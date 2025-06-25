@@ -1,0 +1,479 @@
+:root{
+  --wc-form-color-background: #1B203A;
+  --wc-form-border-color: #fff;
+  --wc-form-border-color: #fff !important;
+
+  .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected]{
+    background-color: #7C4DFF !important;
+    color: white !important;
+    outline: none !important;
+  }
+  .select2-container--default .select2-results__option[data-selected=true] {
+    background-color: #7C4DFF !important;
+    color: white !important;
+    outline: none !important;
+  }
+  .select2-dropdown{
+    color: #fff !important;
+  }
+  .select2-search__field{
+    padding: 12px 15px !important;
+    background-color: #1B203A !important;
+    color: white !important;
+    outline: none !important;
+    border: 1px solid #fff !important;
+    border-radius: 5px !important;
+  }
+  span.select2-dropdown.select2-dropdown--below{
+    border-bottom: none;
+  }
+  /* test */
+  /* --- SELECT2 STYLING --- */
+.select2-container--default .select2-selection--single {
+  background-color: #1B203A;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  height: 48px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  transition: border 0.2s ease;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #ffffff;
+  line-height: 46px;
+  font-size: 16px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
+  right: 10px;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border-color: #8B5DFF;
+}
+
+.select2-dropdown {
+  background-color: #2A2E4A;
+  border: 1px solid #7C4DFF;
+  color: #fff;
+}
+
+.select2-container--default .select2-results__option {
+  padding: 10px 15px;
+  font-size: 16px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted[data-selected] {
+  background-color: #7C4DFF;
+  color: #fff;
+}
+
+.select2-container--default .select2-results__option[aria-selected="true"] {
+  background-color: #8B5DFF;
+  color: white;
+}
+
+.select2-search__field {
+  background-color: #1B203A;
+  border: 1px solid #fff;
+  color: white;
+  padding: 10px 12px;
+  font-size: 16px;
+}
+
+/* --- SCROLLBAR CUSTOM --- */
+.select2-results__options::-webkit-scrollbar {
+  width: 8px;
+}
+
+.select2-results__options::-webkit-scrollbar-track {
+  background: #1B203A;
+}
+
+.select2-results__options::-webkit-scrollbar-thumb {
+  background-color: #7C4DFF;
+  border-radius: 4px;
+  border: 2px solid #1B203A;
+}
+}
+.required_field{
+  .required{
+    color: red;
+  }
+}
+.ast-container{
+  all: revert !important;
+  }
+.ov-checkout.page-checkout{
+    background-color: #1b203a;
+    color: #ffffff;
+    min-height: calc(100vh - 100px);
+    box-sizing: border-box;
+    padding: 150px 0 100px;
+    .ov-checkout-container {
+      width: 100%;
+        max-width: 1200px;
+        margin-inline: auto;
+        @media(max-width:1200px){
+          max-width: calc(100% - 64px);
+        }
+        @media(max-width:550px){
+          max-width: calc(100% - 32px);
+        }
+
+      .ov-checkout-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        position: relative;
+        @media(max-width:1100px){
+           /* max-width: 650px; */
+           margin-inline: auto;
+        }
+        .ov-checkout-back {
+          background-color: rgba(255, 255, 255, 0.2);
+          border-radius: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #FFFFFF;
+          text-decoration: none;
+          font-size: 24px;
+          margin-right: 20px;
+          width: 56px;
+          height: 56px;
+          position: absolute;
+          left: -76px;
+          @media(max-width:1400px){
+            position: static;
+          }
+        }
+        .ov-checkout-title {
+          font-size: 32px;
+          font-weight: 600;
+          margin: 0;
+        }
+      }
+
+      .ov-checkout-content{
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        margin-inline: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        @media(max-width:1100px){
+          display: flex;
+          flex-direction: column-reverse;
+        }
+
+        /* leva strana */
+        .ov-checkout-steps {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+
+          .ov-step {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 16px 20px;
+            .ov-step-number {
+              font-weight: 600;
+              margin-right: 12px;
+            }
+            .ov-step-label {
+              flex: 1;
+              font-size: 16px;
+            }
+          }
+          .ov-step-active {
+            border-color: #7C4DFF;
+            background-color: rgba(124,77,255,0.1);
+          }
+        } 
+        .checkout-form{
+         
+            .ovb-customer-details-container{
+              .woocommerce-billing-fields{
+                .woocommerce-billing-fields__field-wrapper{
+                  p{
+                    label{}
+                    span{
+                      input {
+                        border: 1px solid #fff;
+                        background: transparent;
+                        color: white;
+                        padding: 10px;
+                        border-radius: 0;
+                        outline: none;
+                        box-shadow: none;
+                        width: 100%;
+                        height: 45px;
+                      }
+                      input::placeholder{
+                        color: #ffffff66;
+                      }
+                      input:focus{
+                        border-color: #8B5DFF;
+                        outline: none;
+                        box-shadow: none;
+                      }
+                    }
+                  }
+                }
+              }
+              /* Stilizacija Order Notes polja */
+                #order_comments_field {
+                  margin-top: 30px;
+
+                  label {
+                    color: #fff;
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin-bottom: 8px;
+                    display: block;
+                  }
+
+                  textarea#order_comments {
+                    width: 100%;
+                    background-color: #1B203A;
+                    border: 1px solid #ffffff;
+                    color: #ffffff;
+                    border-radius: 4px;
+                    padding: 12px 16px;
+                    font-size: 16px;
+                    resize: vertical;
+                    min-height: 100px;
+                    box-sizing: border-box;
+
+                    &::placeholder {
+                      color: #FFFFFF99;
+                      font-size: 14px;
+                    }
+
+                    &:focus {
+                      border-color: #8B5DFF;
+                      outline: none;
+                    }
+
+                    &::-webkit-scrollbar {
+                      width: 8px;
+                    }
+                    &::-webkit-scrollbar-thumb {
+                      background-color: #7C4DFF;
+                      border-radius: 4px;
+                    }
+                    &::-webkit-scrollbar-track {
+                      background: #1B203A;
+                    }
+                  }
+                }
+            }
+          
+            .woocommerce-checkout-payment{
+             .form-row.place-order{
+                .woocommerce-terms-and-conditions-wrapper{
+                  font-size: 16px;
+                  letter-spacing: 1;
+                  font-family: inherit;
+                  .woocommerce-privacy-policy-text{
+                    p{
+                      a{
+                        color: #7C4DFF;
+                        text-decoration: none;
+                        transition: all 0.28s ease;
+                        &:hover{
+                          text-decoration: underline;
+                          color: #8B5DFF;
+                        }
+                      }
+                    }
+                  }
+                }
+                button#place_order{
+                  background-color: #7C4DFF;
+                  color: #fff;
+                  padding: 15px 30px;
+                  border: none;
+                  outline: none;
+                  cursor: pointer;
+                  border-radius: 6px;
+                  transition: all 0.28s ease;
+                  font-size: 16px;
+                  &:hover{
+                    background-color: #8B5DFF;
+                  }
+                }
+             } 
+            }
+        }
+        
+        /* desna strana */
+        .ov-checkout-summary {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          height: fit-content;
+          border: 1px solid #fff;   
+          border-radius: 1px;
+          padding: 24px;
+          color: #ffffff;
+          max-width: 100%;
+          box-sizing: border-box;
+          background-color: transparent;
+          @media(max-width:450px){
+            padding: 16px;
+          }
+
+          .ov-summary-card{
+            #order_review_heading{
+
+            }
+            .ovb-product-image {
+              width: 100%;
+              overflow: hidden;
+              img {
+                display: block;
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+              }
+            }
+            .ovb-trip-details-summary {
+              margin-bottom: 20px;
+              border-bottom: 1px solid #fff;
+              .ovb-trip-details-title {
+                font-size: 22px;
+                margin: 24px 0 12px;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+                color: #ffffff;
+              }
+              .ovb-trip-details {
+                .ovb-trip-detail-item {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 10px;
+                  @media(max-width:450px){
+                    flex-direction: column;
+                    align-items: flex-start;
+                  }
+                  .trip-details-stay{
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
+
+                    .ovb-trip-detail-text{
+                      margin-top: 5px;
+                    }
+                  }
+                  .trip-details-accommodation-details{
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    .ovb-trip-detail-nights,
+                    .ovb-trip-detail-guests{
+                      display: flex;
+                      align-items: center;
+                      gap: 3px;
+                      .ovb-trip-detail-text{
+                        margin-top: 5px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            .ovb-order-review-container{
+              .shop_table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 1.5rem;
+                background: transparent;
+                color: #fff;
+                font-family: sans-serif;
+              
+                thead {
+                  th {
+                    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+                    text-align: left;
+                    padding: 0.75rem 1rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    font-size: 0.9rem;
+                    background: rgba(255, 255, 255, 0.05);
+                  }
+                  th.product-subtotal{
+                    text-align: right;
+                  }
+                }
+              
+                tbody {
+                  td {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                    padding: 0.75rem 1rem;
+                    font-size: 0.9rem;
+                  }
+                  td.product-subtotal{
+                    text-align: right;
+                  }
+                }
+              
+                .ovb-details-label {
+                  td {
+                    background: rgba(255, 255, 255, 0.05);
+                    font-style: italic;
+                    color: #ddd;
+                    padding-top: 1rem;
+                    padding-bottom: 0.5rem;
+                  }
+                }
+              
+                .ovb-detail-line {
+                  td {
+                    padding: 12px 16px;
+                    font-size: 0.85rem;
+                    color: #ccc;
+                  }
+                  td.ovb-detail-price{
+                    text-align: right;
+                  }
+                }
+              
+                tfoot {
+                  th,
+                  td {
+                    border-top: 2px solid rgba(255, 255, 255, 0.6);
+                    padding: 0.75rem 1rem;
+                    font-weight: 700;
+                    font-size: 1rem;
+                  }
+                  th{
+                    text-align: left;
+                    text-transform: uppercase;
+                  }
+                  td.product-total {
+                    text-align: right;
+                  }
+              
+                  .order-total {
+                    font-weight: 900;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

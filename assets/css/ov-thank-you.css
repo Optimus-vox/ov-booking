@@ -1,0 +1,135 @@
+html{
+    /* height: 100%; */
+}
+#page{
+    /* flex: 1; */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.ast-container{
+  all: revert !important;
+  }
+.woocommerce-order-received{
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+.ov-thank-you-wrapper{
+    background: #1a1a2e;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .ov-thankyou {
+        max-width: 800px;
+        width: 100%;
+        margin: 2rem auto;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        color: #fff;
+        box-sizing: border-box;
+      
+        h2 {
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 1.5rem;
+          text-align: center;
+        }
+      
+        .ov-order-info {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 2rem;
+          
+          li {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 1rem;
+      
+            strong {
+              font-weight: 600;
+              color: #e0e0e0;
+            }
+          }
+        }
+      
+        h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 20px;
+          border-bottom: 1px solid rgba(255,255,255,0.2);
+          padding-bottom: 15px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+      
+        .ov-booking-summary {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 2rem;
+      
+          li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1rem;
+      
+            .dashicons {
+              font-size: 1.2rem;
+              margin-right: 0.75rem;
+              color: #a0a0ff;
+            }
+          }
+        }
+      
+        .ov-contact-info {
+          text-align: center;
+          font-size: 0.9rem;
+          color: #ccc;
+      
+          a {
+            color: #fff;
+            text-decoration: underline;
+            margin-left: 0.25rem;
+      
+            &:hover {
+              color: #a0a0ff;
+            }
+          }
+        }
+        @media(max-width: 840px){
+          width: 100%;
+          max-width: calc(100% - 40px);
+        }
+        @media(max-width: 500px){
+          padding: 16px;
+        }
+      }
+
+      .ov-add-to-calendar {
+        margin-top: 2rem;
+      }
+      
+      .ov-add-to-calendar .button {
+        background-color: #4285F4;
+        color: #fff;
+        padding: 12px 30px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-bottom: 12px;
+        box-sizing: border-box;
+      }
+      .ov-add-to-calendar .button:hover {
+        background-color: #3367D6;
+      }
+
+}
+  

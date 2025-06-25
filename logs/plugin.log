@@ -1,0 +1,4273 @@
+[2025-06-24 12:37:37] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: cart
+[2025-06-24 12:37:37] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: checkout
+[2025-06-24 12:37:37] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: myaccount
+[2025-06-24 12:37:37] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: shop
+[2025-06-24 12:43:03] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: cart
+[2025-06-24 12:43:03] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: checkout
+[2025-06-24 12:43:03] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: myaccount
+[2025-06-24 12:43:03] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: shop
+[2025-06-24 12:54:57] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: cart
+[2025-06-24 12:54:57] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: checkout
+[2025-06-24 12:54:57] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: myaccount
+[2025-06-24 13:11:36] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: shop
+[2025-06-24 13:20:01] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: cart
+[2025-06-24 13:20:01] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: myaccount
+[2025-06-24 13:21:32] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+        )
+
+)
+
+[2025-06-24 13:21:32] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:21:41] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+)
+
+[2025-06-24 13:21:41] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:21:56] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-01] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-02] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-03] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-04] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-05] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-06] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-07] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-08] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-09] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-10] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-11] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-12] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-13] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-14] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-15] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-16] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-17] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-18] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-19] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-20] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-21] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-22] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-23] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-31] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+)
+
+[2025-06-24 13:21:56] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:22:09] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-01] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-02] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-03] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-04] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-05] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-06] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-07] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-08] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-09] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-10] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-11] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-12] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-13] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-14] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-15] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-16] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-17] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-18] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-19] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-20] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-21] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-22] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-23] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-07-31] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+)
+
+[2025-06-24 13:22:09] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:22:33] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-01] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-02] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-03] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-04] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-05] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-06] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-07] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-08] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-09] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-10] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-11] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-12] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-13] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-14] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-15] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-16] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-17] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-18] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-19] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-20] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-21] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-22] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-23] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-31] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+)
+
+[2025-06-24 13:22:33] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:22:49] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-01] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-02] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-03] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-04] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-05] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-06] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-07] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-08] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-09] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-10] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-11] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-12] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-13] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-14] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-15] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-16] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-17] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-18] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-19] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-20] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-21] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-22] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-23] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-31] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+)
+
+[2025-06-24 13:22:49] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:23:06] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-01] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-02] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-03] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-04] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-05] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-06] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-07] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-08] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-09] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-10] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-11] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-12] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-13] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-14] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-15] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-16] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-17] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-18] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-19] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-20] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-21] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-22] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-23] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-24] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-25] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-26] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-27] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-28] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-29] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-30] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-31] => Array
+        (
+            [isPast] => 
+            [status] => unavailable
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+)
+
+[2025-06-24 13:23:06] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:23:21] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [status] => unavailable
+            [price] => 
+            [priceType] => 
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-01] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-02] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-03] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-04] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-05] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-06] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-07] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-08] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-09] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-10] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-11] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-12] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-13] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-14] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-15] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-16] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-17] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-18] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-19] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-20] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-21] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-22] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-23] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-24] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-25] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-26] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-27] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-28] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-29] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-30] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+    [2025-07-31] => Array
+        (
+            [isPast] => 
+            [status] => available
+            [price] => 10
+            [priceType] => regular
+            [client] => 
+        )
+
+)
+
+[2025-06-24 13:23:21] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 13:47:21] settings.php:21 ovb_reset_woocommerce_pages() - 🧹 WooCommerce stranice resetovane ručno iz admina.
+[2025-06-24 13:47:49] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: cart
+[2025-06-24 13:47:49] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: checkout
+[2025-06-24 13:47:49] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: myaccount
+[2025-06-24 13:47:49] ov-booking.php:46 ovb_create_woocommerce_pages() - ✅ Created WooCommerce page: shop
+[2025-06-24 14:40:53] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+        )
+
+)
+
+[2025-06-24 14:40:53] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
+[2025-06-24 14:41:06] class-wp-hook.php:324 ov_save_calendar_data() - Saving calendar data: Array
+(
+    [2025-06-01] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-02] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-03] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-04] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-05] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-06] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-07] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-08] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-09] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-10] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-11] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-12] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-13] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-14] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-15] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-16] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-17] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-18] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-19] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-20] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-21] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-22] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-23] => Array
+        (
+            [isPast] => 1
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-24] => Array
+        (
+            [isPast] => 
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-25] => Array
+        (
+            [isPast] => 
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-26] => Array
+        (
+            [isPast] => 
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-27] => Array
+        (
+            [isPast] => 
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-28] => Array
+        (
+            [isPast] => 
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-29] => Array
+        (
+            [isPast] => 
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+    [2025-06-30] => Array
+        (
+            [isPast] => 
+            [price] => 10
+            [priceType] => regular
+            [status] => available
+            [client] => 
+        )
+
+)
+
+[2025-06-24 14:41:06] class-wp-hook.php:324 ov_save_calendar_data() - Saving price types: Array
+(
+    [regular] => 10
+    [weekend] => 0
+    [discount] => 0
+    [custom] => 0
+)
+
