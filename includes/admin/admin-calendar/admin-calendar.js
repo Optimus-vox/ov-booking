@@ -258,45 +258,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Sačuvaj definisane cene
   jQuery("#save_price_types").on("click", function () {
-    definedPriceTypes.regular = Number(jQuery("#regular_price").val());
-    definedPriceTypes.weekend = Number(jQuery("#weekend_price").val());
-    definedPriceTypes.discount = Number(jQuery("#discount_price").val());
-    definedPriceTypes.custom = Number(jQuery("#custom_price").val());
 
-    const selectedStatus = jQuery("#bulk_status").val();
-    const statusRule = jQuery("#status_apply_rule").val();
-    const month = d.getUTCMonth();
-    const year = d.getUTCFullYear();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    Swal.fire({
+      title: "Save price types?",
+      text: "Are you sure you want to save the updated prices (Regular, Weekend, Discount, and Custom)?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, save",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return; // User clicked "Cancel" → Do nothing
+      }
 
-    if (selectedStatus && statusRule) {
-      for (let i = 1; i <= daysInMonth; i++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-          i
-        ).padStart(2, "0")}`;
-        const dateObj = new Date(dateStr);
-        const dayOfWeek = dateObj.getUTCDay();
+      // ✅ User confirmed → Continue
+      definedPriceTypes.regular = Number(jQuery("#regular_price").val());
+      definedPriceTypes.weekend = Number(jQuery("#weekend_price").val());
+      definedPriceTypes.discount = Number(jQuery("#discount_price").val());
+      definedPriceTypes.custom = Number(jQuery("#custom_price").val());
 
-        if (
-          (statusRule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
-          (statusRule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
-          statusRule === "full_month"
-        ) {
-          calendarData[dateStr] = {
-            ...calendarData[dateStr],
-            status: selectedStatus,
-            price: calendarData[dateStr]?.price || null,
-            priceType: calendarData[dateStr]?.priceType || null,
-            client: calendarData[dateStr]?.client || null,
-          };
-        }
+      const selectedStatus = jQuery("#bulk_status").val();
+      const statusRule = jQuery("#status_apply_rule").val();
+      const month = d.getUTCMonth();
+      const year = d.getUTCFullYear();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        if (statusRule === "custom") {
-          const picker = jQuery("#status_daterange").data("daterangepicker");
-          const start = picker.startDate;
-          const end = picker.endDate;
-          const target = new Date(dateStr);
-          if (target >= start.toDate() && target <= end.toDate()) {
+      if (selectedStatus && statusRule) {
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+            i
+          ).padStart(2, "0")}`;
+          const dateObj = new Date(dateStr);
+          const dayOfWeek = dateObj.getUTCDay();
+
+          if (
+            (statusRule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
+            (statusRule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
+            statusRule === "full_month"
+          ) {
             calendarData[dateStr] = {
               ...calendarData[dateStr],
               status: selectedStatus,
@@ -305,30 +304,48 @@ document.addEventListener("DOMContentLoaded", function () {
               client: calendarData[dateStr]?.client || null,
             };
           }
+
+          if (statusRule === "custom") {
+            const picker = jQuery("#status_daterange").data("daterangepicker");
+            const start = picker.startDate;
+            const end = picker.endDate;
+            const target = new Date(dateStr);
+            if (target >= start.toDate() && target <= end.toDate()) {
+              calendarData[dateStr] = {
+                ...calendarData[dateStr],
+                status: selectedStatus,
+                price: calendarData[dateStr]?.price || null,
+                priceType: calendarData[dateStr]?.priceType || null,
+                client: calendarData[dateStr]?.client || null,
+              };
+            }
+          }
         }
+
+        myCalendar();
       }
 
-      myCalendar();
-    }
-
-    const productId = jQuery("#ov_product_id").val();
-    jQuery.ajax({
-      url: ov_calendar_vars.ajax_url,
-      method: "POST",
-      data: {
-        action: "ov_save_calendar_data",
-        product_id: productId,
-        calendar_data: JSON.stringify(calendarData),
-        price_types: definedPriceTypes,
-      },
-      success: function (res) {
-        alert("Sve uspešno sačuvano.");
-      },
-      error: function (err) {
-        console.error("Greška prilikom čuvanja:", err);
-      },
+      const productId = jQuery("#ov_product_id").val();
+      jQuery.ajax({
+        url: ov_calendar_vars.ajax_url,
+        method: "POST",
+        data: {
+          action: "ov_save_calendar_data",
+          product_id: productId,
+          calendar_data: JSON.stringify(calendarData),
+          price_types: definedPriceTypes,
+        },
+        success: function (res) {
+          Swal.fire("Success!", "Data successfully saved.", "success");
+        },
+        error: function (err) {
+          Swal.fire("Error!", "Error occurred while saving.", "error");
+          console.error("Error occurred:", err);
+        },
+      });
     });
   });
+
 
   // Sačuvaj definisane cene
   jQuery("#client_date_range").daterangepicker({
@@ -337,7 +354,6 @@ document.addEventListener("DOMContentLoaded", function () {
     opens: "right",
   });
 
-  // 🔧 NOVO – Primeni izabrani tip cene na dane
   jQuery("#apply_price").on("click", function () {
     const priceType = jQuery("#price_type").val();
     const rule = jQuery("#apply_rule").val();
@@ -345,45 +361,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedStatus = jQuery("#bulk_status").val(); // može biti prazan string
 
     if (selectedPrice === null || isNaN(selectedPrice)) {
-      alert("Unesi validnu cenu za izabrani tip.");
-      return;
+      return Swal.fire("Error", "Unesi validnu cenu za izabrani tip.", "error");
     }
 
-    const month = d.getUTCMonth();
-    const year = d.getUTCFullYear();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    Swal.fire({
+      title: 'Apply price?',
+      text: `Price type: ${priceType}, Rule: ${rule}. Are you sure?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, apply',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (!result.isConfirmed) return;
 
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-        i
-      ).padStart(2, "0")}`;
-      // const dateObj = new Date(dateStr);
-      // const dayOfWeek = dateObj.getUTCDay(); // 0 = nedelja, 6 = subota
-      const dayOfWeek = new Date(year, month, i).getDay();
+      // Dobavi trenutni datum (nedostajao ti je d u originalu)
+      const d = new Date();
+      const month = d.getUTCMonth();
+      const year = d.getUTCFullYear();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      if (
-        (rule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
-        (rule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
-        rule === "full_month"
-      ) {
-        calendarData[dateStr] = {
-          ...calendarData[dateStr],
-          price: selectedPrice,
-          priceType: priceType,
-          status:
-            selectedStatus || calendarData[dateStr]?.status || "available",
-          client: calendarData[dateStr]?.client || null,
-        };
-      }
-      // 🔧 NOVO – Primeni izabrani tip cene na custom datume
-      if (rule === "custom") {
-        const picker = jQuery("#daterange").data("daterangepicker");
-        const start = picker.startDate.startOf('day'); // moment
-        const end = picker.endDate.startOf('day');     // moment
-        let current = moment(start); // kopija
+      for (let i = 1; i <= daysInMonth; i++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+        const dayOfWeek = new Date(year, month, i).getDay();
 
-        while (current.isSameOrBefore(end)) {
-          const dateStr = current.format("YYYY-MM-DD"); // npr. "2025-06-05"
+        if (
+          (rule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
+          (rule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
+          rule === "full_month"
+        ) {
           calendarData[dateStr] = {
             ...calendarData[dateStr],
             price: selectedPrice,
@@ -391,37 +396,60 @@ document.addEventListener("DOMContentLoaded", function () {
             status: selectedStatus || calendarData[dateStr]?.status || "available",
             client: calendarData[dateStr]?.client || null,
           };
-          current.add(1, "days"); // pređi na sledeći dan
+        }
+
+        // Primeni za custom interval
+        if (rule === "custom") {
+          const picker = jQuery("#daterange").data("daterangepicker");
+          if (!picker) {
+            return Swal.fire("Error", "Date range picker nije inicijalizovan.", "error");
+          }
+          const start = picker.startDate.startOf('day');
+          const end = picker.endDate.startOf('day');
+          let current = moment(start);
+
+          while (current.isSameOrBefore(end)) {
+            const dateStr = current.format("YYYY-MM-DD");
+            calendarData[dateStr] = {
+              ...calendarData[dateStr],
+              price: selectedPrice,
+              priceType: priceType,
+              status: selectedStatus || calendarData[dateStr]?.status || "available",
+              client: calendarData[dateStr]?.client || null,
+            };
+            current.add(1, "days");
+          }
         }
       }
 
-    }
+      myCalendar(); // osveži prikaz
 
-    myCalendar(); // Osveži prikaz
+      const productId = jQuery("#ov_product_id").val();
 
-    const productId = jQuery("#ov_product_id").val();
+      jQuery.ajax({
+        url: ov_calendar_vars.ajax_url,
+        method: "POST",
+        data: {
+          action: "ov_save_calendar_data",
+          product_id: productId,
+          calendar_data: JSON.stringify(calendarData),
+          price_types: ov_calendar_vars.priceTypes,
+        },
+        dataType: "json",
+        success: function (res) {
+          Swal.fire("Success!", "Cene su uspešno sačuvane.", "success");
+          console.log("Sačuvano:", res);
+        },
+        error: function (err) {
+          Swal.fire("Error", "Greška prilikom čuvanja podataka.", "error");
+          console.error("Greška prilikom čuvanja podataka", err);
+        },
+      });
 
-    jQuery.ajax({
-      url: ov_calendar_vars.ajax_url,
-      method: "POST",
-      data: {
-        action: "ov_save_calendar_data",
-        product_id: productId,
-        calendar_data: JSON.stringify(calendarData),
-        // price_types: definedPriceTypes,
-        price_types: ov_calendar_vars.priceTypes,
-      },
-      dataType: "json",
-      success: function (res) {
-        console.log("Sačuvano:", res);
-      },
-      error: function (err) {
-        console.error("Greška prilikom čuvanja podataka", err);
-      },
+      console.log(calendarData, "apply data");
     });
-
-    console.log(calendarData, "apply data");
   });
+
 
   jQuery("#apply_status").on("click", function () {
     const selectedStatus = jQuery("#bulk_status").val();
@@ -879,5 +907,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-
-
