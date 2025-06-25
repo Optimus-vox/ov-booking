@@ -107,7 +107,7 @@
   }
 }
 .ast-container{
-  all: revert !important;
+  /* all: revert !important; */
   }
 .ov-checkout.page-checkout{
     background-color: #1b203a;

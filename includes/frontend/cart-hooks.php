@@ -93,8 +93,7 @@ add_filter('woocommerce_add_to_cart_validation', function($passed, $product_id, 
         return false;
     }
     if (WC()->cart && WC()->cart->get_cart_contents_count() > 0) {
-        wc_add_notice(__('Možete rezervisati samo jedan termin odjednom.', 'ov-booking'), 'error');
-        return false;
+        WC()->cart->empty_cart(); // automatski ukloni prethodni proizvod
     }
     return $passed;
 }, 10, 3);

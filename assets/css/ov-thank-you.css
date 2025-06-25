@@ -8,7 +8,7 @@ html{
     height: 100vh;
 }
 .ast-container{
-  all: revert !important;
+  /* all: revert !important; */
   }
 .woocommerce-order-received{
     height: 100%;

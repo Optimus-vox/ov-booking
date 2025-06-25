@@ -1,0 +1,5 @@
+.ob-booking-active{
+    .ast-container{
+        all: revert !important;
+    }
+}

@@ -42,6 +42,9 @@ function ovb_check_woocommerce_dependency() {
 // Activation logic
 register_activation_hook(__FILE__, function () {
     ovb_check_woocommerce_dependency();
+    if (function_exists('ovb_force_all_products_to_simple')) {
+        ovb_force_all_products_to_simple();
+    }
     if (function_exists('ovb_create_woocommerce_pages')) {
         ovb_create_woocommerce_pages();
     }

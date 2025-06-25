@@ -63,7 +63,7 @@
 }
 }
 .ast-container{
-  all: revert !important;
+  /* all: revert !important; */
   }
 #page {
   display: grid;

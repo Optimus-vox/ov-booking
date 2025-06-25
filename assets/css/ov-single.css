@@ -1,14 +1,5 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-}
-
-html {
-  margin: 0;
-}
 .ast-container{
-  all: revert !important;
+  /* all: revert !important; */
   }
 .container {
   width: 100%;
@@ -340,7 +331,8 @@ html {
             font-size: 19px;
             line-height: 22.5px;
             margin: 15px 0;
-            width: calc(100% - 26px - 30px);
+            /* width: calc(100% - 26px - 30px); */
+            width: 100%
           }
         }
 

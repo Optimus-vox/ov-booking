@@ -2,6 +2,27 @@
 defined('ABSPATH') || exit;
 
 
+// Force all products to be 'simple'
+function ovb_force_all_products_to_simple() {
+    $args = [
+        'post_type'      => 'product',
+        'post_status'    => 'any',
+        'numberposts'    => -1,
+        'fields'         => 'ids',
+    ];
+    $product_ids = get_posts($args);
+
+    foreach ($product_ids as $product_id) {
+        wp_set_object_terms($product_id, 'simple', 'product_type', false);
+    }
+}
+
+// Set all products to 'simple'
+add_action('save_post_product', function($post_id) {
+    if (get_post_type($post_id) === 'product') {
+        wp_set_object_terms($post_id, 'simple', 'product_type', false);
+    }
+}, 20, 1);
 
 // Create WooCommerce pages if they don't exist
 function ovb_create_woocommerce_pages() {
