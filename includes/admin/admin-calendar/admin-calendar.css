@@ -11,7 +11,7 @@ input {
   background-color: #fff;
   overflow: hidden;
 }
-
+/*
 .calendar-nav {
   display: flex;
   align-items: center;
@@ -20,7 +20,7 @@ input {
   margin-bottom: 30px;
   width: fit-content;
 }
-
+*/
 .calendar-nav i {
   cursor: pointer;
   transform: rotate(270deg);
