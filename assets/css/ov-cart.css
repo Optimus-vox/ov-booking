@@ -12,7 +12,7 @@
 .ov-cart.page-cart {
     background-color: #1B203A;
     color: #FFFFFF;
-    padding: 150px 0 100px;
+    padding: 100px 0 100px;
     min-height: calc(100vh - 100px);
     box-sizing: border-box;
     .ov-cart-container{
@@ -93,6 +93,7 @@
       font-size: 32px;
       font-weight: 600;
       margin: 0;
+      color: #fff;
     }
   }
   
@@ -145,13 +146,16 @@
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s ease;
+    &:hover{
+      background-color: #8B5DFF;
+    }
     &.ov-empty-cart-button{
       width: fit-content;
       margin-right: auto;
       background-color: transparent;
       border: 1px solid #7C4DFF;
       &:hover{
-        background-color: #7C4DFF;
+        background-color: #8B5DFF;
       }
     }
   }
@@ -175,6 +179,7 @@
     font-size: 24px;
     margin: 0 0 12px;
     font-weight: 600;
+    color: #fff;
   }
   .ov-summary-policy {
     font-size: 16px;
@@ -467,6 +472,7 @@
       font-size: 16px;
       outline: none;
       margin-bottom: 12px;
+      height: auto;
       &:last-of-type{
         margin-bottom: 0;
       }
@@ -491,6 +497,9 @@
     .ov-login-password {
       position: relative;
       margin-bottom: 12px;
+      input{
+        height: auto;
+      }
     }
     .ov-forgot-password{
       a{
@@ -530,7 +539,7 @@
         &.login{
           background-color: #8B5DFF;
           border: none;
-          padding: 16px 30px;
+          padding: 21px 30px;
           &:hover{
             background-color: #7C4DFF;
           }
@@ -552,7 +561,7 @@
 		position: absolute;
 		top: 50%;
 		right: 1rem;
-		transform: translateY(-60%);
+		transform: translateY(-80%);
 		background: none;
 		border: none;
 		font-size: 1.25rem;
@@ -601,7 +610,8 @@
 
 /* TEST helper za google dugme  */
 .google-login-button {
-  display: inline-flex;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 10px;
   background: #ffffff;
@@ -611,7 +621,10 @@
   font-weight: bold;
   border: 1px solid #ddd;
   text-decoration: none;
-  margin-bottom: 1rem;
+  .helper{
+    width: 20px;
+    height: 20px;
+  }
 }
 .google-login-button:hover {
   background: #f5f5f5;

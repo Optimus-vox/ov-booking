@@ -1,3 +1,34 @@
+:root{
+  --ast-post-nav-space: unset;
+  --ast-container-default-xlg-padding: unset;
+  --ast-container-default-lg-padding: unset;
+  --ast-container-default-slg-padding: unset;
+  --ast-container-default-md-padding: unset;
+  --ast-container-default-sm-padding: unset;
+  --ast-container-default-xs-padding: unset;
+  --ast-container-default-xxs-padding: unset;
+  --ast-code-block-background: unset;
+  --ast-comment-inputs-background: unset;
+  --ast-normal-container-width: unset;
+  --ast-narrow-container-width: unset;
+  --ast-blog-title-font-weight:unset;
+  --ast-blog-meta-weight: unset;
+  --ast-global-color-primary: unset;
+  --ast-global-color-secondary: unset;
+  --ast-global-color-alternate-background: unset;
+  --ast-global-color-subtle-background: unset;
+  --ast-bg-style-guide: unset;
+  --ast-shadow-style-guide: unset;
+  --ast-global-dark-bg-style: unset;
+  --ast-global-dark-lfs: unset;
+  --ast-widget-bg-color: unset;
+  --ast-wc-container-head-bg-color: unset;
+  --ast-title-layout-bg: unset;
+  --ast-search-border-color: unset;
+  --ast-lifter-hover-bg: unset;
+  --ast-gallery-block-color: unset;
+  --srfm-color-input-label: unset;
+}
 body.ov-single-product-body .ast-container,
 body.ov-my-account-body .ast-container {
   all: unset;

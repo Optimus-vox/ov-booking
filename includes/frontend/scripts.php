@@ -318,16 +318,19 @@ function ovb_enqueue_astra_overrides()
     $theme = wp_get_theme();
 
     if (strpos($theme->get('Name'), 'Astra') !== false || strpos($theme->get('Template'), 'astra') !== false) {
-        wp_enqueue_style(
-            'ovb-astra-overrides',
-            // plugin_dir_url(__FILE__) . 'assets/css/ov-astra-overrides.css',
-            plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css',
-            [],
-            filemtime(plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css')
-        );
 
-        if (function_exists('ov_log_error')) {
-            ov_log_error('✅ Astra detected, OVB override stylesheet enqueued.', 'general');
+     $css_file = plugin_dir_path(__FILE__) . '../../assets/css/ov-astra-overrides.css';
+
+        if ( file_exists( $css_file ) ) {
+            wp_enqueue_style(
+                'ovb-astra-overrides',
+                plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css',
+                [],
+                filemtime( $css_file )
+            );
+            if ( function_exists('ov_log_error') ) {
+                ov_log_error('✅ Astra detected, OVB override stylesheet enqueued.', 'general');
+            }
         }
     }
 }

@@ -30,7 +30,7 @@
   /* test */
   /* --- SELECT2 STYLING --- */
 .select2-container--default .select2-selection--single {
-  background-color: #1B203A;
+  background-color: #1B203A !important;
   border: 1px solid #ffffff;
   color: #ffffff;
   height: 48px;
@@ -69,7 +69,7 @@
 
 .select2-container--default .select2-results__option--highlighted[aria-selected],
 .select2-container--default .select2-results__option--highlighted[data-selected] {
-  background-color: #7C4DFF;
+  background-color: #7C4DFF !important;
   color: #fff;
 }
 
@@ -114,7 +114,7 @@
     color: #ffffff;
     min-height: calc(100vh - 100px);
     box-sizing: border-box;
-    padding: 150px 0 100px;
+    padding: 100px 0 100px;
     .ov-checkout-container {
       width: 100%;
         max-width: 1200px;
@@ -157,6 +157,7 @@
           font-size: 32px;
           font-weight: 600;
           margin: 0;
+          color: #fff;
         }
       }
 
@@ -204,9 +205,14 @@
          
             .ovb-customer-details-container{
               .woocommerce-billing-fields{
+                h3{
+                  color: #fff;
+                }
                 .woocommerce-billing-fields__field-wrapper{
                   p{
-                    label{}
+                    label{
+                      color: #fff;
+                    }
                     span{
                       input {
                         border: 1px solid #fff;
@@ -277,6 +283,11 @@
                     }
                   }
                 }
+            }
+            .woocommerce-additional-fields{
+              h3{
+                color:#fff;
+              }
             }
           
             .woocommerce-checkout-payment{
@@ -395,6 +406,9 @@
               }
             }
             .ovb-order-review-container{
+              width: 100% !important;
+              padding: 0 !important;
+              border: none !important;
               .shop_table {
                 width: 100%;
                 border-collapse: collapse;
@@ -407,7 +421,7 @@
                   th {
                     border-bottom: 2px solid rgba(255, 255, 255, 0.6);
                     text-align: left;
-                    padding: 0.75rem 1rem;
+                    padding: 0.75rem 1rem !important;
                     font-weight: 600;
                     text-transform: uppercase;
                     font-size: 0.9rem;
@@ -421,7 +435,7 @@
                 tbody {
                   td {
                     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-                    padding: 0.75rem 1rem;
+                    padding: 0.75rem 1rem !important;
                     font-size: 0.9rem;
                   }
                   td.product-subtotal{
@@ -434,14 +448,14 @@
                     background: rgba(255, 255, 255, 0.05);
                     font-style: italic;
                     color: #ddd;
-                    padding-top: 1rem;
-                    padding-bottom: 0.5rem;
+                    padding-top: 1rem !important;
+                    padding-bottom: 0.5rem !important;
                   }
                 }
               
                 .ovb-detail-line {
                   td {
-                    padding: 12px 16px;
+                    padding: 12px 16px !important;
                     font-size: 0.85rem;
                     color: #ccc;
                   }
@@ -454,7 +468,7 @@
                   th,
                   td {
                     border-top: 2px solid rgba(255, 255, 255, 0.6);
-                    padding: 0.75rem 1rem;
+                    padding: 0.75rem 1rem !important;
                     font-weight: 700;
                     font-size: 1rem;
                   }

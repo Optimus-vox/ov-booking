@@ -25,39 +25,6 @@ add_action('save_post_product', function($post_id) {
 }, 20, 1);
 
 // Create WooCommerce pages if they don't exist
-// function ovb_create_woocommerce_pages() {
-//     $pages = [
-//         'cart'     => ['title' => 'Cart',     'shortcode' => '[woocommerce_cart]'],
-//         'checkout' => ['title' => 'Checkout', 'shortcode' => '[woocommerce_checkout]'],
-//         'myaccount'=> ['title' => 'My Account','shortcode' => '[woocommerce_my_account]'],
-//         'shop'     => ['title' => 'Shop',     'shortcode' => ''],
-//     ];
-
-//     foreach ($pages as $key => $data) {
-//         $existing_id = wc_get_page_id($key);
-//         $existing_post = $existing_id > 0 ? get_post($existing_id) : false;
-
-//         if (!$existing_post || $existing_post->post_status !== 'publish') {
-//             $page_exists_by_slug = get_page_by_path(sanitize_title($data['title']));
-
-//             if (!$page_exists_by_slug) {
-//                 $page_id = wp_insert_post([
-//                     'post_title'   => $data['title'],
-//                     'post_content' => $data['shortcode'],
-//                     'post_status'  => 'publish',
-//                     'post_type'    => 'page',
-//                 ]);
-
-//                 if ($page_id && !is_wp_error($page_id)) {
-//                     update_option("woocommerce_{$key}_page_id", $page_id);
-//                     if (function_exists('ov_log_error')) {
-//                         ov_log_error("✅ Created WooCommerce page: {$key}", 'general');
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
 function ovb_create_woocommerce_pages() {
     // Provera da li je WooCommerce aktiviran
     if (!class_exists('WooCommerce')) {
@@ -83,11 +50,11 @@ function ovb_create_woocommerce_pages() {
             'shortcode' => '[woocommerce_my_account]',
             'tag' => 'woocommerce_my_account'
         ],
-        'shop' => [
-            'title' => 'Shop',
-            'shortcode' => '[products]',
-            'tag' => 'products'
-        ],
+        // 'shop' => [
+        //     'title' => 'Shop',
+        //     'shortcode' => '[products]',
+        //     'tag' => 'products'
+        // ],
     ];
 
     foreach ($pages as $key => $data) {
