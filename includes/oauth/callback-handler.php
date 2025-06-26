@@ -8,7 +8,7 @@ function ovb_handle_google_oauth_callback() {
         return;
     }
 
-    if (!wp_verify_nonce($_GET['state'], 'google_oauth_nonce')) {
+    if (!isset($_GET['state']) || !wp_verify_nonce($_GET['state'], 'google_oauth_nonce')) {
         wc_add_notice(__('Neispravan sigurnosni token.', 'ov-booking'), 'error');
         wp_redirect(wc_get_cart_url());
         exit;
@@ -17,7 +17,14 @@ function ovb_handle_google_oauth_callback() {
     $client_id     = get_option('ovb_google_client_id');
     $client_secret = get_option('ovb_google_client_secret');
     $redirect_uri  = home_url('/wp-login.php?google_auth=1');
-    $code          = sanitize_text_field($_GET['code']);
+
+    if (!$client_id || !$client_secret) {
+        wc_add_notice(__('Google OAuth nije ispravno podešen.', 'ov-booking'), 'error');
+        wp_redirect(wc_get_cart_url());
+        exit;
+    }
+
+    $code = sanitize_text_field($_GET['code']);
 
     $response = wp_remote_post('https://oauth2.googleapis.com/token', [
         'body' => [
@@ -36,8 +43,8 @@ function ovb_handle_google_oauth_callback() {
     }
 
     $body = json_decode(wp_remote_retrieve_body($response), true);
-    if (!isset($body['access_token'])) {
-        wc_add_notice(__('Nije primljen važeći token od Google-a.', 'ov-booking'), 'error');
+    if (empty($body['access_token'])) {
+        wc_add_notice(__('Token od Google-a nije primljen.', 'ov-booking'), 'error');
         wp_redirect(wc_get_cart_url());
         exit;
     }
@@ -51,7 +58,7 @@ function ovb_handle_google_oauth_callback() {
     ]);
 
     if (is_wp_error($user_info_response)) {
-        wc_add_notice(__('Neuspelo dobijanje podataka o korisniku.', 'ov-booking'), 'error');
+        wc_add_notice(__('Greška pri dobijanju korisničkih podataka.', 'ov-booking'), 'error');
         wp_redirect(wc_get_cart_url());
         exit;
     }
@@ -59,12 +66,13 @@ function ovb_handle_google_oauth_callback() {
     $user_info = json_decode(wp_remote_retrieve_body($user_info_response), true);
 
     if (empty($user_info['email'])) {
-        wc_add_notice(__('Google nalog nema dostupnu email adresu.', 'ov-booking'), 'error');
+        wc_add_notice(__('Google nalog nema email.', 'ov-booking'), 'error');
         wp_redirect(wc_get_cart_url());
         exit;
     }
 
     $user = get_user_by('email', $user_info['email']);
+
     if (!$user) {
         $user_id = wp_create_user(
             sanitize_user($user_info['email']),
@@ -73,16 +81,16 @@ function ovb_handle_google_oauth_callback() {
         );
 
         if (is_wp_error($user_id)) {
-            wc_add_notice(__('Neuspešno kreiranje korisnika.', 'ov-booking'), 'error');
+            wc_add_notice(__('Kreiranje korisnika nije uspelo.', 'ov-booking'), 'error');
             wp_redirect(wc_get_cart_url());
             exit;
         }
 
         wp_update_user([
             'ID'           => $user_id,
-            'display_name' => $user_info['name'],
-            'first_name'   => $user_info['given_name'],
-            'last_name'    => $user_info['family_name'],
+            'display_name' => $user_info['name'] ?? '',
+            'first_name'   => $user_info['given_name'] ?? '',
+            'last_name'    => $user_info['family_name'] ?? '',
         ]);
 
         $user = get_user_by('id', $user_id);

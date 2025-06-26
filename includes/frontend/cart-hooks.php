@@ -3,15 +3,27 @@ defined('ABSPATH') || exit;
 
 
 // Snimi booking podatke prilikom dodavanja u korpu
+// add_filter('woocommerce_add_cart_item_data','ovb_save_all_booking_data',10,3);
+// function ovb_save_all_booking_data($data,$product_id,$variation_id){
+//     if(!empty($_POST['all_dates'])){
+//         if(!empty($_POST['start_date'])) $data['start_date']=sanitize_text_field(wp_unslash($_POST['start_date']));
+//         if(!empty($_POST['end_date']))   $data['end_date']  =sanitize_text_field(wp_unslash($_POST['end_date']));
+//         $data['all_dates']   =sanitize_text_field(wp_unslash($_POST['all_dates']));
+//         $data['guests']      =isset($_POST['guests'])?intval($_POST['guests']):1;
+//         $data['ov_all_dates']=sanitize_text_field(wp_unslash($_POST['all_dates']));
+//         $data['unique_key']  =md5(microtime().rand());
+//     }
+//     return $data;
+// }
 add_filter('woocommerce_add_cart_item_data','ovb_save_all_booking_data',10,3);
 function ovb_save_all_booking_data($data,$product_id,$variation_id){
     if(!empty($_POST['all_dates'])){
-        if(!empty($_POST['start_date'])) $data['start_date']=sanitize_text_field(wp_unslash($_POST['start_date']));
-        if(!empty($_POST['end_date']))   $data['end_date']  =sanitize_text_field(wp_unslash($_POST['end_date']));
-        $data['all_dates']   =sanitize_text_field(wp_unslash($_POST['all_dates']));
-        $data['guests']      =isset($_POST['guests'])?intval($_POST['guests']):1;
-        $data['ov_all_dates']=sanitize_text_field(wp_unslash($_POST['all_dates']));
-        $data['unique_key']  =md5(microtime().rand());
+        $data['start_date']   = sanitize_text_field($_POST['start_date'] ?? '');
+        $data['end_date']     = sanitize_text_field($_POST['end_date'] ?? '');
+        $data['all_dates']    = sanitize_text_field($_POST['all_dates']);
+        $data['guests']       = isset($_POST['guests']) ? intval($_POST['guests']) : 1;
+        $data['ov_all_dates'] = $data['all_dates']; // kompatibilnost
+        $data['unique_key']   = md5(microtime().rand());
     }
     return $data;
 }
@@ -88,17 +100,46 @@ add_filter('woocommerce_cart_item_name', function($name, $item) {
 
 // Validacija pre dodavanja u korpu
 add_filter('woocommerce_add_to_cart_validation', function($passed, $product_id, $qty) {
-    if (empty($_POST['all_dates'])) {
-        wc_add_notice(__('Molim Vas, izaberite datume pre nego što dodate u korpu.', 'ov-booking'), 'error');
-        return false;
-    }
+    // if (empty($_POST['all_dates'])) {
+    //     wc_add_notice(__('Molim Vas, izaberite datume pre nego što dodate u korpu.', 'ov-booking'), 'error');
+    //     return false;
+    // }
     if (WC()->cart && WC()->cart->get_cart_contents_count() > 0) {
         WC()->cart->empty_cart(); // automatski ukloni prethodni proizvod
     }
     return $passed;
 }, 10, 3);
 
-// Redirect na cart nakon add-to-cart
+// add_filter('woocommerce_add_to_cart_validation', function($passed, $product_id, $qty) {
+//     if (empty($_POST['all_dates'])) {
+//         wc_add_notice(__('Molim Vas, izaberite datume pre nego što dodate u korpu.', 'ov-booking'), 'error');
+//         if (function_exists('ov_log_error')) {
+//             ov_log_error('🚫 Validacija pala: all_dates nije prosleđen', 'cart');
+//         }
+//         return false;
+//     }
+
+//     if (WC()->cart && WC()->cart->get_cart_contents_count() > 0) {
+//         WC()->cart->empty_cart(); // automatski ukloni prethodni proizvod
+//     }
+
+//     if (function_exists('ov_log_error')) {
+//         ov_log_error('✅ Validacija prošla za proizvod ID: ' . $product_id, 'cart');
+//     }
+
+//     return $passed;
+// }, 10, 3);
+
+
+// Redirect na cart nakon add-to-cart (samo za ne-AJAX)
 add_filter('woocommerce_add_to_cart_redirect', function($url) {
     return wc_get_cart_url();
+});
+
+// AJAX hook za potvrdu dodavanja (opciono: možeš ovde slati dodatne podatke ako treba)
+add_action('woocommerce_ajax_added_to_cart', function() {
+    if (function_exists('ov_log_error')) {
+        ov_log_error('✅ AJAX proizvod dodat u korpu', 'cart');
+    }
+    return true;
 });

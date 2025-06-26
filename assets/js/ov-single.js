@@ -213,89 +213,192 @@
 
 
 // File: assets/js/ov-single.js
-jQuery(function ($) {
-  // 1) Provera da li su moment i DateRangePicker učitani
-  if (typeof moment === "undefined") {
-    console.error("[OV] Moment.js nije učitan");
-    return;
-  }
-  if (typeof $.fn.daterangepicker !== "function") {
-    console.error("[OV] DateRangePicker nije učitan");
-    return;
-  }
+// jQuery(function ($) {
+//   // 1) Provera da li su moment i DateRangePicker učitani
+//   if (typeof moment === "undefined") {
+//     console.error("[OV] Moment.js nije učitan");
+//     return;
+//   }
+//   if (typeof $.fn.daterangepicker !== "function") {
+//     console.error("[OV] DateRangePicker nije učitan");
+//     return;
+//   }
 
-  // 2) Monkey-patch updateCalendars da uvek redraw-uje cene/status
-  (function () {
-    const DRP = $.fn.daterangepicker && $.fn.daterangepicker.constructor;
-    if (DRP && !DRP.prototype.__patchedUpdateCalendars) {
-      const orig = DRP.prototype.updateCalendars;
-      DRP.prototype.updateCalendars = function () {
-        orig.apply(this, arguments);
-        try {
-          renderCalendar($(this.element));
-        } catch (err) {
-          console.warn("[OV] updateCalendars render failed", err);
-        }
-      };
-      DRP.prototype.__patchedUpdateCalendars = true;
-      console.log("[OV] updateCalendars patched");
-    }
-  })();
+//   // 2) Monkey-patch updateCalendars da uvek redraw-uje cene/status
+//   (function () {
+//     const DRP = $.fn.daterangepicker && $.fn.daterangepicker.constructor;
+//     if (DRP && !DRP.prototype.__patchedUpdateCalendars) {
+//       const orig = DRP.prototype.updateCalendars;
+//       DRP.prototype.updateCalendars = function () {
+//         orig.apply(this, arguments);
+//         try {
+//           renderCalendar($(this.element));
+//         } catch (err) {
+//           console.warn("[OV] updateCalendars render failed", err);
+//         }
+//       };
+//       DRP.prototype.__patchedUpdateCalendars = true;
+//       console.log("[OV] updateCalendars patched");
+//     }
+//   })();
 
-  // 3) Monkey-patch clickDate da nikad ne baca undefined.substr
-  (function () {
-    const DRP = $.fn.daterangepicker && $.fn.daterangepicker.constructor;
-    if (DRP && !DRP.prototype.__patchedClickDate) {
-      const origClickDate = DRP.prototype.clickDate;
-      DRP.prototype.clickDate = function (e) {
-        try {
-          const sep = this.locale.separator || " - ";
-          const $el = $(this.element);
-          const val = $el.val() || "";
-          if (val.split(sep).length < 2) {
-            const fmt = this.locale.format;
-            const sd = this.startDate.format(fmt);
-            $el.val(sd + sep + sd);
-          }
-        } catch (prepErr) {
-          console.warn("[OV] DRP prepErr", prepErr);
-        }
-        let result;
-        try {
-          result = origClickDate.call(this, e);
-        } catch (clickErr) {
-          console.warn("[OV] DRP clickDate swallowed", clickErr);
-        }
-        return result;
-      };
-      DRP.prototype.__patchedClickDate = true;
-    }
-  })();
+//   // 3) Monkey-patch clickDate da nikad ne baca undefined.substr
+//   (function () {
+//     const DRP = $.fn.daterangepicker && $.fn.daterangepicker.constructor;
+//     if (DRP && !DRP.prototype.__patchedClickDate) {
+//       const origClickDate = DRP.prototype.clickDate;
+//       DRP.prototype.clickDate = function (e) {
+//         try {
+//           const sep = this.locale.separator || " - ";
+//           const $el = $(this.element);
+//           const val = $el.val() || "";
+//           if (val.split(sep).length < 2) {
+//             const fmt = this.locale.format;
+//             const sd = this.startDate.format(fmt);
+//             $el.val(sd + sep + sd);
+//           }
+//         } catch (prepErr) {
+//           console.warn("[OV] DRP prepErr", prepErr);
+//         }
+//         let result;
+//         try {
+//           result = origClickDate.call(this, e);
+//         } catch (clickErr) {
+//           console.warn("[OV] DRP clickDate swallowed", clickErr);
+//         }
+//         return result;
+//       };
+//       DRP.prototype.__patchedClickDate = true;
+//     }
+//   })();
 
-  jQuery(document).ready(function ($) {
-    $('.ov-testimonials-carousel').owlCarousel({
-      items: 1,           // prikazuje se po jedan slide
-      center: true,       // centriraj slide
-      loop: true,
-      margin: 30,         // razmak ako dodamo sledeći slide (ako bude)
-      nav: false,
-      dots: true,
-      autoHeight: true,
-      autoplay: true,
-      autoplayTimeout: 5000,
-      autoplayHoverPause: true,
-    });
-  });
+//   jQuery(document).ready(function ($) {
+//     $('.ov-testimonials-carousel').owlCarousel({
+//       items: 1,           // prikazuje se po jedan slide
+//       center: true,       // centriraj slide
+//       loop: true,
+//       margin: 30,         // razmak ako dodamo sledeći slide (ako bude)
+//       nav: false,
+//       dots: true,
+//       autoHeight: true,
+//       autoplay: true,
+//       autoplayTimeout: 5000,
+//       autoplayHoverPause: true,
+//     });
+//   });
 
-  if ($(".go-to-cart-button").length) {
-    $(".stay-duration").hide();
-    $(".custom-price").addClass("added-to-cart");
-  }
-});
+//   if ($(".go-to-cart-button").length) {
+//     $(".stay-duration").hide();
+//     $(".custom-price").addClass("added-to-cart");
+//   }
+// });
 
 
 
-document.addEventListener("DOMContentLoaded", function () {
+// document.addEventListener("DOMContentLoaded", function () {
+//   initOvDateRangePicker({
+//     input: "#custom-daterange-input",
+//     container: "#date-range-picker",
+//     readonly: false,
+//     alwaysOpen: false,
+//     locale: "sr-RS",
+//     calendarData: window.ov_calendar_vars?.calendarData || {},
+//     totalsContainer: "#ov_total_container",
+
+//   });
+//   initOvDateRangePicker({
+//     container: "#ov-booking_readonly_calendar",
+//     readonly: true,
+//     alwaysOpen: true,
+//     locale: "sr-RS",
+//     calendarData: window.ov_calendar_vars?.calendarData || {},
+//   });
+// });
+
+
+// jQuery(function ($) {
+//   const $form = $("form.ov-booking-form");
+
+//   if (!$form.length) return;
+
+//   $form.on("submit", function (e) {
+//     e.preventDefault();
+
+//     const $btn = $form.find('button[type="submit"]');
+//     $btn.prop("disabled", true).text("Processing...");
+
+//     const formData = $form.serialize();
+//     const ajaxUrl = `${window.location.origin}/?wc-ajax=add_to_cart`;
+
+//     $.post(ajaxUrl, formData)
+//       .done(function (response) {
+//         if (response && typeof response === "object" && response.fragments) {
+//           const redirectUrl = typeof ovCartVars !== "undefined" && ovCartVars.checkoutUrl ? ovCartVars.checkoutUrl : "/checkout/";
+//           window.location.href = redirectUrl;
+//         } else {
+//           alert("❌ Greška: nevažeći odgovor sa servera.");
+//           console.warn("📦 Invalid response (expected JSON, got HTML):", response);
+//           $btn.prop("disabled", false).text("Book Now");
+//         }
+//       })
+//       .fail(function (err) {
+//         alert("❌ Server nije odgovorio. Pokušaj ponovo.");
+//         console.error("🔥 AJAX fail:", err);
+//         $btn.prop("disabled", false).text("Book Now");
+//       });
+//   });
+// });
+
+
+
+
+// jQuery(document).ready(function ($) {
+//   $("form.cart").on("submit", function (e) {
+//     if (typeof window.selectedDatesArr === "undefined" || window.selectedDatesArr.length === 0) {
+//       alert("Molimo izaberite datume pre nego što nastavite.");
+//       e.preventDefault();
+//       return false;
+//     }
+
+//     const startDate = window.selectedDatesArr[0];
+//     const endDate = window.selectedDatesArr[window.selectedDatesArr.length - 1];
+//     const allDates = window.selectedDatesArr;
+
+//     $("#start_date_input").val(startDate);
+//     $("#end_date_input").val(endDate);
+//     $("#all_dates_input").val(allDates.join(","));
+//     $("#guest_input").val($("#guest_selector").val() || 1); // ako koristiš dropdown, ili izmeni po potrebi
+//   });
+// });
+
+
+
+
+
+// document.addEventListener("DOMContentLoaded", function () {
+//   initOvDateRangePicker({
+//     input: "#custom-daterange-input",
+//     container: "#date-range-picker",
+//     readonly: false,
+//     alwaysOpen: false,
+//     locale: "sr-RS",
+//     calendarData: window.ov_calendar_vars?.calendarData || {},
+//     totalsContainer: "#ov_total_container",
+//     initialStartDate: window.ov_calendar_vars?.startDate || null,
+//     initialEndDate: window.ov_calendar_vars?.endDate || null,
+//   });
+
+//   initOvDateRangePicker({
+//     container: "#ov-booking_readonly_calendar",
+//     readonly: true,
+//     alwaysOpen: true,
+//     locale: "sr-RS",
+//     calendarData: window.ov_calendar_vars?.calendarData || {},
+//   });
+// });
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 1) Inicijalizuj picker za unos datuma
   initOvDateRangePicker({
     input: "#custom-daterange-input",
     container: "#date-range-picker",
@@ -304,13 +407,38 @@ document.addEventListener("DOMContentLoaded", function () {
     locale: "sr-RS",
     calendarData: window.ov_calendar_vars?.calendarData || {},
     totalsContainer: "#ov_total_container",
-
+    initialStartDate: window.ov_calendar_vars?.startDate || null,
+    initialEndDate: window.ov_calendar_vars?.endDate || null,
   });
+
+  // 2) Inicijalni readonly prikaz kalendara
   initOvDateRangePicker({
     container: "#ov-booking_readonly_calendar",
     readonly: true,
     alwaysOpen: true,
     locale: "sr-RS",
     calendarData: window.ov_calendar_vars?.calendarData || {},
+  });
+
+  // 3) Validacija pre slanja forme
+  const form = document.querySelector("form.ov-booking-form");
+  if (!form) return;
+
+  form.addEventListener("submit", (e) => {
+    const startDate = form.querySelector('input[name="start_date"]')?.value.trim();
+    const endDate = form.querySelector('input[name="end_date"]')?.value.trim();
+    const allDates = form.querySelector('input[name="all_dates"]')?.value.trim();
+
+    if (!startDate || !endDate || !allDates) {
+      e.preventDefault();
+      alert("Molimo izaberite datume pre nego što nastavite.");
+      return;
+    }
+
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Processing...";
+    }
   });
 });

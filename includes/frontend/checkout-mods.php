@@ -26,3 +26,7 @@ function ov_remove_add_to_cart_and_price_on_shop(){
 add_filter('woocommerce_cart_subtotal','__return_empty_string',10,3);
 add_filter('woocommerce_cart_totals_subtotal_label','__return_false');
 add_filter('woocommerce_cart_totals_subtotal_html','__return_empty_string');
+
+
+// Redirect to cart after successful addition
+add_filter('woocommerce_cart_redirect_after_add', '__return_true');

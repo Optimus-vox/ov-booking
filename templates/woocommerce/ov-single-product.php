@@ -300,7 +300,7 @@ get_header();
 
                                     <?php
                                     // Ako u korpi već postoji neki proizvod:
-                                    if ($cart_not_empty):
+                                    if ($cart_not_empty || $in_cart):
                                         // 1) Ako je baš ovaj proizvod u korpi:
                                         if ($in_cart): ?>
                                             <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="button go-to-cart-button">
@@ -317,39 +317,40 @@ get_header();
                                     else:
                                         // Korpa je prazna → prikaži standardnu formu za “Book Now”
                                         ?>
-                                        <form class="cart ov-booking-form" method="post" enctype="multipart/form-data">
-                                            <?php
-                                            if ($ov_start_date && $ov_end_date) {
-                                                $start_formatted = date_i18n('d/m/Y', strtotime($ov_start_date));
-                                                $end_formatted = date_i18n('d/m/Y', strtotime($ov_end_date));
-                                                $daterange_value = $start_formatted . ' - ' . $end_formatted;
-                                            } else {
-                                                $daterange_value = '';
-                                            }
-                                            ?>
-                                            <div class="daterange-picker" id="date-range-picker">
-                                                <input type="text" id="custom-daterange-input" class="daterange" readonly
-                                                    placeholder="DD/MM/YYYY – DD/MM/YYYY" />
-                                            </div>
+                                <form class="cart ov-booking-form" method="post" enctype="multipart/form-data">
+  <div id="date-range-picker" class="daterange-picker">
+    <!-- VIDLJIVI picker input -->
+    <input
+      type="text"
+      id="custom-daterange-input"
+      class="daterange"
+      readonly
+      placeholder="<?php esc_attr_e( 'DD/MM/YYYY – DD/MM/YYYY', 'ov-booking' ); ?>"
+    />
+    <!-- SKRIVENA polja koja JS popunjava -->
+    <input type="hidden" name="start_date" id="start_date" />
+    <input type="hidden" name="end_date"   id="end_date"   />
+    <input type="hidden" name="all_dates"  id="all_dates"  />
+  </div>
 
-                                            <input type="hidden" name="add-to-cart"
-                                                value="<?php echo esc_attr($product->get_id()); ?>" />
+  <input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" />
 
-                                            <div class="ov-guests-select">
-                                                <label for="ov-guests"><?php esc_html_e('Guests', 'ov-booking'); ?></label>
-                                                <select name="guests" id="ov-guests">
-                                                    <?php for ($i = 1; $i <= $max_guests; $i++): ?>
-                                                        <option value="<?php echo esc_attr($i); ?>" <?php selected($ov_guests, $i); ?>>
-                                                            <?php echo esc_html($i); ?>
-                                                        </option>
-                                                    <?php endfor; ?>
-                                                </select>
-                                            </div>
+  <div class="ov-guests-select">
+    <label for="ov-guests"><?php esc_html_e( 'Guests', 'ov-booking' ); ?></label>
+    <select name="guests" id="ov-guests">
+      <?php for ( $i = 1; $i <= $max_guests; $i++ ) : ?>
+        <option value="<?php echo esc_attr( $i ); ?>" <?php selected( $ov_guests, $i ); ?>>
+          <?php echo esc_html( $i ); ?>
+        </option>
+      <?php endfor; ?>
+    </select>
+  </div>
 
-                                            <button type="submit" class="single_add_to_cart_button button alt ov-add-to-cart">
-                                                <?php esc_html_e('Book Now', 'ov-booking'); ?>
-                                            </button>
-                                        </form>
+  <button type="submit" class="single_add_to_cart_button button alt ov-add-to-cart">
+    <?php esc_html_e( 'Book Now', 'ov-booking' ); ?>
+  </button>
+</form>
+
                                     <?php endif; ?>
                                 </div>
                             </section>

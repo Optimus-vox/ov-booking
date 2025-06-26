@@ -4271,3 +4271,8 @@
     [custom] => 0
 )
 
+[2025-06-25 14:09:48] class-wp-hook.php:324 {closure}() - ✅ Validacija prošla za proizvod ID: 229
+[2025-06-25 14:10:45] class-wp-hook.php:324 {closure}() - ✅ Validacija prošla za proizvod ID: 229
+[2025-06-25 14:14:13] class-wp-hook.php:324 {closure}() - ✅ Validacija prošla za proizvod ID: 229
+[2025-06-25 14:18:27] class-wp-hook.php:324 {closure}() - ✅ Validacija prošla za proizvod ID: 229
+[2025-06-25 14:19:07] class-wp-hook.php:324 {closure}() - ✅ Validacija prošla za proizvod ID: 229

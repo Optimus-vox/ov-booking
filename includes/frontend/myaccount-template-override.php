@@ -10,7 +10,6 @@ function ovb_template_redirect_my_account(){
     if ((function_exists('is_account_page') && is_account_page()) || is_page($id)) {
         $tpl = OV_BOOKING_PATH . 'templates/woocommerce/ov-my-account.php';
 
-        echo $tpl;
         if (file_exists($tpl)) {
             load_template($tpl, true);
             exit;

@@ -25,38 +25,154 @@ add_action('save_post_product', function($post_id) {
 }, 20, 1);
 
 // Create WooCommerce pages if they don't exist
+// function ovb_create_woocommerce_pages() {
+//     $pages = [
+//         'cart'     => ['title' => 'Cart',     'shortcode' => '[woocommerce_cart]'],
+//         'checkout' => ['title' => 'Checkout', 'shortcode' => '[woocommerce_checkout]'],
+//         'myaccount'=> ['title' => 'My Account','shortcode' => '[woocommerce_my_account]'],
+//         'shop'     => ['title' => 'Shop',     'shortcode' => ''],
+//     ];
+
+//     foreach ($pages as $key => $data) {
+//         $existing_id = wc_get_page_id($key);
+//         $existing_post = $existing_id > 0 ? get_post($existing_id) : false;
+
+//         if (!$existing_post || $existing_post->post_status !== 'publish') {
+//             $page_exists_by_slug = get_page_by_path(sanitize_title($data['title']));
+
+//             if (!$page_exists_by_slug) {
+//                 $page_id = wp_insert_post([
+//                     'post_title'   => $data['title'],
+//                     'post_content' => $data['shortcode'],
+//                     'post_status'  => 'publish',
+//                     'post_type'    => 'page',
+//                 ]);
+
+//                 if ($page_id && !is_wp_error($page_id)) {
+//                     update_option("woocommerce_{$key}_page_id", $page_id);
+//                     if (function_exists('ov_log_error')) {
+//                         ov_log_error("✅ Created WooCommerce page: {$key}", 'general');
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 function ovb_create_woocommerce_pages() {
+    // Provera da li je WooCommerce aktiviran
+    if (!class_exists('WooCommerce')) {
+        if (function_exists('ov_log_error')) {
+            ov_log_error("❌ WooCommerce nije aktiviran - preskačem kreiranje stranica", 'general');
+        }
+        return;
+    }
+
     $pages = [
-        'cart'     => ['title' => 'Cart',     'shortcode' => '[woocommerce_cart]'],
-        'checkout' => ['title' => 'Checkout', 'shortcode' => '[woocommerce_checkout]'],
-        'myaccount'=> ['title' => 'My Account','shortcode' => '[woocommerce_my_account]'],
-        'shop'     => ['title' => 'Shop',     'shortcode' => ''],
+        'cart' => [
+            'title' => 'Cart',
+            'shortcode' => '[woocommerce_cart]',
+            'tag' => 'woocommerce_cart'
+        ],
+        'checkout' => [
+            'title' => 'Checkout',
+            'shortcode' => '[woocommerce_checkout]',
+            'tag' => 'woocommerce_checkout'
+        ],
+        'myaccount' => [
+            'title' => 'My Account',
+            'shortcode' => '[woocommerce_my_account]',
+            'tag' => 'woocommerce_my_account'
+        ],
+        'shop' => [
+            'title' => 'Shop',
+            'shortcode' => '[products]',
+            'tag' => 'products'
+        ],
     ];
 
     foreach ($pages as $key => $data) {
+        // Provera da li postoji definisana stranica u WooCommerce postavkama
         $existing_id = wc_get_page_id($key);
-        $existing_post = $existing_id > 0 ? get_post($existing_id) : false;
+        
+        // Dobijanje post objekta ako postoji validan ID
+        $existing_post = false;
+        if ($existing_id > 0) {
+            $existing_post = get_post($existing_id);
+            
+            // Provera da li je post zaista stranica i da je objavljena
+            if (!$existing_post || $existing_post->post_type !== 'page' || $existing_post->post_status !== 'publish') {
+                $existing_post = false;
+            }
+        }
 
-        if (!$existing_post || $existing_post->post_status !== 'publish') {
-            $page_exists_by_slug = get_page_by_path(sanitize_title($data['title']));
+        // Provera da li stranica ima shortcode
+        $has_shortcode = false;
+        if ($existing_post && !empty($existing_post->post_content)) {
+            $has_shortcode = has_shortcode($existing_post->post_content, $data['tag']);
+        }
 
-            if (!$page_exists_by_slug) {
+        // Logika za kreiranje/ažuriranje
+        if (!$existing_post) {
+            // Provera da li postoji stranica sa istim slugom
+            $page_slug = sanitize_title($data['title']);
+            $page_exists = get_page_by_path($page_slug, OBJECT, 'page');
+            
+            if (!$page_exists) {
+                // Kreiranje nove stranice
                 $page_id = wp_insert_post([
-                    'post_title'   => $data['title'],
-                    'post_content' => $data['shortcode'],
-                    'post_status'  => 'publish',
-                    'post_type'    => 'page',
+                    'post_title'     => $data['title'],
+                    'post_name'      => $page_slug,
+                    'post_content'   => $data['shortcode'],
+                    'post_status'    => 'publish',
+                    'post_type'      => 'page',
+                    'comment_status' => 'closed',
+                    'ping_status'    => 'closed',
                 ]);
 
-                if ($page_id && !is_wp_error($page_id)) {
+                if (!is_wp_error($page_id) && $page_id > 0) {
+                    // Ažuriranje WooCommerce postavki
                     update_option("woocommerce_{$key}_page_id", $page_id);
+                    
                     if (function_exists('ov_log_error')) {
-                        ov_log_error("✅ Created WooCommerce page: {$key}", 'general');
+                        ov_log_error("✅ Kreirana WooCommerce stranica: {$key} (ID: {$page_id})", 'general');
                     }
+                } elseif (function_exists('ov_log_error')) {
+                    ov_log_error("❌ Greška pri kreiranju stranice {$key}: " . $page_id->get_error_message(), 'general');
                 }
+            } else {
+                // Ako postoji stranica sa istim slugom ali nije u WooCommerce postavkama
+                update_option("woocommerce_{$key}_page_id", $page_exists->ID);
+                
+                if (!$has_shortcode) {
+                    wp_update_post([
+                        'ID' => $page_exists->ID,
+                        'post_content' => $data['shortcode']
+                    ]);
+                }
+                
+                if (function_exists('ov_log_error')) {
+                    ov_log_error("🔗 Postojeća stranica povezana za {$key} (ID: {$page_exists->ID})", 'general');
+                }
+            }
+        } elseif (!$has_shortcode) {
+            // Ažuriranje postojeće stranice koja nema shortcode
+            $update_result = wp_update_post([
+                'ID' => $existing_post->ID,
+                'post_content' => $data['shortcode']
+            ]);
+            
+            if (!is_wp_error($update_result)) {
+                if (function_exists('ov_log_error')) {
+                    ov_log_error("🔧 Shortcode dodat na postojeću stranicu: {$key} (ID: {$existing_post->ID})", 'general');
+                }
+            } elseif (function_exists('ov_log_error')) {
+                ov_log_error("⚠️ Greška pri ažuriranju stranice {$key}: " . $update_result->get_error_message(), 'general');
             }
         }
     }
+
+    // Resetujemo permalinks nakon kreiranja stranica
+    flush_rewrite_rules(false);
 }
 // Reset all product prices on activation
 function ovb_reset_all_product_prices() {

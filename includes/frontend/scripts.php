@@ -85,8 +85,41 @@ function enqueue_calendar_admin_assets($hook)
 add_action('admin_enqueue_scripts', 'enqueue_calendar_admin_assets');
 
 
+// /**
+//  * Frontend calendar + product assets za single product stranicu
+//  */
+// function ov_enqueue_single_product_assets()
+// {
+//     if (is_singular('product')) {
+//         global $post;
+
+//         ov_enqueue_calendar_core_libraries();
+
+//         // CSS/JS for single-product calendar
+//         wp_enqueue_style('ov-custom-single-style', OV_BOOKING_URL . 'assets/css/ov-single.css');
+//         wp_enqueue_script('ov-custom-single-script', OV_BOOKING_URL . 'assets/js/ov-single.js', ['jquery', 'daterangepicker-js'], null, true);
+
+//         $calendar_data = get_post_meta($post->ID, '_ov_calendar_data', true) ?: [];
+//         $price_defaults = get_post_meta($post->ID, '_ov_price_types', true) ?: [
+//             'regular' => '',
+//             'weekend' => '',
+//             'discount' => '',
+//             'custom' => ''
+//         ];
+
+//         wp_localize_script('ov-custom-single-script', 'ov_calendar_vars', [
+//             'ajax_url' => admin_url('admin-ajax.php'),
+//             'product_id' => $post->ID,
+//             'calendarData' => $calendar_data,
+//             'priceTypes' => $price_defaults,
+//             'checkoutUrl' => ovb_get_checkout_url(),
+//         ]);
+//     }
+// }
+// add_action('wp_enqueue_scripts', 'ov_enqueue_single_product_assets');
+
 /**
- * Frontend calendar + product assets Za single product stranicu
+ * Frontend calendar + product assets za single product stranicu
  */
 function ov_enqueue_single_product_assets()
 {
@@ -99,6 +132,12 @@ function ov_enqueue_single_product_assets()
         wp_enqueue_style('ov-custom-single-style', OV_BOOKING_URL . 'assets/css/ov-single.css');
         wp_enqueue_script('ov-custom-single-script', OV_BOOKING_URL . 'assets/js/ov-single.js', ['jquery', 'daterangepicker-js'], null, true);
 
+        // WooCommerce skripte za add-to-cart i fragmentaciju
+        wp_enqueue_script('wc-add-to-cart');
+        wp_enqueue_script('woocommerce');
+        wp_enqueue_script('wc-single-product');
+        wp_enqueue_script('wc-cart-fragments');
+
         $calendar_data = get_post_meta($post->ID, '_ov_calendar_data', true) ?: [];
         $price_defaults = get_post_meta($post->ID, '_ov_price_types', true) ?: [
             'regular' => '',
@@ -108,10 +147,15 @@ function ov_enqueue_single_product_assets()
         ];
 
         wp_localize_script('ov-custom-single-script', 'ov_calendar_vars', [
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'product_id' => $post->ID,
-            'calendarData' => $calendar_data,
-            'priceTypes' => $price_defaults
+            'ajax_url'       => admin_url('admin-ajax.php'),
+            'product_id'     => $post->ID,
+            'calendarData'   => $calendar_data,
+            'priceTypes'     => $price_defaults,
+            'checkoutUrl'    => ovb_get_checkout_url(),
+            'cartUrl'        => wc_get_cart_url(),
+            'isUserLoggedIn' => is_user_logged_in(),
+            'startDate'      => isset($_GET['ov_start_date']) ? sanitize_text_field($_GET['ov_start_date']) : '',
+            'endDate'        => isset($_GET['ov_end_date']) ? sanitize_text_field($_GET['ov_end_date']) : '',
         ]);
     }
 }
