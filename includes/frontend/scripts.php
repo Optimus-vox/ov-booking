@@ -5,7 +5,7 @@ require_once dirname(__DIR__) . '/helpers/logger.php';
 //Register dashicons
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('dashicons');
-  });
+});
 
 /**
  * Frontend main assets
@@ -61,6 +61,10 @@ function enqueue_calendar_admin_assets($hook)
     global $post;
     if (($hook === 'post.php' || $hook === 'post-new.php') && isset($post) && $post->post_type === 'product') {
         ov_enqueue_calendar_core_libraries();
+        
+        wp_enqueue_style('sweetalert2-css', 'https://cdn.jsdelivr.net/npm/sweetalert2@11.22.1/dist/sweetalert2.min.css', [], '2.7.1');
+        wp_enqueue_script('sweetalert2-js', 'https://cdn.jsdelivr.net/npm/sweetalert2@11.22.1/dist/sweetalert2.all.min.js', [], '11.22.1', true);
+
 
         // Admin calendar style & script
         wp_enqueue_style('admin-calendar-style', OV_BOOKING_URL . 'includes/admin/admin-calendar/admin-calendar.css');
@@ -187,16 +191,16 @@ function ovb_enqueue_cart_assets()
         // $checkout_url = ($checkout_page_id && get_post_status($checkout_page_id) === 'publish')
         //     ? get_permalink($checkout_page_id)
         //     : home_url('/checkout/');
-        
+
         // if (! filter_var($checkout_url, FILTER_VALIDATE_URL)) {
         //     $checkout_url = home_url('/checkout/');
         // }
-       // Lokalizuj varijable
+        // Lokalizuj varijable
         wp_localize_script('ovb-cart-script', 'ovCartVars', [
-            'ajax_url'            => admin_url('admin-ajax.php'),
+            'ajax_url' => admin_url('admin-ajax.php'),
             'emptyCartConfirmMsg' => __('Are you sure you want to empty your cart?', 'ov-booking'),
             'checkoutUrl' => ovb_get_checkout_url(),
-            'isUserLoggedIn'      => is_user_logged_in(),
+            'isUserLoggedIn' => is_user_logged_in(),
         ]);
     }
 }
@@ -309,7 +313,8 @@ function ovb_enqueue_myaccount_styles()
 // Ako je Astra tema ukljucena ubaci fajl 
 
 add_action('wp_enqueue_scripts', 'ovb_enqueue_astra_overrides', 99);
-function ovb_enqueue_astra_overrides() {
+function ovb_enqueue_astra_overrides()
+{
     $theme = wp_get_theme();
 
     if (strpos($theme->get('Name'), 'Astra') !== false || strpos($theme->get('Template'), 'astra') !== false) {
@@ -318,7 +323,7 @@ function ovb_enqueue_astra_overrides() {
             // plugin_dir_url(__FILE__) . 'assets/css/ov-astra-overrides.css',
             plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css',
             [],
-            filemtime( plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css')
+            filemtime(plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css')
         );
 
         if (function_exists('ov_log_error')) {

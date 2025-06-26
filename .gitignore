@@ -1,0 +1,62 @@
+logs/
+# === WordPress Core ===
+/wp-admin/
+/wp-includes/
+/license.txt
+/readme.html
+/wp-config.php
+
+# === Samo naš plugin ===
+/wp-content/plugins/*
+!/wp-content/plugins/ov-booking/
+!/wp-content/plugins/ov-booking/**
+
+# === Uploads, cache i backup ===
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/backups/
+
+# === Node.js ===
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/package-lock.json
+/pnpm-lock.yaml
+
+# === Composer na root-u (ako postoji) ===
+/vendor/
+/composer.lock
+/composer.phar
+
+# === Build artefakti ===
+/dist/
+/build/
+*.css.map
+*.min.js
+*.min.css
+
+# === OS i IDE temp fajlovi ===
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# === Logovi i error fajlovi ===
+*.log
+error_log
+php-errors.log
+
+# === Okruženjske promenljive ===
+.env*
+.env.*.local
+
+# === Ostalo ===
+*.bak
+*.tmp
+*.swp
+*.zip
