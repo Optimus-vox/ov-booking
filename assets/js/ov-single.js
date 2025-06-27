@@ -385,7 +385,7 @@
 // });
 
 jQuery(document).ready(function ($) {
-  console.log('Owl Carousel init test');
+
   $('.ov-testimonials-carousel').owlCarousel({
     items: 1,
     center: true,
