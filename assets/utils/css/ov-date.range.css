@@ -226,10 +226,9 @@
 }
 
 @media screen and (max-width: 425px) {
-
   .ov-day {
     font-size: 10px;
     height: auto;
-    padding: 5px;
+    padding: 2px;
   }
 }
