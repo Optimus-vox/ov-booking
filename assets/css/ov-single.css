@@ -450,9 +450,6 @@
         }
       }
     }
-
-    .testimonials-section {}
-
     .google-maps {
       border-top: 1px solid #fff;
       padding: 60px 0;
@@ -618,8 +615,6 @@
   bottom: -40px;
   right: -10px;
 }
-
-/* Možeš dodati dodatne stilove za cene koje renderuješ u kalendaru */
 
 @media screen and (max-width: 1680px) {
   .single-product-wrapper {
