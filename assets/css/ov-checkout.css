@@ -50,6 +50,7 @@
 .select2-container--default .select2-selection--single .select2-selection__arrow {
   height: 100%;
   right: 10px;
+  color: #fff !important;
 }
 
 .select2-container--default.select2-container--focus .select2-selection--single {
@@ -291,6 +292,14 @@
             }
           
             .woocommerce-checkout-payment{
+              .wc_payment_methods{
+                .wc_payment_method{
+                  label{
+                    color: #fff !important;
+                    font-size: 16px;
+                  }
+                }
+              }
              .form-row.place-order{
                 .woocommerce-terms-and-conditions-wrapper{
                   font-size: 16px;
@@ -421,10 +430,10 @@
                   th {
                     border-bottom: 2px solid rgba(255, 255, 255, 0.6);
                     text-align: left;
-                    padding: 0.75rem 1rem !important;
+                    padding: 12px 16px !important;
                     font-weight: 600;
                     text-transform: uppercase;
-                    font-size: 0.9rem;
+                    font-size: 14px;
                     background: rgba(255, 255, 255, 0.05);
                   }
                   th.product-subtotal{
@@ -433,10 +442,18 @@
                 }
               
                 tbody {
+                  tr.cart_item{
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+                    td{
+                      border-bottom: none !important;
+                    }
+                  }
                   td {
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-                    padding: 0.75rem 1rem !important;
-                    font-size: 0.9rem;
+                    padding: 12px 16px !important;
+                    font-size: 14px;
+                  }
+                  td.product-name{
+                    border: none;
                   }
                   td.product-subtotal{
                     text-align: right;
@@ -448,8 +465,10 @@
                     background: rgba(255, 255, 255, 0.05);
                     font-style: italic;
                     color: #ddd;
-                    padding-top: 1rem !important;
-                    padding-bottom: 0.5rem !important;
+                    font-size: 14px !important;
+                    padding-top: 16px !important;
+                    padding-bottom: 16px !important;
+                    text-align: left !important;
                   }
                 }
               
@@ -468,9 +487,9 @@
                   th,
                   td {
                     border-top: 2px solid rgba(255, 255, 255, 0.6);
-                    padding: 0.75rem 1rem !important;
+                    padding: 12px 16px !important;
                     font-weight: 700;
-                    font-size: 1rem;
+                    font-size: 16px;
                   }
                   th{
                     text-align: left;
@@ -482,6 +501,7 @@
               
                   .order-total {
                     font-weight: 900;
+                    background-color: rgba(255, 255, 255, 0.2) !important;
                   }
                 }
               }
