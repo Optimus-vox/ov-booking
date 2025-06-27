@@ -41,7 +41,7 @@ function ovb_render_google_login_button() {
     ?>
     <a href="<?php echo esc_url($oauth_url); ?>" class="google-login-button" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#444;padding:10px 20px;border-radius:4px;font-weight:bold;border:1px solid #ddd;text-decoration:none;margin-bottom:1rem;">
         <img src="<?php echo esc_url(OV_BOOKING_URL . 'assets/images/google-logo.png'); ?>" alt="Google Logo" style="width:20px; vertical-align:middle; margin-right:8px;">
-        <?php esc_html_e('Prijavi se putem Google naloga', 'ov-booking'); ?>
+        <?php esc_html_e('Continue with Google', 'ov-booking'); ?> <span class="helper"></span>
     </a>
     <?php
 }

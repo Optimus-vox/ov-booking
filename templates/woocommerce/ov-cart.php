@@ -33,10 +33,10 @@ $total_items = WC()->cart->get_cart_contents_count();
 // Broj različitih stavki u korpi (linija po linija)
 $line_items = count( WC()->cart->get_cart() );
 
-// Za potrebe debug-a možeš otkomentarisati:
-echo 'Ukupno proizvoda: ' . esc_html( $total_items );
-echo '<br>';
-echo 'Broj linija u korpi: ' . esc_html( $line_items );
+// Za potrebe debug-a 
+// echo 'Ukupno proizvoda: ' . esc_html( $total_items );
+// echo '<br>';
+// echo 'Broj linija u korpi: ' . esc_html( $line_items );
 
 /**
  * 2) Učitaj prvu stavku iz korpe
@@ -249,30 +249,16 @@ get_header();
     </div>
     <p class="ov-modal-subtitle">Welcome back! / Create your account</p>
 
+    <?php if ( function_exists('ovb_render_google_login_button') ) : ?>
     <!-- Social login buttons -->
-    <div class="ov-social-logins">
-        <?php if (function_exists('ovb_render_google_login_button')) ovb_render_google_login_button(); ?>
+        <div class="ov-social-logins">
+            <?php ovb_render_google_login_button(); ?>
+        </div>
 
-      
-      <button class="ov-social-button">
-        <img class="ov-social-button-icon" src="<?php echo esc_url( plugins_url( '../../assets/images/google-logo.png', __FILE__ ) ); ?>" alt="Google"> 
-         <span>
-            Continue with Apple    
-         </span>
-         <div class="ov-spacing-helper"></div>
-      </button>
-      <button class="ov-social-button">
-        <img class="ov-social-button-icon" src="<?php echo esc_url( plugins_url( '../../assets/images/google-logo.png', __FILE__ ) ); ?>" alt="Google"> 
-        <span>
-            Continue with Facebook
-        </span>
-        <div class="ov-spacing-helper"></div>
-      </button>
-    </div>
-
-    <div class="ov-divider">
-        <span>or</span>
-    </div>
+        <div class="ov-divider">
+            <span>or</span>
+        </div>
+    <?php endif; ?>
 
     <!-- Login Form -->
     <form name="loginform" id="ov_login-cart-form"

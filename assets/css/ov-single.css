@@ -1,6 +1,3 @@
-.ast-container{
-  /* all: revert !important; */
-  }
 .container {
   width: 100%;
   max-width: calc(100% - 32px);
@@ -14,6 +11,7 @@
 .single-product-wrapper {
   background-color: #1b203a;
   color: #fff;
+  padding-top: 80px;
 
   .product {
     h1 {
@@ -33,6 +31,16 @@
       .main-product-image {
         width: 50%;
         height: 100%;
+        .lightgallery{
+          height: 100%;
+          .hreff-wrap{
+            display: flex;
+            height: 100%;
+            .gallery-main-img{
+              height: 100%;
+            }
+          }
+        }
       }
 
     }
@@ -230,6 +238,8 @@
             margin: 0 0 24px 0;
             font-size: 45px;
             line-height: 100%;
+            color: #fff;
+            font-size: 21px;
           }
 
           span {
@@ -331,15 +341,19 @@
             font-size: 19px;
             line-height: 22.5px;
             margin: 15px 0;
-            /* width: calc(100% - 26px - 30px); */
-            width: 100%
+            width: calc(100% - 50px);
+            height: auto;
           }
         }
 
         .ov-guests-select {
           display: flex;
           flex-direction: column;
-
+          label{
+            color: #fff;
+            font-size: 19px;
+            line-height: 22.5px;
+          }
           select {
             padding: 13px 25px;
             background: transparent;
@@ -355,6 +369,7 @@
             appearance: base-select;
             margin-top: 10px;
             margin-bottom: 10px;
+            height: auto;
           }
 
           option {
@@ -466,6 +481,7 @@
         margin: 0 0 24px 0;
         font-size: 45px;
         line-height: 100%;
+        color: #fff;
       }
 
       .policies {
@@ -482,6 +498,7 @@
             font-size: 28px;
             line-height: 100%;
             margin: 0;
+            color: #fff;
           }
 
           .safety-info,
@@ -759,14 +776,15 @@
   .single-product-wrapper {
     padding: 0;
 
-    & .product {
-      & .product-details {
+    &.product {
+      &.product-details {
         .product-details-right {
           padding: 10px;
 
-          & .custom-dates {
+          &.custom-dates {
             .daterange {
               font-size: 14px;
+
             }
           }
         }
@@ -783,8 +801,8 @@
   font-size: 16px !important;
 }
 
-h3,
+/* h3,
 .ov-testimonial-name {
   font-size: 20px !important;
 
-}
+} */

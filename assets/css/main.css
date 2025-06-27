@@ -3,3 +3,9 @@
         all: revert !important;
     }
 }
+
+.ob-booking-active.ovb-cart-page{
+    .ov-cart-notices{
+        display: none !important;
+    }
+}

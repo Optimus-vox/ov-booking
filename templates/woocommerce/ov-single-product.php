@@ -75,7 +75,11 @@ get_header();
                         <?php if ($product && is_a($product, 'WC_Product')):
                             $main_image_id = $product->get_image_id();
                             $main_image_url = wp_get_attachment_url($main_image_id);
+
                             $attachment_ids = $product->get_gallery_image_ids();
+                            $total_imgs    = count( $attachment_ids );
+                            $visible_count = min( 6, $total_imgs );
+                            $visible_ids   = array_slice( $attachment_ids, 0, $visible_count );
                             ?>
                             <div class="main-product-image">
                                 <div class="lightgallery">
@@ -89,20 +93,19 @@ get_header();
                             </div>
 
                             <div class="product-gallery">
-                                <div class="product-gallery-grid lightgallery">
-                                    <?php
-                                    $index = 1;
-                                    foreach ($attachment_ids as $attachment_id):
-                                        $image_link = wp_get_attachment_url($attachment_id);
-                                        ?>
-                                        <a class="hreff-wrap" href="<?php echo esc_url($image_link); ?>"
-                                            data-index="<?php echo $index++; ?>">
-                                            <img class="gallery-product-img" alt="Gallery image"
-                                                src="<?php echo esc_url($image_link); ?>" />
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
+  <div class="product-gallery-grid lightgallery images-<?php echo $visible_count; ?>">
+    <?php 
+    $i = 1;
+    foreach ( $visible_ids as $attachment_id ):
+      $image_link = wp_get_attachment_url( $attachment_id );
+    ?>
+      <a class="hreff-wrap" href="<?php echo esc_url( $image_link ); ?>" data-index="<?php echo $i++; ?>">
+        <img class="gallery-product-img" src="<?php echo esc_url( $image_link ); ?>" alt="Gallery image" />
+      </a>
+    <?php endforeach; ?>
+  </div>
+</div>
+
 
                             <!-- Ovo je skriveni lightgallery wrapper za LightGallery -->
                             <div id="lightgallery-all" style="display:none;">
