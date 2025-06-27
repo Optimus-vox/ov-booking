@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .container {
   width: 100%;
   max-width: calc(100% - 32px);
@@ -31,12 +35,15 @@
       .main-product-image {
         width: 50%;
         height: 100%;
-        .lightgallery{
+
+        .lightgallery {
           height: 100%;
-          .hreff-wrap{
+
+          .hreff-wrap {
             display: flex;
             height: 100%;
-            .gallery-main-img{
+
+            .gallery-main-img {
               height: 100%;
             }
           }
@@ -103,7 +110,7 @@
             }
           }
 
-          
+
           .the-content {
             padding-bottom: 48px;
             border-bottom: 1px solid #fff;
@@ -349,11 +356,13 @@
         .ov-guests-select {
           display: flex;
           flex-direction: column;
-          label{
+
+          label {
             color: #fff;
             font-size: 19px;
             line-height: 22.5px;
           }
+
           select {
             padding: 13px 25px;
             background: transparent;
@@ -450,6 +459,7 @@
         }
       }
     }
+
     .google-maps {
       border-top: 1px solid #fff;
       padding: 60px 0;

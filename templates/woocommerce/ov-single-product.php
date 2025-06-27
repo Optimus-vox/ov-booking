@@ -408,7 +408,7 @@ get_header();
                     $iframe = get_post_meta(get_the_ID(), '_google_maps_iframe', true);
                     if (!empty($iframe)):
                         ?>
-                        <div class="google-maps">
+                        <div class="google-maps" id="map">
                             <h3>Where you will be</h3>
                             <div class="map-wrap">
                                 <?php
