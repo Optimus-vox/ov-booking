@@ -170,8 +170,13 @@ function initOvDateRangePicker(config) {
       day.addEventListener("mouseenter", () => {
         if (startDate && !endDate && date > startDate) {
           highlightHoverRange(startDate, date);
+        } else if (startDate && endDate) {
+          highlightHoverRange(startDate, endDate);
+        } else {
+          highlightHoverRange(date, date);
         }
       });
+
 
       day.addEventListener("mouseleave", () => {
         clearHoverRange();
@@ -184,8 +189,9 @@ function initOvDateRangePicker(config) {
   function highlightHoverRange(start, end) {
     const allDays = containerEl.querySelectorAll(".ov-day");
 
-    // Ukloni sve prethodne hover klase
-    allDays.forEach(d => d.classList.remove("hover-range"));
+    allDays.forEach(d => {
+      d.classList.remove("hover-range", "end-date");
+    });
 
     let rangeStart = new Date(start);
     let rangeEnd = new Date(end);
@@ -194,23 +200,33 @@ function initOvDateRangePicker(config) {
       [rangeStart, rangeEnd] = [rangeEnd, rangeStart];
     }
 
+    const endDateStr = formatDate(rangeEnd);
+
+
     allDays.forEach(d => {
       const dateStr = d.dataset.date;
       if (!dateStr) return;
 
       const elementDate = new Date(dateStr);
 
-      // Ne dodaj hover klasu na start i end da ne zameni njihove posebne klase
       if (
         elementDate > rangeStart &&
         elementDate < rangeEnd &&
-        !d.classList.contains("start-date") &&
-        !d.classList.contains("end-date")
+        !d.classList.contains("start-date")
       ) {
         d.classList.add("hover-range");
       }
+
+      if (dateStr === endDateStr) {
+        d.classList.add("end-date");
+      }
     });
+
+    hoverEndDate = rangeEnd;
   }
+
+
+
 
   function clearHoverRange() {
     const days = containerEl.querySelectorAll(".ov-day.hover-range");

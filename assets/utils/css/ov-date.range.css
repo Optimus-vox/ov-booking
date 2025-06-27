@@ -121,8 +121,8 @@
 }
 
 .ov-day.selected,
-.ov-day:hover:not(.ov-picker-container.always-open .ov-day)
- {
+.ov-day:hover:not(.ov-picker-container.always-open .ov-day),
+.ov-day.end-date {
   background-color: #7b47ff !important;
   color: #fff !important;
   transition: all .3s;
