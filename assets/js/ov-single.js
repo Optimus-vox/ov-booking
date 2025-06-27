@@ -272,20 +272,7 @@
 //     }
 //   })();
 
-//   jQuery(document).ready(function ($) {
-//     $('.ov-testimonials-carousel').owlCarousel({
-//       items: 1,           // prikazuje se po jedan slide
-//       center: true,       // centriraj slide
-//       loop: true,
-//       margin: 30,         // razmak ako dodamo sledeći slide (ako bude)
-//       nav: false,
-//       dots: true,
-//       autoHeight: true,
-//       autoplay: true,
-//       autoplayTimeout: 5000,
-//       autoplayHoverPause: true,
-//     });
-//   });
+
 
 //   if ($(".go-to-cart-button").length) {
 //     $(".stay-duration").hide();
@@ -397,7 +384,26 @@
 //   });
 // });
 
+jQuery(document).ready(function ($) {
+
+  $('.ov-testimonials-carousel').owlCarousel({
+    items: 1,
+    center: true,
+    loop: true,
+    margin: 30,
+    nav: false,
+    dots: true,
+    autoHeight: true,
+    autoplay: true,
+    autoplayTimeout: 5000,
+    autoplayHoverPause: true,
+    smartSpeed: 600,  // ubaci glatku animaciju
+  });
+
+});
+
 document.addEventListener("DOMContentLoaded", () => {
+
   // 1) Inicijalizuj picker za unos datuma
   initOvDateRangePicker({
     input: "#custom-daterange-input",

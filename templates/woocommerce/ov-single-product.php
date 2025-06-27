@@ -77,9 +77,9 @@ get_header();
                             $main_image_url = wp_get_attachment_url($main_image_id);
 
                             $attachment_ids = $product->get_gallery_image_ids();
-                            $total_imgs    = count( $attachment_ids );
-                            $visible_count = min( 6, $total_imgs );
-                            $visible_ids   = array_slice( $attachment_ids, 0, $visible_count );
+                            $total_imgs = count($attachment_ids);
+                            $visible_count = min(6, $total_imgs);
+                            $visible_ids = array_slice($attachment_ids, 0, $visible_count);
                             ?>
                             <div class="main-product-image">
                                 <div class="lightgallery">
@@ -93,18 +93,20 @@ get_header();
                             </div>
 
                             <div class="product-gallery">
-  <div class="product-gallery-grid lightgallery images-<?php echo $visible_count; ?>">
-    <?php 
-    $i = 1;
-    foreach ( $visible_ids as $attachment_id ):
-      $image_link = wp_get_attachment_url( $attachment_id );
-    ?>
-      <a class="hreff-wrap" href="<?php echo esc_url( $image_link ); ?>" data-index="<?php echo $i++; ?>">
-        <img class="gallery-product-img" src="<?php echo esc_url( $image_link ); ?>" alt="Gallery image" />
-      </a>
-    <?php endforeach; ?>
-  </div>
-</div>
+                                <div class="product-gallery-grid lightgallery images-<?php echo $visible_count; ?>">
+                                    <?php
+                                    $i = 1;
+                                    foreach ($visible_ids as $attachment_id):
+                                        $image_link = wp_get_attachment_url($attachment_id);
+                                        ?>
+                                        <a class="hreff-wrap" href="<?php echo esc_url($image_link); ?>"
+                                            data-index="<?php echo $i++; ?>">
+                                            <img class="gallery-product-img" src="<?php echo esc_url($image_link); ?>"
+                                                alt="Gallery image" />
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
 
 
                             <!-- Ovo je skriveni lightgallery wrapper za LightGallery -->
@@ -320,39 +322,35 @@ get_header();
                                     else:
                                         // Korpa je prazna → prikaži standardnu formu za “Book Now”
                                         ?>
-                                <form class="cart ov-booking-form" method="post" enctype="multipart/form-data">
-  <div id="date-range-picker" class="daterange-picker">
-    <!-- VIDLJIVI picker input -->
-    <input
-      type="text"
-      id="custom-daterange-input"
-      class="daterange"
-      readonly
-      placeholder="<?php esc_attr_e( 'DD/MM/YYYY – DD/MM/YYYY', 'ov-booking' ); ?>"
-    />
-    <!-- SKRIVENA polja koja JS popunjava -->
-    <input type="hidden" name="start_date" id="start_date" />
-    <input type="hidden" name="end_date"   id="end_date"   />
-    <input type="hidden" name="all_dates"  id="all_dates"  />
-  </div>
+                                        <form class="cart ov-booking-form" method="post" enctype="multipart/form-data">
+                                            <div id="date-range-picker" class="daterange-picker">
+                                                <!-- VIDLJIVI picker input -->
+                                                <input type="text" id="custom-daterange-input" class="daterange" readonly
+                                                    placeholder="<?php esc_attr_e('DD/MM/YYYY – DD/MM/YYYY', 'ov-booking'); ?>" />
+                                                <!-- SKRIVENA polja koja JS popunjava -->
+                                                <input type="hidden" name="start_date" id="start_date" />
+                                                <input type="hidden" name="end_date" id="end_date" />
+                                                <input type="hidden" name="all_dates" id="all_dates" />
+                                            </div>
 
-  <input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" />
+                                            <input type="hidden" name="add-to-cart"
+                                                value="<?php echo esc_attr($product->get_id()); ?>" />
 
-  <div class="ov-guests-select">
-    <label for="ov-guests"><?php esc_html_e( 'Guests', 'ov-booking' ); ?></label>
-    <select name="guests" id="ov-guests">
-      <?php for ( $i = 1; $i <= $max_guests; $i++ ) : ?>
-        <option value="<?php echo esc_attr( $i ); ?>" <?php selected( $ov_guests, $i ); ?>>
-          <?php echo esc_html( $i ); ?>
-        </option>
-      <?php endfor; ?>
-    </select>
-  </div>
+                                            <div class="ov-guests-select">
+                                                <label for="ov-guests"><?php esc_html_e('Guests', 'ov-booking'); ?></label>
+                                                <select name="guests" id="ov-guests">
+                                                    <?php for ($i = 1; $i <= $max_guests; $i++): ?>
+                                                        <option value="<?php echo esc_attr($i); ?>" <?php selected($ov_guests, $i); ?>>
+                                                            <?php echo esc_html($i); ?>
+                                                        </option>
+                                                    <?php endfor; ?>
+                                                </select>
+                                            </div>
 
-  <button type="submit" class="single_add_to_cart_button button alt ov-add-to-cart">
-    <?php esc_html_e( 'Book Now', 'ov-booking' ); ?>
-  </button>
-</form>
+                                            <button type="submit" class="single_add_to_cart_button button alt ov-add-to-cart">
+                                                <?php esc_html_e('Book Now', 'ov-booking'); ?>
+                                            </button>
+                                        </form>
 
                                     <?php endif; ?>
                                 </div>
@@ -363,7 +361,6 @@ get_header();
                     <?php
                     // 1) Učitaj sve testimonijale iz post meta
                     $testimonials = get_post_meta(get_the_ID(), '_product_testimonials', true);
-
                     if (!empty($testimonials)): ?>
                         <div class="ov-testimonials-wrapper">
                             <h3><?php esc_html_e('What our customers say', 'ov-booking'); ?></h3>
@@ -411,7 +408,7 @@ get_header();
                     $iframe = get_post_meta(get_the_ID(), '_google_maps_iframe', true);
                     if (!empty($iframe)):
                         ?>
-                        <div class="google-maps">
+                        <div class="google-maps" id="map">
                             <h3>Where you will be</h3>
                             <div class="map-wrap">
                                 <?php

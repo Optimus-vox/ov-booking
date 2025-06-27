@@ -73,7 +73,6 @@ function render_calendar_meta_box($post)
                 <li class="tab-link" data-tab="tab-set-price">Set Prices</li>
                 <li class="tab-link" data-tab="tab-calendar-status">Availability Updates</li>
             </ul>
-
             <div class="content">
 
                 <!-- TAB 1: Accommodation Type -->

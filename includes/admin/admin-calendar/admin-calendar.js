@@ -815,7 +815,7 @@ document.addEventListener("DOMContentLoaded", function () {
           jQuery("#price_modal_wrapper").hide(); // zatvori modal
         },
         error: function (err) {
-          console.error("Greška pri čuvanju cene:", err);
+          console.error("Greška pri čuvanju cene:", err); 
         },
       });
     });

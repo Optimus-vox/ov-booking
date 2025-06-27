@@ -28,17 +28,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let currentIndex = 0;
   let manualScroll = false;
+  let thumbnails = []; // čuvamo reference na thumbnail img elemente
 
   function openModal(index) {
     currentIndex = index;
-    showImage(index, true);
     modal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
+
+    // Kreiraj thumbnail slike samo prvi put
+    if (thumbnails.length === 0) {
+      createThumbnails();
+    }
+
+    showImage(index, true);
   }
 
   function closeModalHandler() {
     modal.classList.add("hidden");
     document.body.style.overflow = "";
+  }
+
+  function createThumbnails() {
+    thumbnailsContainer.innerHTML = "";
+    allImages.forEach((img, i) => {
+      const thumb = document.createElement("img");
+      thumb.src = img.thumb;
+      thumb.addEventListener("click", () => {
+        currentIndex = i;
+        showImage(i, true);
+      });
+      thumbnailsContainer.appendChild(thumb);
+      thumbnails.push(thumb);
+    });
+
+    const totalWidth = allImages.length * 160;
+    thumbnailsContainer.style.justifyContent = totalWidth > window.innerWidth ? "flex-start" : "center";
   }
 
   function showImage(index, forceScroll = false) {
@@ -51,20 +75,10 @@ document.addEventListener("DOMContentLoaded", function () {
       modalImage.classList.remove("fade-out");
     }, 200);
 
-    thumbnailsContainer.innerHTML = "";
-    allImages.forEach((img, i) => {
-      const thumb = document.createElement("img");
-      thumb.src = img.thumb;
-      if (i === index) thumb.classList.add("active");
-      thumb.addEventListener("click", () => {
-        currentIndex = i;
-        showImage(i, true);
-      });
-      thumbnailsContainer.appendChild(thumb);
+    // Update aktivni thumbnail
+    thumbnails.forEach((thumb, i) => {
+      thumb.classList.toggle("active", i === index);
     });
-
-    const totalWidth = allImages.length * 160;
-    thumbnailsContainer.style.justifyContent = totalWidth > window.innerWidth ? "flex-start" : "center";
 
     if (!manualScroll || forceScroll) {
       const activeThumb = thumbnailsContainer.querySelector("img.active");
