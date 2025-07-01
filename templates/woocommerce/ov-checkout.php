@@ -224,30 +224,20 @@ $checkout = WC()->checkout();
                                     <?php
                                         // ispišemo detalje po datumima:
                                         if ( ! empty( $cart_item['ov_all_dates'] ) ) {
-                                            $dates      = explode( ',', $cart_item['ov_all_dates'] );
-                                            // broj noći iz cart-item meta (fallback na count-1 ako ne postoji)
-                                            $nights     = isset( $cart_item['nights'] )
-                                                          ? intval( $cart_item['nights'] )
-                                                          : max( 0, count( $dates ) - 1 );
-                                            // kalendar sa cenama
-                                            $calendar   = get_post_meta( $product->get_id(), '_ov_calendar_data', true ) ?: [];
-                                            // uzmemo samo prvih $nights datuma
-                                            $print_dates = array_slice( $dates, 0, $nights );
-                                        
-                                            foreach ( $print_dates as $date ) {
+                                            $dates = explode( ',', $cart_item['ov_all_dates'] );
+                                            // niz sa cenama već obračunatim u init.php
+                                            $calendar = get_post_meta( $product->get_id(), '_ov_calendar_data', true );
+                                            foreach ( $dates as $date ) {
                                                 $price = isset( $calendar[ $date ]['price'] )
                                                     ? floatval( $calendar[ $date ]['price'] )
                                                     : 0;
                                                 ?>
-                                                <tr class="ovb-detail-line">
-                                                    <td class="ovb-detail-date">
-                                                        <?php echo esc_html( date_i18n( 'd.m.Y', strtotime( $date ) ) ); ?>
-                                                    </td>
-                                                    <td class="ovb-detail-price">
-                                                        <?php echo wc_price( $price ); ?>
-                                                    </td>
-                                                </tr>
-                                                <?php
+                                                                <tr class="ovb-detail-line">
+                                                                    <td class="ovb-detail-date">
+                                                                        <?php echo esc_html( date_i18n( 'd.m.Y', strtotime( $date ) ) ); ?></td>
+                                                                    <td class="ovb-detail-price"><?php echo wc_price( $price ); ?></td>
+                                                                </tr>
+                                                                <?php
                                             }
                                         }
                                     endforeach; ?>

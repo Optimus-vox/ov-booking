@@ -181,24 +181,6 @@ function process_icons_saving($post_id, $meta_key) {
     }
 }
 
-
-
-//2
-
-
-// Register new meta box
-// function apartment_additional_info_meta_box() {
-//     add_meta_box(
-//         'apartment_additional_info_id',
-//         'Additional Apartment Information',
-//         'show_additional_apartment_info',
-//         'product',
-//         'normal',
-//         'default'
-//     );
-// }
-// add_action('add_meta_boxes', 'apartment_additional_info_meta_box');
-
 // Show fields
 function show_additional_apartment_info($post) {
     wp_nonce_field('sacuvaj_additional_info_nonce', 'additional_info_nonce');
@@ -303,43 +285,3 @@ function show_additional_apartment_info($post) {
     </style>
     <?php
 }
-
-// function save_additional_apartment_info($post_id) {
-//     if (!isset($_POST['additional_info_nonce']) || 
-//         !wp_verify_nonce($_POST['additional_info_nonce'], 'sacuvaj_additional_info_nonce')) {
-//         return;
-//     }
-
-//     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-//     if (!current_user_can('edit_post', $post_id)) return;
-
-//     // Definišemo tipove smeštaja ovde
-//     $accommodation_types = [
-//         'apartment' => 'Apartment',
-//         'house' => 'House',
-//         'villa' => 'Villa',
-//         'cottage' => 'Cottage',
-//         'studio' => 'Studio'
-//     ];
-
-//     $data = $_POST['additional_info'] ?? [];
-//     $sanitized = [];
-
-//     // Sanitizacija svih polja
-//     $sanitized['street_name'] = sanitize_text_field($data['street_name'] ?? '');
-    
-//     // Provera tipa smeštaja
-//     $sanitized['accommodation_type'] = isset($data['accommodation_type']) && array_key_exists($data['accommodation_type'], $accommodation_types)
-//         ? sanitize_key($data['accommodation_type'])
-//         : 'apartment';
-    
-//     $sanitized['city'] = sanitize_text_field($data['city'] ?? '');
-//     $sanitized['country'] = sanitize_text_field($data['country'] ?? '');
-//     $sanitized['max_guests'] = !empty($data['max_guests']) ? absint($data['max_guests']) : 1;
-//     $sanitized['bedrooms'] = !empty($data['bedrooms']) ? absint($data['bedrooms']) : 1;
-//     $sanitized['beds'] = !empty($data['beds']) ? absint($data['beds']) : 1;
-//     $sanitized['bathrooms'] = !empty($data['bathrooms']) ? absint($data['bathrooms']) : 1;
-
-//     update_post_meta($post_id, '_apartment_additional_info', $sanitized);
-// }
-// add_action('save_post', 'save_additional_apartment_info');

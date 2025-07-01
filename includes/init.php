@@ -25,7 +25,6 @@ if (file_exists($autoload_path)) {
 }
 //test
 
-require_once __DIR__ . '/class-ical-service.php';
 require_once __DIR__ . '/admin/class-ical-meta.php';
 require_once OV_BOOKING_PATH . 'includes/admin/class-oauth-settings.php';
 require_once OV_BOOKING_PATH . 'includes/oauth/callback-handler.php';
@@ -53,6 +52,7 @@ require_once __DIR__ . '/frontend/order-meta-display.php';
 /** -----------------------------
  *  ICAL MODUL
  * ----------------------------- */
+require_once __DIR__ . '/class-ical-service.php';
 require_once __DIR__ . '/ical/ical-init.php';
 
 /** -----------------------------

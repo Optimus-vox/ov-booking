@@ -2,19 +2,6 @@
 defined('ABSPATH') || exit;
 require_once dirname(__DIR__) . '/helpers/logger.php';
 
-
-// function ov_dodaj_custom_editor_metabox() {
-//     add_meta_box(
-//         'ov_custom_text_editor',
-//         'Product description editor',
-//         'ov_prikazi_custom_editor',
-//         ['product'],
-//         'normal',
-//         'default'
-//     );
-// }
-// add_action('add_meta_boxes', 'ov_dodaj_custom_editor_metabox');
-
 function ov_prikazi_custom_editor($post) {
     wp_nonce_field('ov_sacuvaj_custom_editor', 'ov_custom_editor_nonce');
     $vrednost = get_post_meta($post->ID, '_ov_custom_editor', true);

@@ -159,38 +159,6 @@ add_action( 'wp', function() {
     }
 });
 
-function ovb_generate_ics_content($order) {
-    $items = $order->get_items();
-    $item = reset($items);
-    $product_id = $item->get_product_id();
-    $apartment  = get_the_title($product_id);
-
-    $dates = explode(',', $item->get_meta('ov_all_dates'));
-    sort($dates);
-
-    $start = (new DateTime($dates[0]))->format('Ymd');
-    $end_obj = new DateTime(end($dates));
-    $end_obj->modify('+1 day');
-    $end = $end_obj->format('Ymd');
-
-    $ical  = "BEGIN:VCALENDAR\r\n";
-    $ical .= "VERSION:2.0\r\n";
-    $ical .= "PRODID:-//OV Booking//EN\r\n";
-    $ical .= "CALSCALE:GREGORIAN\r\n";
-    $ical .= "BEGIN:VEVENT\r\n";
-    $ical .= "UID:" . uniqid() . "@booking\r\n";
-    $ical .= "DTSTAMP:" . gmdate('Ymd\THis\Z') . "\r\n";
-    $ical .= "DTSTART;VALUE=DATE:$start\r\n";
-    $ical .= "DTEND;VALUE=DATE:$end\r\n";
-    $ical .= "SUMMARY:Booking – $apartment\r\n";
-    $ical .= "DESCRIPTION:Reservation from OV Booking\r\n";
-    $ical .= "END:VEVENT\r\n";
-    $ical .= "END:VCALENDAR\r\n";
-
-    return $ical;
-}
-
-
 // checkout fix
 function ovb_get_checkout_url() {
     $page_id = wc_get_page_id('checkout');

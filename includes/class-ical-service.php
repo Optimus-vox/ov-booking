@@ -1,211 +1,339 @@
 <?php
-defined('ABSPATH') || exit;
+defined( 'ABSPATH' ) || exit;
 
 class OVB_iCal_Service {
-    
-    public static function init() {
-        // Export
-        add_action('parse_request', [__CLASS__, 'handle_ical_request']);
-        // Cron import
-        add_action('ovb_ical_import', [__CLASS__, 'fetch_and_import']);
-        // Manual import
-        add_action('wp_ajax_ovb_sync_ical', [__CLASS__, 'ajax_sync_ical']);
+
+    /**
+     * Generate ICS content for a given order
+     */
+    public static function generate_ics_string( WC_Order $order ): string {
+        // Get timezone from WordPress settings
+        $timezone = new DateTimeZone( wp_timezone_string() );
+        
+        // Get check-in and check-out dates from order meta
+        $start_meta = $order->get_meta( 'start_date' );
+        $end_meta   = $order->get_meta( 'end_date' );
+        
+        // Create DateTime objects with local timezone
+        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
+        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+        
+        // Convert to UTC for ICS format
+        $start_obj->setTimezone( new DateTimeZone( 'UTC' ) );
+        $end_obj->setTimezone( new DateTimeZone( 'UTC' ) );
+        
+        $start_iso = $start_obj->format( 'Ymd\THis\Z' );
+        $end_iso   = $end_obj->format( 'Ymd\THis\Z' );
+        $dtstamp   = gmdate( 'Ymd\THis\Z' ); // Current UTC time
+
+        $summary  = self::get_event_summary( $order );
+        $details  = self::build_ics_details( $order );
+        $location = self::build_location_string( $order );
+
+        $ics  = "BEGIN:VCALENDAR\r\n";
+        $ics .= "METHOD:REQUEST\r\n";
+        $ics .= "VERSION:2.0\r\n";
+        $ics .= "CALSCALE:GREGORIAN\r\n";
+        $ics .= "PRODID:-//OV Booking//EN\r\n";
+        $ics .= "BEGIN:VEVENT\r\n";
+        $ics .= "UID:{$order->get_id()}@" . parse_url( home_url(), PHP_URL_HOST ) . "\r\n";
+        $ics .= "DTSTAMP:{$dtstamp}\r\n";
+        $ics .= "DTSTART:{$start_iso}\r\n";
+        $ics .= "DTEND:{$end_iso}\r\n";
+        $ics .= "SUMMARY:" . self::escape_ical_text($summary) . "\r\n";
+        $ics .= "DESCRIPTION:" . $details . "\r\n";
+        if ( $location ) {
+            $ics .= "LOCATION:" . self::escape_ical_text($location) . "\r\n";
+        }
+        $ics .= "END:VEVENT\r\n";
+        $ics .= "END:VCALENDAR\r\n";
+
+        return $ics;
     }
 
-    // public static function handle_ical_request($wp) {   
-    //     error_log('[OVB iCal] query_vars = ' . print_r($wp->query_vars, true));
-    //         if (!isset($wp->query_vars['ical']) || intval($wp->query_vars['ical']) !== 1) {             return;        
-    //         }       
-    //         $slug = $wp->query_vars['name'] ?? '';       
-    //         $post = get_page_by_path($slug, OBJECT, 'product');        
-    //         if (!$post) {           
-    //             wp_die('Invalid iCal request', 'iCal Error', ['response' => 400]);        
-    //         }        
-    //         $events = self::get_booking_events($post->ID);        
-    //         header('Content-Type: text/calendar; charset=utf-8');        
-    //         header('Content-Disposition: attachment; filename="product-' . $post->post_name . '.ics"');        echo self::build_ical($events);        
-    //         exit;    
-    // }
+    /**
+     * Build plain‐text details block for ICS file with proper escaping
+     */
+    private static function build_ics_details( WC_Order $order ): string {
+        $pid        = self::get_product_id( $order );
+        $apt_type   = self::get_accommodation_type( $pid );
+        $apt_title  = get_the_title( $pid );
+        $first_name = $order->get_billing_first_name();
+        $last_name  = $order->get_billing_last_name();
 
-    public static function handle_ical_request($wp) {
-        if (!isset($wp->query_vars['ical'])) {
+        // Get timezone from WordPress settings
+        $timezone = new DateTimeZone( wp_timezone_string() );
+        
+        // Get check-in and check-out dates from order meta
+        $start_meta = $order->get_meta( 'start_date' );
+        $end_meta   = $order->get_meta( 'end_date' );
+        
+        // Create DateTime objects with local timezone
+        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
+        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+
+        $items      = $order->get_items();
+        $first_item = reset( $items );
+        $guests     = $first_item
+                      ? ( $first_item->get_meta( 'ov_guest_count' ) ?: '1' )
+                      : '1';
+
+        $address = self::build_location_string( $order );
+
+        $lines = [
+            "{$apt_type}: {$apt_title}",
+            "Guest: {$first_name} {$last_name}",
+            "Address: {$address}",
+            "Check-in: " . $start_obj->format( 'd.m.Y H:i' ),
+            "Check-out: " . $end_obj->format( 'd.m.Y H:i' ),
+            "Guests: {$guests}",
+            "Apartment page: " . get_permalink( $pid ),
+            "Contact: info@example.com",
+            "Confirmation: #{$order->get_order_number()}",
+            "Payment method: " . $order->get_payment_method_title(),
+        ];
+
+        $inv_path = ABSPATH . "wp-content/uploads/invoices/{$order->get_id()}.pdf";
+        if ( file_exists( $inv_path )) {
+            $inv_url = home_url( "/wp-content/uploads/invoices/{$order->get_id()}.pdf" );
+            $lines[] = "Invoice: {$inv_url}";
+        }
+
+        // Build description with proper line breaks
+        $description = implode( "\\n", array_map( [self::class, 'escape_ical_text'], $lines ) );
+        
+        return $description;
+    }
+
+    /**
+     * Properly escape text for iCalendar format
+     * (RFC 5545 section 3.3.11)
+     */
+    private static function escape_ical_text( string $text ): string {
+        $text = str_replace( '\\', '\\\\', $text );
+        $text = str_replace( "\r\n", "\\n", $text );
+        $text = str_replace( "\n", "\\n", $text );
+        $text = str_replace( ',', '\\,', $text );
+        $text = str_replace( ';', '\\;', $text );
+        return $text;
+    }
+
+    /**
+     * Save the ICS file to uploads and return full path
+     */
+    public static function save_ics_file( WC_Order $order ): string {
+        $upload_dir = wp_upload_dir();
+        $file_name  = "ovb-order-{$order->get_id()}.ics";
+        $file_path  = trailingslashit( $upload_dir['basedir'] ) . $file_name;
+        file_put_contents( $file_path, self::generate_ics_string( $order ) );
+        return $file_path;
+    }
+
+    /**
+     * Get public URL for download link
+     */
+    public static function get_ics_download_url( WC_Order $order ): string {
+        $upload_dir = wp_upload_dir();
+        return trailingslashit( $upload_dir['baseurl'] ) . "ovb-order-{$order->get_id()}.ics";
+    }
+
+    /**
+     * Render buttons on Thank You page
+     */
+    public static function render_calendar_buttons( $order_id ) {
+        $order = wc_get_order( $order_id );
+        if ( ! $order ) {
             return;
         }
-    
-        error_log('[OVB iCal] query_vars = ' . print_r($wp->query_vars, true));
-    
-        global $wp_query;
-        $post_id = $wp_query->queried_object_id ?? 0;
-        $post = get_post($post_id);
-    
-        if (!$post || $post->post_type !== 'product') {
-            // fallback: probaj da pročitaš slug ručno
-            $slug_path = $wp->request ?? '';
-            $slug_parts = explode('/', trim($slug_path, '/'));
-            $slug = $slug_parts[count($slug_parts) - 2] ?? '';
-            error_log("[OVB iCal] Fallback slug = $slug");
-            $post = get_page_by_path($slug, OBJECT, 'product');
+
+        $ics_url    = rest_url( "ov-booking/v1/order/{$order_id}/ics" );
+        $google_url = self::get_google_calendar_url( $order );
+
+        echo '<p class="ovb-add-to-calendar">';
+        printf(
+            '<a href="%s" target="_blank" class="button" download="booking-%d.ics">📥 Dodaj u kalendar</a> ',
+            esc_url( $ics_url ),
+            $order_id
+        );
+        printf(
+            '<a href="%s" target="_blank" class="button">📅 Add to Google Calendar</a>',
+            esc_url( $google_url )
+        );
+        echo '</p>';
+    }
+
+    /**
+     * Attach ICS to completed order email
+     */
+    public static function attach_ics_to_email( $attachments, $email_id, WC_Order $order ) {
+        if ( 'customer_completed_order' === $email_id ) {
+            $attachments[] = self::save_ics_file( $order );
         }
-    
-        if (!$post || $post->post_type !== 'product') {
-            error_log('[OVB iCal] Proizvod nije pronađen ili nije product.');
-            wp_die('Invalid iCal request', 'iCal Error', ['response' => 400]);
+        return $attachments;
+    }
+
+    /**
+     * Build Google Calendar add-event URL
+     */
+    public static function get_google_calendar_url( WC_Order $order ): string {
+        // Get timezone from WordPress settings
+        $timezone = new DateTimeZone( wp_timezone_string() );
+        
+        // Get check-in and check-out dates from order meta
+        $start_meta = $order->get_meta( 'start_date' );
+        $end_meta   = $order->get_meta( 'end_date' );
+        
+        // Create DateTime objects with local timezone
+        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
+        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+        
+        // Convert to UTC for Google Calendar format
+        $start_obj->setTimezone( new DateTimeZone( 'UTC' ) );
+        $end_obj->setTimezone( new DateTimeZone( 'UTC' ) );
+        
+        $start_iso = $start_obj->format( 'Ymd\THis\Z' );
+        $end_iso   = $end_obj->format( 'Ymd\THis\Z' );
+
+        $summary  = self::get_event_summary( $order );
+        $details  = self::build_gcal_details( $order );
+        $location = self::build_location_string( $order );
+
+        $params = [
+            'action'   => 'TEMPLATE',
+            'text'     => $summary,
+            'dates'    => "{$start_iso}/{$end_iso}",
+            'details'  => $details,
+            'location' => $location,
+            'sf'       => 'true',
+            'output'   => 'xml',
+        ];
+        $query = http_build_query( $params, '', '&', PHP_QUERY_RFC3986 );
+
+        return 'https://calendar.google.com/calendar/render?' . $query;
+    }
+
+    /**
+     * Build event summary ("Rezervacija – ApartmentName")
+     */
+    private static function get_event_summary( WC_Order $order ): string {
+        $pid       = self::get_product_id( $order );
+        $apt_type  = self::get_accommodation_type( $pid );
+        $apt_title = get_the_title( $pid );
+        return "Rezervacija – {$apt_type} {$apt_title}";
+    }
+
+    /**
+     * Build the HTML‐br‐separated details block for Google Calendar
+     */
+    private static function build_gcal_details( WC_Order $order ): string {
+        $pid        = self::get_product_id( $order );
+        $apt_type   = self::get_accommodation_type( $pid );
+        $apt_title  = get_the_title( $pid );
+        $first_name = $order->get_billing_first_name();
+        $last_name  = $order->get_billing_last_name();
+
+        // Get timezone from WordPress settings
+        $timezone = new DateTimeZone( wp_timezone_string() );
+        
+        // Get check-in and check-out dates from order meta
+        $start_meta = $order->get_meta( 'start_date' );
+        $end_meta   = $order->get_meta( 'end_date' );
+        
+        // Create DateTime objects with local timezone
+        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
+        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+
+        $items      = $order->get_items();
+        $first_item = reset( $items );
+        $guests     = $first_item ? ( $first_item->get_meta( 'ov_guest_count' ) ?: '1' ) : '1';
+
+        $address = self::build_location_string( $order );
+
+        $lines = [
+            "🏠 {$apt_type}: {$apt_title}",
+            "👤 Guest: {$first_name} {$last_name}",
+            "📍 Address: {$address}",
+            "🗓 Check-in: " . $start_obj->format( 'd.m.Y H:i' ),
+            "🚪 Check-out: " . $end_obj->format( 'd.m.Y H:i' ),
+            "👥 Guests: {$guests}",
+            "🔗 Apartment page: " . get_permalink( $pid ),
+            "📞 Contact: info@example.com",
+            "🔐 Confirmation: #{$order->get_order_number()}",
+            "💳 Payment method: " . $order->get_payment_method_title(),
+        ];
+
+        $inv_path = ABSPATH . "wp-content/uploads/invoices/{$order->get_id()}.pdf";
+        if ( file_exists( $inv_path ) ) {
+            $inv_url  = home_url( "/wp-content/uploads/invoices/{$order->get_id()}.pdf" );
+            $lines[]  = "📄 Invoice: {$inv_url}";
         }
-    
-        error_log("[OVB iCal] Pronađen proizvod: ID={$post->ID}");
-    
-        $events = self::get_booking_events($post->ID);
-    
-        header('Content-Type: text/calendar; charset=utf-8');
-        header('Content-Disposition: inline; filename="product-' . $post->post_name . '.ics"');
-        echo self::build_ical($events);
+
+        return implode( '<br/>', $lines );
+    }
+
+    /**
+     * Build the location string from additional_info meta
+     */
+    private static function build_location_string( WC_Order $order ): string {
+        $pid  = self::get_product_id( $order );
+        $info = get_post_meta( $pid, '_apartment_additional_info', true );
+        if ( ! is_array( $info ) ) {
+            return '';
+        }
+        $parts = [];
+        foreach ( [ 'street_name', 'city', 'country' ] as $key ) {
+            if ( ! empty( $info[ $key ] ) ) {
+                $parts[] = sanitize_text_field( $info[ $key ] );
+            }
+        }
+        return implode( ', ', $parts );
+    }
+
+    /**
+     * Get first product ID from order
+     */
+    private static function get_product_id( WC_Order $order ): int {
+        $items = $order->get_items();
+        $first = reset( $items );
+        return $first ? $first->get_product_id() : 0;
+    }
+
+    /**
+     * Read accommodation type from product meta
+     */
+    private static function get_accommodation_type( int $product_id ): string {
+        $type = get_post_meta( $product_id, 'accommodation_type', true );
+        return $type ?: 'Apartment';
+    }
+
+    /**
+     * REST callback: return inline .ics
+     */
+    public static function serve_order_ical( WP_REST_Request $request ) {
+        $order_id = absint( $request->get_param( 'id' ) );
+        $order    = wc_get_order( $order_id );
+        if ( ! $order ) {
+            return new WP_Error( 'not_found', 'Order not found', [ 'status' => 404 ] );
+        }
+
+        $ics = self::generate_ics_string( $order );
+
+        header( 'Content-Type: text/calendar; charset=utf-8' );
+        header( 'Content-Disposition: attachment; filename="booking-' . $order_id . '.ics"' );
+        echo $ics;
         exit;
     }
-    
-    
+} // end class
 
-
-    public static function get_booking_events($product_id) {
-        $events = [];
-        $orders = wc_get_orders([
-            'status' => ['processing', 'completed'],
-            'limit'  => -1,
-        ]);
-        foreach ($orders as $order) {
-            foreach ($order->get_items() as $item) {
-                if ((int)$item->get_product_id() !== $product_id) {
-                    continue;
-                }
-                $dates_meta = $item->get_meta('ov_all_dates');
-                if (empty($dates_meta)) {
-                    continue;
-                }
-                $dates = array_filter(array_map('trim', explode(',', $dates_meta)));
-                if (empty($dates)) {
-                    continue;
-                }
-                sort($dates);
-
-                $start_date = (new DateTime($dates[0]))->format('Ymd');
-                $end_date_obj = new DateTime(end($dates));
-                $end_date_obj->modify('+1 day');
-                $end_date = $end_date_obj->format('Ymd');
-
-                $events[] = [
-                    'uid'         => sprintf('%s-%s@%s', $order->get_id(), $item->get_id(), parse_url(home_url(), PHP_URL_HOST)),
-                    'dtstamp'     => gmdate('Ymd\THis\Z'),
-                    'dtstart'     => $start_date,
-                    'dtend'       => $end_date,
-                    'summary'     => sprintf('Booking – %s', get_the_title($product_id)),
-                    'description' => sprintf('Rezervacija %s (Order #%d)', get_the_title($product_id), $order->get_id()),
-                    'X-GUEST-NAME'  => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-                    'X-GUEST-EMAIL' => $order->get_billing_email(),
-                    'X-GUEST-PHONE' => $order->get_billing_phone(),
-                    'X-GUEST-COUNT' => $item->get_meta('ov_guest_count') ?: '',
-                    'X-BOOKING-ID'  => $order->get_id(),
-                    'X-PRODUCT-ID'  => $product_id,
-                ];
-            }
-        }
-        return $events;
-    }
-
-    public static function build_ical($events) {
-        $ical  = "BEGIN:VCALENDAR\r\n";
-        $ical .= "VERSION:2.0\r\n";
-        $ical .= "PRODID:-//OV Booking//EN\r\n";
-        $ical .= "CALSCALE:GREGORIAN\r\n";
-
-        foreach ($events as $e) {
-            $ical .= "BEGIN:VEVENT\r\n";
-            foreach ($e as $key => $value) {
-                $ical .= strtoupper($key) . ':' . $value . "\r\n";
-            }
-            $ical .= "END:VEVENT\r\n";
-        }
-
-        $ical .= "END:VCALENDAR\r\n";
-        return $ical;
-    }
-
-    public static function maybe_serve_ical() {
-        add_action('parse_request', function ($wp) {
-            error_log('[OVB iCal] parse_request triggered');
-    
-            if (!isset($wp->query_vars['ical']) || intval($wp->query_vars['ical']) !== 1) {
-                error_log('[OVB iCal] query_var "ical" nije postavljen ili nije 1');
-                return;
-            }
-    
-            $slug = $wp->query_vars['name'] ?? '(not set)';
-            error_log("[OVB iCal] Requested product slug = {$slug}");
-    
-            $post = get_page_by_path($wp->query_vars['name'], OBJECT, 'product');
-            if (!$post) {
-                error_log('[OVB iCal] Proizvod nije pronađen preko slug-a.');
-                wp_die('Invalid iCal request', 'iCal Error', ['response' => 400]);
-            }
-    
-            error_log("[OVB iCal] Pronađen proizvod: ID={$post->ID}");
-    
-            $events = OVB_iCal_Service::get_booking_events($post->ID);
-    
-            header('Content-Type: text/calendar; charset=utf-8');
-            header('Content-Disposition: attachment; filename="product-' . $post->post_name . '.ics"');
-    
-            echo OVB_iCal_Service::build_ical($events);
-            exit;
-        });
-    }
-    
-    public static function generate_product_ical($product_id) {
-        $events = self::get_booking_events($product_id);
-        return self::build_ical($events);
-      }
-
-    public static function fetch_and_import_for_product() {
-        $products = get_posts(['post_type' => 'product', 'numberposts' => -1]);
-        foreach ($products as $product) {
-            $urls = get_post_meta($product->ID, '_ovb_ical_urls', true);
-            if (empty($urls)) {
-                continue;
-            }
-            $urls = preg_split('/[\r\n]+/', $urls);
-            $all_dates = [];
-            foreach ($urls as $url) {
-                $url = esc_url_raw($url);
-                if (empty($url)) {
-                    continue;
-                }
-                $response = wp_safe_remote_get($url, ['timeout' => 20]);
-                if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-                    continue;
-                }
-                $body = wp_remote_retrieve_body($response);
-                try {
-                    $vcal = \Sabre\VObject\Reader::read($body);
-                   
-                    foreach ($vcal->VEVENT as $vevent) {
-                        $start = $vevent->DTSTART->getDateTime()->format('Y-m-d');
-                        $all_dates[] = $start;
-                    }
-                } catch (Exception $e) {
-                    // skip invalid feeds
-                    continue;
-                }
-            }
-            $all_dates = array_unique($all_dates);
-            update_post_meta($product->ID, '_ovb_booked_dates', $all_dates);
-        }
-    }
-
-    public static function ajax_sync_ical() {
-        if ( ! check_ajax_referer('ovb_ical_meta','security', false) ) {
-          wp_send_json_error();
-        }
-        $pid = absint( $_POST['product_id'] );
-        self::fetch_and_import_for_product( $pid );
-        wp_send_json_success();
-      }
-    
-}
+// Register REST route for .ics
+add_action( 'rest_api_init', function() {
+    register_rest_route(
+        'ov-booking/v1',
+        '/order/(?P<id>\d+)/ics',
+        [
+            'methods'             => 'GET',
+            'callback'            => [ 'OVB_iCal_Service', 'serve_order_ical' ],
+            'permission_callback' => '__return_true',
+        ]
+    );
+} );
