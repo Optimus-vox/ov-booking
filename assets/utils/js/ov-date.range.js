@@ -109,16 +109,17 @@ function initOvDateRangePicker(config) {
     day.classList.add("ov-day");
     day.textContent = date.getDate();
 
-    // Precizan datum za poređenje u hover funkciji
     day.dataset.date = formatDate(date);
 
     const key = formatDate(date);
     const info = calendarData[key] || {};
-
     const label = document.createElement("div");
     label.className = "ov-label";
 
-    if (date < today) {
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    if (dateOnly < todayOnly) {
       day.classList.add("past-day");
       label.textContent = `-`;
       day.appendChild(label);
@@ -138,8 +139,6 @@ function initOvDateRangePicker(config) {
       day.appendChild(label);
     }
 
-
-    // Posebne klase za start i end date
     if (startDate && date.toDateString() === startDate.toDateString()) {
       day.classList.add("selected", "start-date");
     }
@@ -159,14 +158,13 @@ function initOvDateRangePicker(config) {
       !readonly &&
       !day.classList.contains("disabled") &&
       !day.classList.contains("booked-day") &&
-      date >= today &&
+      dateOnly >= todayOnly &&
       info?.price
     ) {
       day.style.cursor = "pointer";
 
       day.addEventListener("click", () => handleDateClick(date));
 
-      // Hover efekat
       day.addEventListener("mouseenter", () => {
         if (startDate && !endDate && date > startDate) {
           highlightHoverRange(startDate, date);
@@ -177,7 +175,6 @@ function initOvDateRangePicker(config) {
         }
       });
 
-
       day.addEventListener("mouseleave", () => {
         clearHoverRange();
       });
@@ -185,6 +182,7 @@ function initOvDateRangePicker(config) {
 
     return day;
   }
+
 
   function highlightHoverRange(start, end) {
     const allDays = containerEl.querySelectorAll(".ov-day");
@@ -353,12 +351,16 @@ function initOvDateRangePicker(config) {
     applyResponsiveClass();
   }
 
+  function closePicker() {
+    if (!alwaysOpen) {
+      picker.classList.add("hidden");
+      isPickerOpen = false;
+    }
+  }
+
   function closePickerWithDelay() {
     setTimeout(() => {
-      if (!alwaysOpen) {
-        picker.classList.add("hidden");
-        isPickerOpen = false;
-      }
+      closePicker();
     }, 100);
   }
 
@@ -459,6 +461,13 @@ function initOvDateRangePicker(config) {
       if (!alwaysOpen && isPickerOpen && !picker.contains(e.target) && e.target !== inputEl) {
         closePickerWithDelay();
       }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" || e.key === "Esc") {
+          if (isPickerOpen) {
+            closePicker();
+          }
+        }
+      });
     });
   }
 

@@ -4,9 +4,11 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 input {
   border: 0;
 }
+
 .admin-calendar-container {
   background-color: #fff;
   overflow: hidden;
@@ -73,18 +75,12 @@ input {
   cursor: pointer;
 }
 
-.ov-booking-day-info
-  .ov-booking-price-row
-  .ov-booking-day-price
-  .ov-booking-day-price-icon {
+.ov-booking-day-info .ov-booking-price-row .ov-booking-day-price .ov-booking-day-price-icon {
   width: auto;
   height: 16px;
 }
 
-.ov-booking-day-info
-  .ov-booking-price-row
-  .ov-booking-day-price
-  .ov-booking-day-price-value {
+.ov-booking-day-info .ov-booking-price-row .ov-booking-day-price .ov-booking-day-price-value {
   margin-left: 5px;
   margin-right: 2px;
 }
@@ -116,26 +112,17 @@ input {
   outline: none;
 }
 
-.ov-booking-day-info
-  .ov-booking-actions-row
-  .ov-booking-status-select
-  .ov-booking-status-available {
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select .ov-booking-status-available {
   background-color: green;
   color: white;
 }
 
-.ov-booking-day-info
-  .ov-booking-actions-row
-  .ov-booking-status-select
-  .ov-booking-status-unavailable {
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select .ov-booking-status-unavailable {
   background-color: red;
   color: white;
 }
 
-.ov-booking-day-info
-  .ov-booking-actions-row
-  .ov-booking-status-select
-  .ov-booking-status-booked {
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select .ov-booking-status-booked {
   background-color: purple;
   color: white;
 }
@@ -239,9 +226,11 @@ td.empty {
   visibility: visible;
   opacity: 1;
 }
+
 td {
   border: 1px solid #8b5dff1a;
 }
+
 .admin-table td:not([data-title]) {
   background-color: #f9fafb;
 }
@@ -310,12 +299,15 @@ td .day-wrapper {
   border: none;
   border-radius: 5px;
 }
+
 .wp-core-ui select:hover {
   color: #2c3338;
 }
+
 .wp-core-ui select:focus {
   color: #2c3338;
 }
+
 .status-available {
   background-color: #d1e7dd !important;
 }
@@ -351,6 +343,7 @@ td .day-wrapper {
   display: flex;
   gap: 20px;
 }
+
 /* Tabs */
 .price-settings-tabs {
   display: flex;
@@ -418,10 +411,12 @@ td .day-wrapper {
   transform: translate(-50%, -50%);
   width: 600px;
   padding: 30px;
+
   h3 {
     color: #fff;
   }
 }
+
 #client_action_modal {
   h3 {
     display: flex;
@@ -431,6 +426,7 @@ td .day-wrapper {
     font-size: 20px;
     color: #fff;
     margin: 0;
+
     span {
       width: 50%;
       font-size: 14px;
@@ -438,6 +434,7 @@ td .day-wrapper {
     }
   }
 }
+
 .buttons {
   display: flex;
   flex-direction: column;
@@ -445,43 +442,50 @@ td .day-wrapper {
   gap: 5px;
   font-size: 16px;
   margin-top: 10px;
+
   button {
     width: 100%;
-    color: #1b203a;
-    background-color: #fff;
+    color: #fff;
+    background-color:#8B5DFF;
     border: 0;
     outline: none;
     padding: 10px;
     cursor: pointer;
   }
 }
+
 .add-information {
   display: flex;
   flex-direction: column;
   width: 100%;
   gap: 10px;
 }
+
 .add-information input,
 #price_modal input {
-  background: transparent;
   border: 1px solid #fff;
+  background: transparent;
   color: white;
-  padding: 5px 10px;
+  padding: 10px;
   border-radius: 0;
   outline: none;
   box-shadow: none;
   width: 100%;
+  height: 45px;
 }
+
+#price_modal input:focus,
+.add-information input:focus {
+  border-color: #8B5DFF;
+  outline: none;
+  box-shadow: none;
+}
+
 .add-information input::placeholder,
 #price_modal input::placeholder {
   color: #ffffff66;
 }
-.add-information input:focus,
-#price_modal input:focus {
-  border-color: #fff;
-  outline: none;
-  box-shadow: none;
-}
+
 .close_modal {
   width: 20px;
   position: absolute;
@@ -490,16 +494,23 @@ td .day-wrapper {
   cursor: pointer;
 }
 
+.time-input {
+  padding: 10px !important;
+}
+
 @media screen and (max-width: 1600px) {
   .price-row {
+
     .past-badge,
     .day-price {
       padding: 6px 9px;
     }
   }
+
   .day-client {
     font-size: 10px;
   }
+
   .day-actions {
     flex-direction: column;
   }
@@ -513,9 +524,11 @@ td .day-wrapper {
     gap: 5px;
     width: 100%;
   }
+
   .price-row {
     width: 100%;
     flex: 1;
+
     .past-badge,
     .day-price {
       width: 100%;
@@ -523,15 +536,19 @@ td .day-wrapper {
     }
   }
 }
+
 .admin-table-wrapper {
   width: 100%;
 }
+
 #wp-content-media-buttons {
+
   #insert-media-button,
   .woocommerce-help-tip {
     display: none;
   }
 }
+
 @media (max-width: 1000px) {
   .admin-table-wrapper {
     overflow-x: auto;

@@ -6,7 +6,8 @@ require_once dirname(__DIR__) . '/helpers/logger.php';
 
 // 🧩 Admin Calendar meta box
 add_action('add_meta_boxes', 'add_calendar_meta_box');
-function add_calendar_meta_box() {
+function add_calendar_meta_box()
+{
     if (current_user_can('manage_woocommerce')) {
         add_meta_box(
             'product_calendar_meta_box',
@@ -22,7 +23,8 @@ function add_calendar_meta_box() {
 
 // 🗺️ Google Maps meta box
 add_action('add_meta_boxes', 'google_maps_iframe_meta_box');
-function google_maps_iframe_meta_box() {
+function google_maps_iframe_meta_box()
+{
     if (current_user_can('manage_woocommerce')) {
         add_meta_box(
             'google_maps_iframe_box',
@@ -37,52 +39,80 @@ function google_maps_iframe_meta_box() {
 
 
 add_action('wp_ajax_ov_save_calendar_data', 'ov_save_calendar_data');
-function ov_save_calendar_data() {
-    if (! current_user_can('edit_products')) {
+function ov_save_calendar_data()
+{
+    if (!current_user_can('edit_products')) {
         wp_send_json_error('Unauthorized');
     }
 
-    $product_id    = intval( $_POST['product_id'] ?? 0 );
-    $calendar_data = json_decode( stripslashes( $_POST['calendar_data'] ?? '' ), true );
-    $price_types   = $_POST['price_types'] ?? [];
+    $product_id = intval($_POST['product_id'] ?? 0);
+    $calendar_data = json_decode(stripslashes($_POST['calendar_data'] ?? ''), true);
+    $price_types = $_POST['price_types'] ?? [];
 
-    if ( ! $product_id || ! is_array( $calendar_data ) ) {
+    if (!$product_id || !is_array($calendar_data)) {
         wp_send_json_error('Invalid data');
     }
 
     // Ako ima bar jednog datuma -> snimi calendar_data u meta
-    if ( is_array( $calendar_data ) && count( $calendar_data ) > 0 ) {
-        ov_log_error( 'Saving calendar data: ' . print_r( $calendar_data, true ) );
-        update_post_meta( $product_id, '_ov_calendar_data', $calendar_data );
+    if (is_array($calendar_data) && count($calendar_data) > 0) {
+        ov_log_error('Saving calendar data: ' . print_r($calendar_data, true));
+        update_post_meta($product_id, '_ov_calendar_data', $calendar_data);
     } else {
         // NE sme da prepiše praznim nizom!
-        ov_log_error( 'Skipping calendar_data update because it is empty' );
+        ov_log_error('Skipping calendar_data update because it is empty');
         // Nemojte pozivati update_post_meta ovde
     }
 
     // Ovde snimamo samo price_types (uvek—čak i ako je calendar_data prazan)
-    if ( is_array( $price_types ) ) {
-        ov_log_error( 'Saving price types: ' . print_r( $price_types, true ) );
-        update_post_meta( $product_id, '_ov_price_types', $price_types );
+    if (is_array($price_types)) {
+        ov_log_error('Saving price types: ' . print_r($price_types, true));
+        update_post_meta($product_id, '_ov_price_types', $price_types);
     }
 
     wp_send_json_success('Data saved');
 }
+add_action('wp_ajax_ov_save_checkin_checkout', 'ov_save_checkin_checkout_handler');
+
+function ov_save_checkin_checkout_handler()
+{
+    $post_id = intval($_POST['product_id'] ?? 0);
+    if (!$post_id || !current_user_can('edit_post', $post_id)) {
+        wp_send_json_error('Unauthorized', 403);
+    }
+
+    $checkin = sanitize_text_field($_POST['checkin_time'] ?? '');
+    $checkout = sanitize_text_field($_POST['checkout_time'] ?? '');
+
+    if (!preg_match('/^\d{2}:\d{2}$/', $checkin) || !preg_match('/^\d{2}:\d{2}$/', $checkout)) {
+        wp_send_json_error('Invalid time format', 400);
+    }
+
+    $meta = get_post_meta($post_id, '_apartment_additional_info', true) ?: [];
+    $meta['checkin_time'] = $checkin;
+    $meta['checkout_time'] = $checkout;
+
+    update_post_meta($post_id, '_apartment_additional_info', $meta);
+
+    wp_send_json_success(['message' => 'Times saved']);
+}
+
 // helper za datume (edit iz cart u single)
-function ovb_generate_all_dates( $start, $end ) {
+function ovb_generate_all_dates($start, $end)
+{
     $arr = [];
-    $current = strtotime( $start );
-    $end_ts  = strtotime( $end );
-    while ( $current <= $end_ts ) {
-        $arr[] = date( 'YYYY-MM-DD' === 'YYYY-MM-DD' ? 'Y-m-d' : 'Y-m-d', $current );
-        $current = strtotime( '+1 day', $current );
+    $current = strtotime($start);
+    $end_ts = strtotime($end);
+    while ($current <= $end_ts) {
+        $arr[] = date('YYYY-MM-DD' === 'YYYY-MM-DD' ? 'Y-m-d' : 'Y-m-d', $current);
+        $current = strtotime('+1 day', $current);
     }
     return $arr;
 }
 
 // 💾 Čuvanje cena prilikom ručnog snimanja proizvoda
 add_action('save_post_product', 'ov_save_price_types_meta_box_data');
-function ov_save_price_types_meta_box_data($post_id) {
+function ov_save_price_types_meta_box_data($post_id)
+{
     if (!current_user_can('edit_post', $post_id)) {
         return;
     }
@@ -110,18 +140,23 @@ function ov_save_price_types_meta_box_data($post_id) {
 
 // 💾 Čuvanje statusa dana kada se klikne "Update" dugme na proizvodu
 add_action('save_post_product', 'ov_save_bulk_status_rule');
-function ov_save_bulk_status_rule($post_id) {
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if (!current_user_can('edit_post', $post_id)) return;
+function ov_save_bulk_status_rule($post_id)
+{
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+        return;
+    if (!current_user_can('edit_post', $post_id))
+        return;
 
     $bulk_status = sanitize_text_field($_POST['ov_bulk_status'] ?? '');
     $apply_rule = sanitize_text_field($_POST['ov_status_apply_rule'] ?? '');
     $daterange = sanitize_text_field($_POST['ov_status_daterange'] ?? '');
 
-    if (!$bulk_status || !$apply_rule) return;
+    if (!$bulk_status || !$apply_rule)
+        return;
 
     $calendar = get_post_meta($post_id, '_ov_calendar_data', true);
-    if (!is_array($calendar)) $calendar = [];
+    if (!is_array($calendar))
+        $calendar = [];
 
     $year = date('Y');
     $month = date('m');
@@ -153,14 +188,15 @@ function ov_save_bulk_status_rule($post_id) {
 
 //remove price from shop page
 
-add_action( 'wp', function() {
-    if ( function_exists( 'is_shop' ) && is_shop() ) {
-        remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
+add_action('wp', function () {
+    if (function_exists('is_shop') && is_shop()) {
+        remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10);
     }
 });
 
 // checkout fix
-function ovb_get_checkout_url() {
+function ovb_get_checkout_url()
+{
     $page_id = wc_get_page_id('checkout');
     if ($page_id && get_post_status($page_id) === 'publish') {
         return get_permalink($page_id);
@@ -177,7 +213,8 @@ function ovb_get_checkout_url() {
 }
 
 //remove woo temp button - kasnije razraditi ovo
-function ovb_reset_woocommerce_pages() {
+function ovb_reset_woocommerce_pages()
+{
     foreach ([
         'woocommerce_cart_page_id',
         'woocommerce_checkout_page_id',

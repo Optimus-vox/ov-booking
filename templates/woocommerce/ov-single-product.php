@@ -203,6 +203,10 @@ get_header();
                             <div class="product-details-things-to-know">
                                 <?php
                                 $rules_ikone = get_post_meta(get_the_ID(), '_apartment_rules_icons', true);
+                                $checkin_time = !empty($additional_info['checkin_time']) ? esc_html($additional_info['checkin_time']) : '';
+                                $checkout_time = !empty($additional_info['checkout_time']) ? esc_html($additional_info['checkout_time']) : '';
+                                echo $checkin_time;
+
                                 if (!empty($rules_ikone)): ?>
                                     <div class="apartment-rules-section">
                                         <h3>Things to know</h3>
