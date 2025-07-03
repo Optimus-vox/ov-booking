@@ -314,6 +314,7 @@ function render_calendar_meta_box($post)
                 <h3>Datum: <span id="client_action_date"></span></h3>
                 <input type="hidden" id="client_action_date_input" />
                 <input type="hidden" id="client_action_email_input" />
+                <input type="hidden" id="client_action_bookingid_input" />
             </div>
             <br>
             <div class="buttons">
@@ -321,6 +322,7 @@ function render_calendar_meta_box($post)
                 <button id="delete_client_all">Obriši celu rezervaciju</button>
                 <button onclick="jQuery('#client_action_modal_wrapper').hide()">Otkaži</button>
             </div>
+            
         </div>
     </div>
     <script>

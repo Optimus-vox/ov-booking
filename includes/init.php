@@ -68,6 +68,7 @@ require_once __DIR__ . '/admin/google-maps.php';
 require_once __DIR__ . '/admin/metabox-apartment-info.php';
 require_once __DIR__ . '/admin/metabox-apartment-rules.php';
 require_once __DIR__ . '/admin/testimonials.php';
+require_once __DIR__ . '/admin/admin-calendar/admin-calendar-ajax.php';
 require_once __DIR__ . '/admin/admin-calendar/admin-calendar.php';
 
 /** -----------------------------

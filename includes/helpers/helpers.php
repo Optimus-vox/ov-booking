@@ -36,38 +36,58 @@ function google_maps_iframe_meta_box() {
 }
 
 
-add_action('wp_ajax_ov_save_calendar_data', 'ov_save_calendar_data');
-function ov_save_calendar_data() {
-    if (! current_user_can('edit_products')) {
-        wp_send_json_error('Unauthorized');
-    }
+// add_action('wp_ajax_ov_save_calendar_data', 'ov_save_calendar_data');
+// function ov_save_calendar_data() {
+//     if (! current_user_can('edit_products')) {
+//         wp_send_json_error('Unauthorized');
+//     }
 
-    $product_id    = intval( $_POST['product_id'] ?? 0 );
-    $calendar_data = json_decode( stripslashes( $_POST['calendar_data'] ?? '' ), true );
-    $price_types   = $_POST['price_types'] ?? [];
+//     $product_id    = intval( $_POST['product_id'] ?? 0 );
+//     $calendar_data = json_decode( stripslashes( $_POST['calendar_data'] ?? '' ), true );
+//     $price_types   = $_POST['price_types'] ?? [];
 
-    if ( ! $product_id || ! is_array( $calendar_data ) ) {
-        wp_send_json_error('Invalid data');
-    }
+//     if ( ! $product_id || ! is_array( $calendar_data ) ) {
+//         wp_send_json_error('Invalid data');
+//     }
 
-    // Ako ima bar jednog datuma -> snimi calendar_data u meta
-    if ( is_array( $calendar_data ) && count( $calendar_data ) > 0 ) {
-        ov_log_error( 'Saving calendar data: ' . print_r( $calendar_data, true ) );
-        update_post_meta( $product_id, '_ov_calendar_data', $calendar_data );
-    } else {
-        // NE sme da prepiše praznim nizom!
-        ov_log_error( 'Skipping calendar_data update because it is empty' );
-        // Nemojte pozivati update_post_meta ovde
-    }
+//     // Ako ima bar jednog datuma -> snimi calendar_data u meta
+//     if ( is_array( $calendar_data ) && count( $calendar_data ) > 0 ) {
+//         ov_log_error( 'Saving calendar data: ' . print_r( $calendar_data, true ) );
+//         update_post_meta( $product_id, '_ov_calendar_data', $calendar_data );
+//     } else {
+//         // NE sme da prepiše praznim nizom!
+//         ov_log_error( 'Skipping calendar_data update because it is empty' );
+//         // Nemojte pozivati update_post_meta ovde
+//     }
 
-    // Ovde snimamo samo price_types (uvek—čak i ako je calendar_data prazan)
-    if ( is_array( $price_types ) ) {
-        ov_log_error( 'Saving price types: ' . print_r( $price_types, true ) );
-        update_post_meta( $product_id, '_ov_price_types', $price_types );
-    }
+//     // Ovde snimamo samo price_types (uvek—čak i ako je calendar_data prazan)
+//     if ( is_array( $price_types ) ) {
+//         ov_log_error( 'Saving price types: ' . print_r( $price_types, true ) );
+//         update_post_meta( $product_id, '_ov_price_types', $price_types );
+//     }
 
-    wp_send_json_success('Data saved');
-}
+//     wp_send_json_success('Data saved');
+// }
+
+// function ov_save_calendar_data() {
+//     if ( ! current_user_can('manage_options') ) {
+//         wp_send_json_error('No permission');
+//     }
+
+//     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+//     $calendar_data = isset($_POST['calendar_data']) ? json_decode(stripslashes($_POST['calendar_data']), true) : [];
+//     $price_types = isset($_POST['price_types']) ? json_decode(stripslashes($_POST['price_types']), true) : [];
+
+//     if ($product_id && !empty($calendar_data)) {
+//         update_post_meta($product_id, '_ov_calendar_data', $calendar_data);
+//         update_option('ov_price_types', $price_types); // Ako cene čuvaš globalno ili na proizvodu po kljucevima
+//         wp_send_json_success('Saved');
+//     } else {
+//         wp_send_json_error('Missing data');
+//     }
+// }
+// add_action('wp_ajax_ov_save_calendar_data', 'ov_save_calendar_data');
+
 // helper za datume (edit iz cart u single)
 function ovb_generate_all_dates( $start, $end ) {
     $arr = [];

@@ -385,6 +385,7 @@
 // });
 
 jQuery(document).ready(function ($) {
+  console.log(ov_calendar_vars.calendarData);
 
   $('.ov-testimonials-carousel').owlCarousel({
     items: 1,
@@ -434,6 +435,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const startDate = form.querySelector('input[name="start_date"]')?.value.trim();
     const endDate = form.querySelector('input[name="end_date"]')?.value.trim();
     const allDates = form.querySelector('input[name="all_dates"]')?.value.trim();
+
+    console.log("Submitting booking with dates:", startDate, endDate, allDates);
 
     if (!startDate || !endDate || !allDates) {
       e.preventDefault();
