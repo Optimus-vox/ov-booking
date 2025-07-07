@@ -54,10 +54,32 @@ function ovb_save_calendar_data_callback() {
     if ($update1 === false) {
         error_log("ovb_save_calendar_data_callback: Failed to update calendar data for product $product_id");
     }
-    if ($update2 === false) {
+    if ($update2 === false && get_option('ov_price_types') !== $price_types) {
         error_log("ovb_save_calendar_data_callback: Failed to update price types option");
     }
 
     wp_send_json_success(['message' => 'Podaci uspešno sačuvani.']);
     wp_die();
 }
+
+add_action('wp_ajax_ovb_delete_booking_and_order', function() {
+    if (!current_user_can('manage_woocommerce')) {
+        wp_send_json_error(['message' => 'No permission']);
+    }
+    $booking_id = isset($_POST['booking_id']) ? sanitize_text_field($_POST['booking_id']) : '';
+    if (!$booking_id) wp_send_json_error(['message' => 'Missing booking_id']);
+    $order_id = intval(strtok($booking_id, '_'));
+    if (!$order_id) wp_send_json_error(['message' => 'Missing order_id']);
+    $order = wc_get_order($order_id);
+    if ($order) {
+        error_log(">> Brisem order_id: $order_id, post_type: " . get_post_type($order_id));
+        // Prvo klasični WP način (ako je post_type shop_order)
+        if ($order->get_type() === 'shop_order' && get_post_type($order_id) === 'shop_order') {
+            wp_trash_post($order_id);
+        } else {
+            // HPOS: promeni status ordera u "trash"
+            $order->update_status('trash');
+        }
+    }
+    wp_send_json_success(['message' => 'Order trashed', 'order_id' => $order_id]);
+});

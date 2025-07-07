@@ -1,6 +1,7 @@
 <?php
 defined('ABSPATH') || exit;
 
+
 // Ako smo na order-received endpoint-u, renderuj custom thank you i prekini dalje
 if ( function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received') ) {
     // putanja do tvog thankyou template-a

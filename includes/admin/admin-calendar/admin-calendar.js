@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const isPast = dayDate < today;
 
-      let price = dayData.price ?? null;
+      let price = dayData.price;
       let status = dayData.status ?? "available";
       console.log(
         `Before status logic - Date: ${formattedDate}, price: ${price}, hasClients: ${hasClients}, isPast: ${isPast}, status before: ${status}`
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const isLastDay = clients.some((client) => client.rangeEnd === formattedDate);
       if (hasClients) {
         if (isLastDay) {
-          status = calendarData[formattedDate]?.status || "available";
+          status = "available";
         } else {
           status = "booked";
         }
@@ -113,10 +113,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 </svg>`
                     : ""
                 }
-                ${price !== null ? price + "€" : "Dodaj cenu"}
+                ${typeof price === "number" ? price + "€" : "Dodaj cenu"}
                 <span class="tooltip-text">
-                  Cena: ${price !== null ? price + "€" : "Nije postavljeno"}<br>
-                  Tip cene: ${status}
+                  Cena: ${typeof price === "number" ? price + "€" : "Nije postavljeno"}<br>
+                  Status: ${status}
                 </span>
               </div>
             </div>
@@ -125,9 +125,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (hasClients && !isLastDay) {
         clients.forEach((client) => {
-          if (client.rangeEnd === formattedDate) {
-            return;
-          }
+          // if (client.rangeEnd === formattedDate) {
+          //   return;
+          // }
           dayHTML += `
             <div class="day-client clickable-client"
                  data-date="${formattedDate}"
@@ -141,20 +141,22 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
           `;
         });
-      } else if (hasClients && isLastDay) {
-        dayHTML += `
-          <div class="day-client clickable-client"
-               data-date="${formattedDate}"
-               data-email="${clients[0].email}"
-               data-guests="${clients[0].guests}"
-               data-phone="${clients[0].phone}"
-               data-firstname="${clients[0].firstName}"
-               data-lastname="${clients[0].lastName}"
-               data-bookingid="${clients[0].bookingId}">
-            ${clients[0].firstName} ${clients[0].lastName}
-          </div>
-        `;
-      } else {
+      }
+      // else if (hasClients && isLastDay) {
+      //   dayHTML += `
+      //     <div class="day-client clickable-client"
+      //          data-date="${formattedDate}"
+      //          data-email="${clients[0].email}"
+      //          data-guests="${clients[0].guests}"
+      //          data-phone="${clients[0].phone}"
+      //          data-firstname="${clients[0].firstName}"
+      //          data-lastname="${clients[0].lastName}"
+      //          data-bookingid="${clients[0].bookingId}">
+      //       ${clients[0].firstName} ${clients[0].lastName}
+      //     </div>
+      //   `;
+      // }
+      else {
         dayHTML += `<div class="day-actions">`;
 
         // "+" dugme prikazuj samo ako je status "available" i nije prošao dan
@@ -177,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Status dropdown se prikazuje samo ako nije booked
         // if (status !== "booked") {
-          dayHTML += `
+        dayHTML += `
             <select class="ov-status-select" data-date="${formattedDate}">
               <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
               <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
@@ -215,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
       $day.attr(
         "data-title",
         `Datum: ${formattedDate}
-  Cena: ${price !== null ? price + "€" : "-"}
+  Cena: ${typeof price === "number" ? price + "€" : "-"}
   Tip: ${status}`
       );
 
@@ -259,6 +261,11 @@ document.addEventListener("DOMContentLoaded", function () {
           };
 
           const productId = jQuery("#ov_product_id").val();
+          for (const key in calendarData) {
+            if (!Array.isArray(calendarData[key].clients)) {
+              calendarData[key].clients = [];
+            }
+          }
           jQuery.ajax({
             url: ov_calendar_vars.ajax_url,
             method: "POST",
@@ -379,9 +386,9 @@ document.addEventListener("DOMContentLoaded", function () {
             calendarData[dateStr] = {
               ...calendarData[dateStr],
               status: selectedStatus,
-              price: calendarData[dateStr]?.price || null,
-              priceType: calendarData[dateStr]?.priceType || null,
-              clients: calendarData[dateStr]?.clients || null,
+              price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+              priceType: calendarData[dateStr]?.priceType ?? undefined,
+              clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
             };
           }
 
@@ -394,9 +401,9 @@ document.addEventListener("DOMContentLoaded", function () {
               calendarData[dateStr] = {
                 ...calendarData[dateStr],
                 status: selectedStatus,
-                price: calendarData[dateStr]?.price || null,
-                priceType: calendarData[dateStr]?.priceType || null,
-                clients: calendarData[dateStr]?.clients || null,
+                price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+                priceType: calendarData[dateStr]?.priceType ?? undefined,
+                clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
               };
             }
           }
@@ -406,6 +413,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const productId = jQuery("#ov_product_id").val();
+      for (const key in calendarData) {
+        if (!Array.isArray(calendarData[key].clients)) {
+          calendarData[key].clients = [];
+        }
+      }
       jQuery.ajax({
         url: ov_calendar_vars.ajax_url,
         method: "POST",
@@ -443,7 +455,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedPrice = definedPriceTypes[priceType];
     const selectedStatus = jQuery("#bulk_status").val(); // optional
 
-    if (selectedPrice === null || isNaN(selectedPrice)) {
+    if (typeof selectedPrice !== "number" || isNaN(selectedPrice)) {
       return Swal.fire("Error", "Please enter a valid price for the selected price type.", "error");
     }
 
@@ -493,7 +505,7 @@ document.addEventListener("DOMContentLoaded", function () {
             price: selectedPrice,
             priceType: priceType,
             status: selectedStatus || calendarData[dateStr]?.status || "available",
-            clients: calendarData[dateStr]?.clients || null,
+            clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
           };
         }
       }
@@ -511,7 +523,7 @@ document.addEventListener("DOMContentLoaded", function () {
             price: selectedPrice,
             priceType: priceType,
             status: selectedStatus || calendarData[dateStr]?.status || "available",
-            clients: calendarData[dateStr]?.clients || null,
+            clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
           };
           current.add(1, "days");
         }
@@ -520,7 +532,11 @@ document.addEventListener("DOMContentLoaded", function () {
       myCalendar();
 
       const productId = jQuery("#ov_product_id").val();
-
+      for (const key in calendarData) {
+        if (!Array.isArray(calendarData[key].clients)) {
+          calendarData[key].clients = [];
+        }
+      }
       jQuery.ajax({
         url: ov_calendar_vars.ajax_url,
         method: "POST",
@@ -591,9 +607,9 @@ document.addEventListener("DOMContentLoaded", function () {
           calendarData[dateStr] = {
             ...calendarData[dateStr],
             status: selectedStatus,
-            price: calendarData[dateStr]?.price || null,
-            priceType: calendarData[dateStr]?.priceType || null,
-            clients: calendarData[dateStr]?.clients || null,
+            price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+            priceType: calendarData[dateStr]?.priceType ?? undefined,
+            clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
           };
         }
 
@@ -608,9 +624,9 @@ document.addEventListener("DOMContentLoaded", function () {
             calendarData[dateStr] = {
               ...calendarData[dateStr],
               status: selectedStatus,
-              price: calendarData[dateStr]?.price || null,
-              priceType: calendarData[dateStr]?.priceType || null,
-              clients: calendarData[dateStr]?.clients || null,
+              price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+              priceType: calendarData[dateStr]?.priceType ?? undefined,
+              clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
             };
             current.add(1, "days");
           }
@@ -620,6 +636,11 @@ document.addEventListener("DOMContentLoaded", function () {
       myCalendar();
 
       const productId = jQuery("#ov_product_id").val();
+      for (const key in calendarData) {
+        if (!Array.isArray(calendarData[key].clients)) {
+          calendarData[key].clients = [];
+        }
+      }
       jQuery.ajax({
         url: ov_calendar_vars.ajax_url,
         method: "POST",
@@ -681,6 +702,7 @@ document.addEventListener("DOMContentLoaded", function () {
         guests,
         rangeStart: range.startDate.format("YYYY-MM-DD"),
         rangeEnd: range.endDate.format("YYYY-MM-DD"),
+        // order_id: orderIdFromCheckout
       });
 
       calendarData[dateStr].status = "booked";
@@ -695,7 +717,11 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("calendarData to save:", calendarData);
 
     const productId = jQuery("#ov_product_id").val();
-
+    for (const key in calendarData) {
+      if (!Array.isArray(calendarData[key].clients)) {
+        calendarData[key].clients = [];
+      }
+    }
     jQuery.ajax({
       url: ov_calendar_vars.ajax_url,
       method: "POST",
@@ -810,37 +836,13 @@ document.addEventListener("DOMContentLoaded", function () {
     myCalendar();
 
     // edit single day price
-    // jQuery(document).on("click", ".editable-price", function (e) {
-    //   e.preventDefault();
-
-    //   const date = jQuery(this).data("date");
-    //   jQuery("#price_modal_date").text(moment(date).format("DD/MM/YYYY"));
-    //   jQuery("#price_modal_date_input").val(date);
-
-    //   // popuni vrednost ako postoji
-    //   const currentPrice = calendarData[date]?.price ?? "";
-    //   jQuery("#price_modal_input").val(currentPrice);
-
-    //   jQuery("#price_modal_wrapper").show();
-    // });
     jQuery(document).on("click", ".editable-price", function (e) {
       e.preventDefault();
 
       const date = jQuery(this).data("date"); // npr. "2025-06-05"
       jQuery("#price_modal_date").text(moment(date).format("DD/MM/YYYY"));
       jQuery("#price_modal_date_input").val(date);
-      jQuery("#price_modal_value").val(calendarData[date]?.price || "");
-      jQuery("#price_modal_wrapper").show();
-    });
-
-    //save single day price
-    jQuery(document).on("click", ".editable-price", function (e) {
-      e.preventDefault();
-
-      const date = jQuery(this).data("date"); // npr. "2025-06-05"
-      jQuery("#price_modal_date").text(moment(date).format("DD/MM/YYYY"));
-      jQuery("#price_modal_date_input").val(date);
-      jQuery("#price_modal_input").val(calendarData[date]?.price || "");
+      // jQuery("#price_modal_value").val(typeof calendarData[date]?.price === "number" ? calendarData[date].price : "");
       jQuery("#price_modal_wrapper").show();
     });
 
@@ -860,11 +862,15 @@ document.addEventListener("DOMContentLoaded", function () {
         price: newPrice,
         priceType: "custom",
         status: calendarData[date]?.status || "available",
-        clients: calendarData[date]?.clients || null,
+        clients: Array.isArray(calendarData[date]?.clients) ? calendarData[date].clients : [],
       };
 
       const productId = jQuery("#ov_product_id").val();
-
+      for (const key in calendarData) {
+        if (!Array.isArray(calendarData[key].clients)) {
+          calendarData[key].clients = [];
+        }
+      }
       // Slanje na server
       jQuery.ajax({
         url: ov_calendar_vars.ajax_url,
@@ -931,9 +937,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const guests = jQuery(this).data("guests");
       const bookingId = jQuery(this).data("bookingid");
 
-      const clientData = calendarData[date]?.client || {};
-      const rangeStart = clientData.rangeStart;
-      const rangeEnd = clientData.rangeEnd;
+      const currentClient = (calendarData[date]?.clients || []).find((cl) => cl.bookingId == bookingId);
+      const rangeStart = currentClient?.rangeStart;
+      const rangeEnd = currentClient?.rangeEnd;
+      
 
       jQuery("#client_action_name").text(`${firstName} ${lastName}`);
       jQuery("#client_action_email").text(`${email}`);
@@ -980,26 +987,67 @@ document.addEventListener("DOMContentLoaded", function () {
     // edit client delete single day
 
     //edit client delete reservation range
+    // jQuery("#delete_client_all").on("click", function () {
+    //   const date = jQuery("#client_action_date_input").val();
+    //   // const bookingId = calendarData[date]?.client?.bookingId;
+    //   const bookingId = jQuery("#client_action_bookingid_input").val();
+
+    //   if (!bookingId) {
+    //     console.error("Nije pronađen bookingId za ovu rezervaciju.");
+    //     return;
+    //   }
+
+
+    //   for (const day in calendarData) {
+    //     if (calendarData[day]?.clients && Array.isArray(calendarData[day].clients)) {
+    //       calendarData[day].clients = calendarData[day].clients.filter((client) => client.bookingId !== bookingId);
+    //       if (calendarData[day].clients.length === 0) {
+    //         calendarData[day].clients = [];
+    //         calendarData[day].status = "available";
+    //       }
+    //     }
+    //   }
+
+    //   saveCalendarAndRefresh();
+    // });
+
     jQuery("#delete_client_all").on("click", function () {
       const date = jQuery("#client_action_date_input").val();
-      const bookingId = calendarData[date]?.client?.bookingId;
+      const bookingId = jQuery("#client_action_bookingid_input").val();
 
       if (!bookingId) {
         console.error("Nije pronađen bookingId za ovu rezervaciju.");
         return;
       }
 
-      for (const day in calendarData) {
-        if (calendarData[day]?.clients && Array.isArray(calendarData[day].clients)) {
-          calendarData[day].clients = calendarData[day].clients.filter((client) => client.bookingId !== bookingId);
-          if (calendarData[day].clients.length === 0) {
-            calendarData[day].clients = [];
-            calendarData[day].status = "available";
-          }
-        }
-      }
+      // POZOVI AJAX DA POŠALJE I ORDER U TRASH!
+      jQuery.ajax({
+        url: ov_calendar_vars.ajax_url,
+        method: "POST",
+        data: {
+          action: "ovb_delete_booking_and_order",
+          booking_id: bookingId,
+        },
+        success: function (res) {
+          // (opciono) Prikaži notifikaciju
+          console.log("Order trashed: ", res);
 
-      saveCalendarAndRefresh();
+          // Nastavi sa lokalnim brisanjem iz calendarData kao i do sada:
+          for (const day in calendarData) {
+            if (calendarData[day]?.clients && Array.isArray(calendarData[day].clients)) {
+              calendarData[day].clients = calendarData[day].clients.filter((client) => client.bookingId !== bookingId);
+              if (calendarData[day].clients.length === 0) {
+                calendarData[day].clients = [];
+                calendarData[day].status = "available";
+              }
+            }
+          }
+          saveCalendarAndRefresh();
+        },
+        error: function (err) {
+          console.error("Greška pri brisanju ordera: ", err);
+        },
+      });
     });
 
     //edit client delete reservation range
@@ -1007,7 +1055,11 @@ document.addEventListener("DOMContentLoaded", function () {
     //save edit client delete
     function saveCalendarAndRefresh() {
       const productId = jQuery("#ov_product_id").val();
-
+      for (const key in calendarData) {
+        if (!Array.isArray(calendarData[key].clients)) {
+          calendarData[key].clients = [];
+        }
+      }
       jQuery.ajax({
         url: ov_calendar_vars.ajax_url,
         method: "POST",

@@ -33,7 +33,7 @@ function ov_enqueue_public_assets()
     wp_enqueue_script('lightgallery-thumbnail', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js', ['lightgallery-js'], '2.7.1', true);
     wp_enqueue_script('lightgallery-zoom', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js', ['lightgallery-js'], '2.7.1', true);
 }
-add_action('wp_enqueue_scripts', 'ov_enqueue_public_assets');
+add_action('wp_enqueue_scripts', 'ov_enqueue_public_assets', 99999);
 
 
 /**
