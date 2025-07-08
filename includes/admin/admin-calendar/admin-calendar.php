@@ -9,6 +9,9 @@ function render_calendar_meta_box($post)
     // Get existing values
     $values = get_post_meta($post->ID, '_apartment_additional_info', true);
 
+    $checkin_time = $values['checkin_time'] ?? '12:00';
+    $checkout_time = $values['checkout_time'] ?? '08:00';
+
     // Predefined accommodation types
     $accommodation_types = [
         'apartment' => 'Apartment',
@@ -72,6 +75,7 @@ function render_calendar_meta_box($post)
                 <li class="tab-link" data-tab="tab-general">Price Types</li>
                 <li class="tab-link" data-tab="tab-set-price">Set Prices</li>
                 <li class="tab-link" data-tab="tab-calendar-status">Availability Updates</li>
+                <li class="tab-link" data-tab="tab-checkin-checkout">Check-in / Check-out</li>
             </ul>
             <div class="content">
 
@@ -229,6 +233,30 @@ function render_calendar_meta_box($post)
                     <button id="apply_status" style="margin-top: 10px;" class="button button-secondary">Apply
                         Status</button>
                 </div>
+                <div class="tab-content" id="tab-checkin-checkout" style="display: none;">
+                    <h4>Check-in / Check-out</h4>
+                    <table class="form-table">
+                        <tr>
+                            <th><label for="checkin_time">Check-in Time</label></th>
+                            <td>
+                                <input type="time" id="checkin_time" name="additional_info[checkin_time]" class="time-input"
+                                    value="<?php echo esc_attr($checkin_time); ?>" step="600" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label for="checkout_time">Check-out Time</label></th>
+                            <td>
+                                <input type="time" id="checkout_time" name="additional_info[checkout_time]"
+                                    class="time-input" value="<?php echo esc_attr($checkout_time); ?>" step="600" />
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="button" id="save_checkin_checkout" class="button button-secondary">
+                        Save Times
+                    </button>
+                </div>
+
+
             </div>
         </div>
 
@@ -255,11 +283,22 @@ function render_calendar_meta_box($post)
             </i>
             <h3>Dodaj korisnika</h3>
             <div class="add-information">
-                <input type="text" id="client_first_name" placeholder="First name" name="client_first_name">
-                <input type="text" id="client_last_name" placeholder="Last name" name="client_last_name">
-                <input type="email" id="client_email" placeholder="Email" name="client_email">
-                <input type="text" id="client_phone" placeholder="Phone" name="client_phone">
-                <input type="number" id="client_guests" placeholder="Number of guests" name="client_guests">
+                <label for="client_first_name">First name</label>
+                <input type="text" id="client_first_name" name="client_first_name">
+
+                <label for="client_first_name">Last name</label>
+                <input type="text" id="client_last_name" name="client_last_name">
+
+                <label for="client_first_name">Email</label>
+                <input type="email" id="client_email" name="client_email">
+
+                <label for="client_first_name">Phone</label>
+                <input type="text" id="client_phone" name="client_phone">
+
+                <label for="client_first_name">Number of guests</label>
+                <input type="number" id="client_guests" name="client_guests">
+
+                <label for="client_first_name">Date range</label>
                 <input type="text" id="client_date_range">
                 <input type="hidden" id="client_modal_date_input">
             </div>
@@ -349,7 +388,6 @@ function save_additional_apartment_info($post_id)
     if (!current_user_can('edit_post', $post_id))
         return;
 
-    // Definišemo tipove smeštaja ovde
     $accommodation_types = [
         'apartment' => 'Apartment',
         'house' => 'House',
@@ -361,20 +399,22 @@ function save_additional_apartment_info($post_id)
     $data = $_POST['additional_info'] ?? [];
     $sanitized = [];
 
-    // Sanitizacija svih polja
     $sanitized['street_name'] = sanitize_text_field($data['street_name'] ?? '');
-
-    // Provera tipa smeštaja
-    $sanitized['accommodation_type'] = isset($data['accommodation_type']) && array_key_exists($data['accommodation_type'], $accommodation_types)
-        ? sanitize_key($data['accommodation_type'])
-        : 'apartment';
-
     $sanitized['city'] = sanitize_text_field($data['city'] ?? '');
     $sanitized['country'] = sanitize_text_field($data['country'] ?? '');
+
     $sanitized['max_guests'] = !empty($data['max_guests']) ? absint($data['max_guests']) : 1;
     $sanitized['bedrooms'] = !empty($data['bedrooms']) ? absint($data['bedrooms']) : 1;
     $sanitized['beds'] = !empty($data['beds']) ? absint($data['beds']) : 1;
     $sanitized['bathrooms'] = !empty($data['bathrooms']) ? absint($data['bathrooms']) : 1;
+
+    $sanitized['accommodation_type'] = isset($data['accommodation_type']) && array_key_exists($data['accommodation_type'], $accommodation_types)
+        ? sanitize_key($data['accommodation_type'])
+        : 'apartment';
+
+    // 🕓 Check-in & Check-out times
+    $sanitized['checkin_time'] = preg_match('/^\d{2}:\d{2}$/', $data['checkin_time'] ?? '') ? sanitize_text_field($data['checkin_time']) : '';
+    $sanitized['checkout_time'] = preg_match('/^\d{2}:\d{2}$/', $data['checkout_time'] ?? '') ? sanitize_text_field($data['checkout_time']) : '';
 
     update_post_meta($post_id, '_apartment_additional_info', $sanitized);
 }

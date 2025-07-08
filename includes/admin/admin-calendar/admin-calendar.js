@@ -486,14 +486,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }).then((result) => {
       if (!result.isConfirmed) return;
 
-      // Use current rendered month/year from global `d`
+      const applyToDate = (dateStr) => {
+        const existing = calendarData[dateStr] || {};
+        let statusToSet = existing.status;
+
+        // Ako dan ranije nije imao cenu, a sada dodajemo cenu → status postaje 'available'
+        const hadNoPrice = existing.price === undefined || existing.price === null;
+
+        if (
+          hadNoPrice &&
+          selectedPrice !== null &&
+          selectedPrice !== undefined &&
+          selectedPrice !== ""
+        ) {
+          statusToSet = "available";
+        }
+
+        // Ako korisnik ručno izabere status, koristi to
+        if (selectedStatus) {
+          statusToSet = selectedStatus;
+        }
+
+        calendarData[dateStr] = {
+          ...existing,
+          price: selectedPrice,
+          priceType: priceType,
+          status: statusToSet || "unavailable",
+          client: existing.client || null,
+        };
+      };
+
       const month = d.getUTCMonth();
       const year = d.getUTCFullYear();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      for (let i = 1; i <= daysInMonth; i++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
-        const dayOfWeek = new Date(year, month, i).getDay();
+      if (rule === "weekdays" || rule === "weekends" || rule === "full_month") {
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+          const dayOfWeek = new Date(year, month, i).getDay();
 
         if (
           (rule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
@@ -507,6 +537,13 @@ document.addEventListener("DOMContentLoaded", function () {
             status: selectedStatus || calendarData[dateStr]?.status || "available",
             clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
           };
+          if (
+            (rule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
+            (rule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
+            rule === "full_month"
+          ) {
+            applyToDate(dateStr);
+          }
         }
       }
 
@@ -548,11 +585,12 @@ document.addEventListener("DOMContentLoaded", function () {
           price_types: ov_calendar_vars.priceTypes,
         },
         dataType: "json",
-        success: function (res) {
+        success: function () {
           Swal.fire("Success!", "Prices were successfully saved.", "success");
         },
         error: function (err) {
           Swal.fire("Error", "An error occurred while saving data.", "error");
+          console.error("AJAX error:", err);
         },
       });
     });
@@ -662,6 +700,47 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  jQuery("#save_checkin_checkout").on("click", function (e) {
+    e.preventDefault();
+
+    const checkinTime = jQuery("#checkin_time").val();
+    const checkoutTime = jQuery("#checkout_time").val();
+    const productId = jQuery("#ov_product_id").val();
+
+    if (!checkinTime || !checkoutTime) {
+      Swal.fire("Missing data", "Please enter both check-in and check-out times.", "warning");
+      return;
+    }
+
+    Swal.fire({
+      title: "Confirm time update",
+      html: `You're about to save:<br><b>Check-in:</b> ${checkinTime}<br><b>Check-out:</b> ${checkoutTime}<br><br>Proceed?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, save",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      jQuery.ajax({
+        url: ov_calendar_vars.ajax_url,
+        method: "POST",
+        data: {
+          action: "ov_save_checkin_checkout",
+          product_id: productId,
+          checkin_time: checkinTime,
+          checkout_time: checkoutTime,
+        },
+        success: function (res) {
+          Swal.fire("Saved!", "Check-in and check-out times have been updated.", "success");
+        },
+        error: function (err) {
+          Swal.fire("Error", "There was an error saving the times.", "error");
+          console.error("Error saving times:", err);
+        },
+      });
+    });
+  });
 
 
 
@@ -889,6 +968,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         error: function (err) {
           console.error("Greška pri čuvanju cene:", err);
+          console.error("Greška pri čuvanju cene:", err);
         },
       });
     });
@@ -1079,6 +1159,24 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
     }
+    jQuery(document).on("keydown", function (e) {
+      if (e.key === "Escape" || e.key === "Esc") {
+        // Zatvori client modal
+        if (jQuery("#client_modal_wrapper").is(":visible")) {
+          jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input").val("");
+          jQuery("#client_modal_wrapper").hide();
+        }
+        // Zatvori price modal
+        if (jQuery("#price_modal_wrapper").is(":visible")) {
+          jQuery("#price_modal_wrapper").hide();
+        }
+        // Zatvori client action modal
+        if (jQuery("#client_action_modal_wrapper").is(":visible")) {
+          jQuery("#client_action_modal_wrapper").hide();
+        }
+      }
+    });
+
     //save edit client delete
     //tabs
     jQuery(document).ready(function ($) {
