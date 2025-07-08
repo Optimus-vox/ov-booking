@@ -593,7 +593,7 @@ document.addEventListener("DOMContentLoaded", function () {
           console.error("AJAX error:", err);
         },
       });
-    });
+    };
   });
 
 
@@ -1204,4 +1204,5 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     });
   });
+});
 });
