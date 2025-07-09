@@ -45,7 +45,7 @@ function ov_save_calendar_data() {
     }
 
     $product_id    = intval( $_POST['product_id'] ?? 0 );
-    $calendar_data = json_decode( stripslashes( $_POST['calendar_data'] ?? '' ), true );
+    $calendar_data = json_decode( stripslashes( $_POST['calendar_data'] ?? '' ), true ); // promeni stripslashes u json_decode
     $price_types   = $_POST['price_types'] ?? [];
 
     if ( ! $product_id || ! is_array( $calendar_data ) ) {
@@ -159,6 +159,175 @@ function ov_save_bulk_status_rule($post_id)
 
     update_post_meta($post_id, '_ov_calendar_data', $calendar);
 }
+
+// Manual from admin
+add_action('wp_ajax_ovb_admin_create_manual_order', 'ovb_admin_create_manual_order_callback');
+function ovb_admin_create_manual_order_callback() {
+    //Test nonce
+    if (!wp_verify_nonce($_POST['security'], 'manual_booking_nonce')) {
+        wp_send_json_error('Invalid nonce');
+    }
+
+    if (!current_user_can('edit_products')) {
+        wp_send_json_error('Unauthorized');
+    }
+
+    $product_id = intval($_POST['product_id']);
+    $client_data = json_decode(json_decode($_POST['client_data'] ?? ''), true);
+    $calendar_data = get_post_meta($product_id, '_ov_calendar_data', true);
+
+    if (!$product_id || !is_array($client_data) || !is_array($calendar_data)) {
+        wp_send_json_error('Invalid data');
+    }
+
+    $start = $client_data['rangeStart'];
+    $end   = $client_data['rangeEnd'];
+
+    if (!DateTime::createFromFormat('Y-m-d', $start) || 
+        !DateTime::createFromFormat('Y-m-d', $end)) {
+        wp_send_json_error('Invalid date range');
+    }  {
+        wp_send_json_error('Invalid date range');
+    }
+
+    $dates = [];
+    $current = strtotime($start);
+    $end_ts  = strtotime($end);
+    $dates = [];
+    $total_price = 0;
+
+    // Do/while pokriva i jednodnevne boravke
+    do {
+        $date = date('Y-m-d', $current);
+        $dates[] = $date;
+        $price = isset($calendar_data[$date]['price']) ? floatval($calendar_data[$date]['price']) : 0;
+        $total_price += $price;
+        $current = strtotime('+1 day', $current);
+    } while ($current < $end_ts);
+
+    $booking_id = $client_data['bookingId'] ?? (time() . '_' . rand(1000,9999));
+
+    // WooCommerce order i meta upisi - tvoje isto
+    $order = wc_create_order();
+    $item_id = $order->add_product(wc_get_product($product_id), 1, [
+        'subtotal' => $total_price,
+        'total' => $total_price,
+    ]);
+
+    if ($item_id && is_callable([$order, 'get_item'])) {
+        $order_item = $order->get_item($item_id);
+        $order_item->add_meta_data('booking_dates', implode(',', $dates));
+        $order_item->add_meta_data('first_name', $client_data['firstName'] ?? '');
+        $order_item->add_meta_data('last_name',  $client_data['lastName'] ?? '');
+        $order_item->add_meta_data('email',      $client_data['email'] ?? '');
+        $order_item->add_meta_data('phone',      $client_data['phone'] ?? '');
+        $order_item->add_meta_data('guests',     $client_data['guests'] ?? 1);
+        $order_item->add_meta_data('rangeStart', $start);
+        $order_item->add_meta_data('rangeEnd',   $end);
+        $order_item->add_meta_data('booking_id', $booking_id);
+        $order_item->save();
+    }
+
+    $order->update_meta_data('first_name',  $client_data['firstName'] ?? '');
+    $order->update_meta_data('last_name',   $client_data['lastName'] ?? '');
+    $order->update_meta_data('email',       $client_data['email'] ?? '');
+    $order->update_meta_data('phone',       $client_data['phone'] ?? '');
+    $order->update_meta_data('guests',      $client_data['guests'] ?? 1);
+    $order->update_meta_data('start_date',  $start);
+    $order->update_meta_data('end_date',    $end);
+    $order->update_meta_data('booking_id',  $booking_id);
+
+    $order->set_total($total_price);
+    $order->save();
+    $order->update_status('completed');
+
+    // *** UPIS U CALENDAR_DATA ***
+    foreach ($dates as $date) {
+        // Ako dan ne postoji, inicijalizuj ceo objekat (koristi default vrednosti)
+        if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
+            $calendar_data[$date] = [
+                'status'    => 'booked',
+                'isPast'    => (strtotime($date) < strtotime(date('Y-m-d'))),
+                'price'     => 0,
+                'priceType' => '',
+                'clients'   => [],
+            ];
+        }
+        if (!isset($calendar_data[$date]['clients']) || !is_array($calendar_data[$date]['clients'])) {
+            $calendar_data[$date]['clients'] = [];
+        }
+        // Remove duplicates (po bookingId)
+        $calendar_data[$date]['clients'] = array_values(array_filter(
+            $calendar_data[$date]['clients'],
+            function($c) use ($booking_id) {
+                return !isset($c['bookingId']) || $c['bookingId'] !== $booking_id;
+            }
+        ));
+
+        $calendar_data[$date]['clients'][] = [
+            'bookingId'  => $booking_id,
+            'firstName'  => $client_data['firstName'] ?? '',
+            'lastName'   => $client_data['lastName'] ?? '',
+            'email'      => $client_data['email'] ?? '',
+            'phone'      => $client_data['phone'] ?? '',
+            'guests'     => $client_data['guests'] ?? 1,
+            'rangeStart' => $start,
+            'rangeEnd'   => $end,
+        ];
+        $calendar_data[$date]['status'] = 'booked';
+    }
+
+    // Checkout dan (prvi dan posle poslednjeg datuma): status "available", clients prazan
+    // Samo ako je datum posle end, tj. NAREDNI DAN
+    $checkout_date = date('Y-m-d', strtotime($end . ' +1 day'));
+    if (!isset($calendar_data[$checkout_date]) || !is_array($calendar_data[$checkout_date])) {
+        $calendar_data[$checkout_date] = [];
+    }
+    $calendar_data[$checkout_date]['status'] = 'available';
+    $calendar_data[$checkout_date]['clients'] = [];
+    $calendar_data[$checkout_date]['isPast'] = (strtotime($checkout_date) < strtotime(date('Y-m-d')));
+    if (!isset($calendar_data[$checkout_date]['price'])) {
+        $calendar_data[$checkout_date]['price'] = 0;
+    }
+    if (!isset($calendar_data[$checkout_date]['priceType'])) {
+        $calendar_data[$checkout_date]['priceType'] = '';
+    }
+
+    update_post_meta($product_id, '_ov_calendar_data', $calendar_data);
+
+    wp_send_json_success([
+        'order_id'   => $order->get_id(),
+        'first_name' => $client_data['firstName'] ?? '',
+        'last_name'  => $client_data['lastName'] ?? '',
+        'booking_id' => $booking_id,
+        'total'      => $total_price
+    ]);
+}
+
+
+// Manual from admin dodavanje nove kolone "Guest Name i surname"
+add_filter('manage_edit-shop_order_columns', function($columns) {
+    // Ubaci odmah posle order id
+    $new_columns = [];
+    foreach ($columns as $key => $label) {
+        $new_columns[$key] = $label;
+        if ($key === 'order_number') {
+            $new_columns['guest_name'] = __('Guest', 'ov-booking');
+        }
+    }
+    return $new_columns;
+});
+
+// Prikazivanje imena i prezimenja u koloni kad se doda order iz admina
+add_action('manage_shop_order_posts_custom_column', function($column, $post_id) {
+    if ($column === 'guest_name') {
+        $first = get_post_meta($post_id, 'first_name', true);
+        $last = get_post_meta($post_id, 'last_name', true);
+        echo esc_html(trim("$first $last"));
+    }
+}, 10, 2);
+
+
 
 //remove price from shop page
 
