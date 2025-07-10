@@ -163,18 +163,17 @@ function ov_save_bulk_status_rule($post_id)
 // Manual from admin
 add_action('wp_ajax_ovb_admin_create_manual_order', 'ovb_admin_create_manual_order_callback');
 function ovb_admin_create_manual_order_callback() {
-    //Test nonce
-    if (!wp_verify_nonce($_POST['security'], 'manual_booking_nonce')) {
-        wp_send_json_error('Invalid nonce');
-    }
-
     if (!current_user_can('edit_products')) {
         wp_send_json_error('Unauthorized');
     }
 
     $product_id = intval($_POST['product_id']);
-    $client_data = json_decode(json_decode($_POST['client_data'] ?? ''), true);
+    // $client_data = json_decode(json_decode($_POST['client_data'] ?? ''), true);
     $calendar_data = get_post_meta($product_id, '_ov_calendar_data', true);
+
+    $client_data_json = $_POST['client_data'] ?? '';
+if (is_array($client_data_json)) $client_data_json = json_encode($client_data_json); // fallback, retko
+$client_data = json_decode($client_data_json, true);
 
     if (!$product_id || !is_array($client_data) || !is_array($calendar_data)) {
         wp_send_json_error('Invalid data');
@@ -273,6 +272,8 @@ function ovb_admin_create_manual_order_callback() {
             'guests'     => $client_data['guests'] ?? 1,
             'rangeStart' => $start,
             'rangeEnd'   => $end,
+            'isCheckin'   => $date === $start,
+            'isCheckout'  => $date === $end,
         ];
         $calendar_data[$date]['status'] = 'booked';
     }
@@ -379,9 +380,6 @@ function ovb_sanitize_calendar_data($calendar_data) {
         }
         if (empty($data['clients'])) {
             $data['status'] = 'available';
-            if (isset($data['isLeaving'])) {
-                unset($data['isLeaving']);
-            }
         }
     }
     unset($data);

@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function renderCalendar(startDay, totalDays, currentDate, month, year) {
-    console.log("renderCalendar called with:", { startDay, totalDays, currentDate, month, year });
     console.log("calendarData snapshot:", calendarData);
 
     const calendar = document.querySelector(".admin-table tbody");
@@ -45,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
 
       const dayData = calendarData[formattedDate] || {};
-      console.log(`Date: ${formattedDate}`, dayData);
       const clients = Array.isArray(dayData.clients) ? dayData.clients : [];
       const hasClients = clients.length > 0;
 
@@ -57,9 +55,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       let price = dayData.price;
       let status = dayData.status ?? "available";
-      console.log(
-        `Before status logic - Date: ${formattedDate}, price: ${price}, hasClients: ${hasClients}, isPast: ${isPast}, status before: ${status}`
-      );
+      // console.log(
+      //   `Before status logic - Date: ${formattedDate}, price: ${price}, hasClients: ${hasClients}, isPast: ${isPast}, status before: ${status}`
+      // );
 
       // Ako nemamo cenu i nemamo klijente, status je unavailable
       if (!price && price !== 0 && !hasClients) {
@@ -72,10 +70,6 @@ document.addEventListener("DOMContentLoaded", function () {
         $day.addClass("past-day");
       }
 
-      // Ako imamo klijente, status je booked
-      // if (hasClients) {
-      //   status = "booked";
-      // }
       const isLastDay = clients.some((client) => client.rangeEnd === formattedDate);
       if (hasClients) {
         if (isLastDay) {
@@ -91,104 +85,213 @@ document.addEventListener("DOMContentLoaded", function () {
         isPast: isPast,
       };
 
-      console.log(`After status logic - Date: ${formattedDate}, status: ${status}`);
+      // console.log(`After status logic - Date: ${formattedDate}, status: ${status}`);
+
+      // let dayHTML = `
+      //   <div class="day-wrapper">
+      //     <div class="day-header">
+      //       <div class="day-number ${i === currentDate ? "today-number" : ""}">${i}</div>
+      //       <div class="price-row">
+      //         ${isPast ? `<span class="past-badge">Past</span>` : ""}
+      //         <div class="day-price editable-price" data-date="${formattedDate}">
+      //           ${
+      //             !isPast
+      //               ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+      //             <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
+      //           </svg>`
+      //               : ""
+      //           }
+      //           ${typeof price === "number" ? price + "€" : "Dodaj cenu"}
+      //           <span class="tooltip-text">
+      //             Cena: ${typeof price === "number" ? price + "€" : "Nije postavljeno"}<br>
+      //             Status: ${status}
+      //           </span>
+      //         </div>
+      //       </div>
+      //     </div>
+      // `;
+
+      // // if (hasClients && !isLastDay) {
+      // if (hasClients ) {
+      //   clients.forEach((client) => {
+      //     if (
+      //       (client.rangeStart === client.rangeEnd && client.rangeStart === formattedDate) ||
+      //       (client.rangeStart !== client.rangeEnd && client.rangeEnd !== formattedDate)
+      //     ) {
+      //     dayHTML += `
+      //       <div class="day-client clickable-client"
+      //            data-date="${formattedDate}"
+      //            data-email="${client.email}"
+      //            data-guests="${client.guests}"
+      //            data-phone="${client.phone}"
+      //            data-firstname="${client.firstName}"
+      //            data-lastname="${client.lastName}"
+      //            data-bookingid="${client.bookingId}">
+      //         ${client.firstName} ${client.lastName}
+      //       </div>
+      //     `;
+      //   }});
+      // }
+      // // else if (hasClients && isLastDay) {
+      // //   dayHTML += `
+      // //     <div class="day-client clickable-client"
+      // //          data-date="${formattedDate}"
+      // //          data-email="${clients[0].email}"
+      // //          data-guests="${clients[0].guests}"
+      // //          data-phone="${clients[0].phone}"
+      // //          data-firstname="${clients[0].firstName}"
+      // //          data-lastname="${clients[0].lastName}"
+      // //          data-bookingid="${clients[0].bookingId}">
+      // //       ${clients[0].firstName} ${clients[0].lastName}
+      // //     </div>
+      // //   `;
+      // // }
+      // else {
+      //   dayHTML += `<div class="day-actions">`;
+
+      //   // "+" dugme prikazuj samo ako je status "available" i nije prošao dan
+      //   if ((status === "available" || status === "booked" || status === "unavailable") && !isPast) {
+      //     dayHTML += `
+      //       <button class="add-client-button" data-date="${formattedDate}" title="Dodaj korisnika">
+      //         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      //           <g clip-path="url(#clip0_419_1770)">
+      //             <path d="M13.125 6.09375H8.90625V1.875C8.90625 1.35732 8.48643 0.9375 7.96875 0.9375H7.03125C6.51357 0.9375 6.09375 1.35732 6.09375 1.875V6.09375H1.875C1.35732 6.09375 0.9375 6.51357 0.9375 7.03125V7.96875C0.9375 8.48643 1.35732 8.90625 1.875 8.90625H6.09375V13.125C6.09375 13.6427 6.51357 14.0625 7.03125 14.0625H7.96875C8.48643 14.0625 8.90625 13.6427 8.90625 13.125V8.90625H13.125C13.6427 8.90625 14.0625 8.48643 14.0625 7.96875V7.03125C14.0625 6.51357 13.6427 6.09375 13.125 6.09375Z" fill="#7C3AED"/>
+      //           </g>
+      //           <defs>
+      //             <clipPath id="clip0_419_1770">
+      //               <rect width="15" height="15" fill="white"/>
+      //             </clipPath>
+      //           </defs>
+      //         </svg>
+      //       </button>
+      //     `;
+      //   }
+
+      //   // Status dropdown se prikazuje samo ako nije booked
+      //   // if (status !== "booked") {
+      //   dayHTML += `
+      //       <select class="ov-status-select" data-date="${formattedDate}">
+      //         <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
+      //         <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
+      //         <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
+      //       </select>
+      //     `;
+      //   // }
+
+      //   dayHTML += `</div>`;
+      // }
+
+      // dayHTML += `</div>`;
+
+
+
 
       let dayHTML = `
-        <div class="day-wrapper">
-          <div class="day-header">
+    <div class="day-wrapper">
+        <div class="day-header">
             <div class="day-number ${i === currentDate ? "today-number" : ""}">${i}</div>
             <div class="price-row">
-              ${isPast ? `<span class="past-badge">Past</span>` : ""}
-              <div class="day-price editable-price" data-date="${formattedDate}">
-                ${
-                  !isPast
-                    ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
-                </svg>`
-                    : ""
-                }
-                ${typeof price === "number" ? price + "€" : "Dodaj cenu"}
-                <span class="tooltip-text">
-                  Cena: ${typeof price === "number" ? price + "€" : "Nije postavljeno"}<br>
-                  Status: ${status}
-                </span>
-              </div>
+                ${isPast ? `<span class="past-badge">Past</span>` : ""}
+                <div class="day-price editable-price" data-date="${formattedDate}">
+                    ${
+                      !isPast
+                        ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
+                            </svg>`
+                        : ""
+                    }
+                    ${typeof price === "number" ? price + "€" : "Dodaj cenu"}
+                    <span class="tooltip-text">
+                        Cena: ${typeof price === "number" ? price + "€" : "Nije postavljeno"}<br>
+                        Status: ${status}
+                    </span>
+                </div>
             </div>
-          </div>
-      `;
+        </div>
+`;
 
-      // if (hasClients && !isLastDay) {
-      if (hasClients ) {
+      // Always show clients without filtering end dates
+      if (hasClients) {
         clients.forEach((client) => {
-          if (
-            (client.rangeStart === client.rangeEnd && client.rangeStart === formattedDate) ||
-            (client.rangeStart !== client.rangeEnd && client.rangeEnd !== formattedDate)
-          ) {
+          let iconHtml = "";
+          let hasIcon = false;
+          if (client.isCheckin && client.isCheckout) {
+            hasIcon = true;
+            iconHtml = `<div class="ovb-booking-dates check-in-out" style="display:flex; align-items:center; width:32px">
+            <svg xmlns="http://www.w3.org/2000/svg" title="Check-in-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" title="Check-in-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+             <div class="tooltip-text">Check-in & Check-out</div>
+            </div>`;
+          } else if (client.isCheckin) {
+            hasIcon = true;
+            iconHtml = `<div class="ovb-booking-dates check-in" style="display:flex; align-items:center; gap:5px; width:32px ">
+            <svg xmlns="http://www.w3.org/2000/svg" title="Check-in" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            <div class="tooltip-text">Check-in</div>
+            </div>`;
+          } else if (client.isCheckout) {
+            hasIcon = true;
+            iconHtml = `<div class="ovb-booking-dates check-out" style="display:flex; align-items:center; gap:5px; width:32px">
+                <svg xmlns="http://www.w3.org/2000/svg" title="Check-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <div class="tooltip-text">Check-out</div>
+                </div>`;
+          }
           dayHTML += `
             <div class="day-client clickable-client"
-                 data-date="${formattedDate}"
-                 data-email="${client.email}"
-                 data-guests="${client.guests}"
-                 data-phone="${client.phone}"
-                 data-firstname="${client.firstName}"
-                 data-lastname="${client.lastName}"
-                 data-bookingid="${client.bookingId}">
-              ${client.firstName} ${client.lastName}
+                data-date="${formattedDate}"
+                data-email="${client.email}"
+                data-guests="${client.guests}"
+                data-phone="${client.phone}"
+                data-firstname="${client.firstName}"
+                data-lastname="${client.lastName}"
+                data-bookingid="${client.bookingId}">
+                <span class="ovb-client-info${hasIcon ? " has-icon" : ""}">${iconHtml} ${client.firstName} ${client.lastName} ${hasIcon ? '<i class="icon-spacer"></i>' : ""}</span>
             </div>
-          `;
-        }});
+        `;
+        });
       }
-      // else if (hasClients && isLastDay) {
-      //   dayHTML += `
-      //     <div class="day-client clickable-client"
-      //          data-date="${formattedDate}"
-      //          data-email="${clients[0].email}"
-      //          data-guests="${clients[0].guests}"
-      //          data-phone="${clients[0].phone}"
-      //          data-firstname="${clients[0].firstName}"
-      //          data-lastname="${clients[0].lastName}"
-      //          data-bookingid="${clients[0].bookingId}">
-      //       ${clients[0].firstName} ${clients[0].lastName}
-      //     </div>
-      //   `;
-      // }
-      else {
-        dayHTML += `<div class="day-actions">`;
 
-        // "+" dugme prikazuj samo ako je status "available" i nije prošao dan
-        if ((status === "available" || status === "booked" || status === "unavailable") && !isPast) {
-          dayHTML += `
-            <button class="add-client-button" data-date="${formattedDate}" title="Dodaj korisnika">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      // Start actions container
+      dayHTML += `<div class="day-actions">`;
+
+      // Show "+" button only for non-booked, non-past days
+      if (!hasClients && !isPast ) {
+        dayHTML += `
+        <button class="add-client-button" data-date="${formattedDate}" title="Dodaj korisnika">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_419_1770)">
-                  <path d="M13.125 6.09375H8.90625V1.875C8.90625 1.35732 8.48643 0.9375 7.96875 0.9375H7.03125C6.51357 0.9375 6.09375 1.35732 6.09375 1.875V6.09375H1.875C1.35732 6.09375 0.9375 6.51357 0.9375 7.03125V7.96875C0.9375 8.48643 1.35732 8.90625 1.875 8.90625H6.09375V13.125C6.09375 13.6427 6.51357 14.0625 7.03125 14.0625H7.96875C8.48643 14.0625 8.90625 13.6427 8.90625 13.125V8.90625H13.125C13.6427 8.90625 14.0625 8.48643 14.0625 7.96875V7.03125C14.0625 6.51357 13.6427 6.09375 13.125 6.09375Z" fill="#7C3AED"/>
+                    <path d="M13.125 6.09375H8.90625V1.875C8.90625 1.35732 8.48643 0.9375 7.96875 0.9375H7.03125C6.51357 0.9375 6.09375 1.35732 6.09375 1.875V6.09375H1.875C1.35732 6.09375 0.9375 6.51357 0.9375 7.03125V7.96875C0.9375 8.48643 1.35732 8.90625 1.875 8.90625H6.09375V13.125C6.09375 13.6427 6.51357 14.0625 7.03125 14.0625H7.96875C8.48643 14.0625 8.90625 13.6427 8.90625 13.125V8.90625H13.125C13.6427 8.90625 14.0625 8.48643 14.0625 7.96875V7.03125C14.0625 6.51357 13.6427 6.09375 13.125 6.09375Z" fill="#7C3AED"/>
                 </g>
                 <defs>
-                  <clipPath id="clip0_419_1770">
-                    <rect width="15" height="15" fill="white"/>
-                  </clipPath>
+                    <clipPath id="clip0_419_1770">
+                        <rect width="15" height="15" fill="white"/>
+                    </clipPath>
                 </defs>
-              </svg>
-            </button>
-          `;
-        }
-
-        // Status dropdown se prikazuje samo ako nije booked
-        // if (status !== "booked") {
-        dayHTML += `
-            <select class="ov-status-select" data-date="${formattedDate}">
-              <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
-              <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
-              <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
-            </select>
-          `;
-        // }
-
-        dayHTML += `</div>`;
+            </svg>
+        </button>
+        <select class="ov-status-select" data-date="${formattedDate}">
+            <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
+            <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
+            <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
+        </select>
+    `;
       }
 
-      dayHTML += `</div>`;
-      console.log(`Generated HTML for ${formattedDate}:`, dayHTML);
+      // Show status dropdown for all non-past days
+    //   if (!isPast) {
+    //     dayHTML += `
+    //     <select class="ov-status-select" data-date="${formattedDate}">
+    //         <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
+    //         <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
+    //         <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
+    //     </select>
+    // `;
+    //   }
+
+      // Close actions container and day wrapper
+      dayHTML += `</div></div>`;
+
+
+      // console.log(`Generated HTML for ${formattedDate}:`, dayHTML);
 
       $day.html(dayHTML);
 
@@ -766,6 +869,8 @@ document.addEventListener("DOMContentLoaded", function () {
         guests,
         rangeStart: range.startDate.format("YYYY-MM-DD"),
         rangeEnd: range.endDate.format("YYYY-MM-DD"),
+        isCheckin: dateStr === range.startDate.format("YYYY-MM-DD"),
+        isCheckout: dateStr === range.endDate.format("YYYY-MM-DD"),
         // order_id: orderIdFromCheckout
       });
 

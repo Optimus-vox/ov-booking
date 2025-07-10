@@ -143,9 +143,73 @@ function ovb_admin_calendar_add_reservation($order_id) {
         
         $last_date = end($dates);
 
-        foreach ($dates as $date) {
-            if (!isset($events[$date])) $events[$date] = [];
+        // foreach ($dates as $date) {
+        //     if (!isset($events[$date])) $events[$date] = [];
 
+        //     $already_exists = false;
+        //     foreach ($events[$date] as $event) {
+        //         if (isset($event['order_id']) && $event['order_id'] == $order_id) {
+        //             $already_exists = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!$already_exists) {
+        //         $events[$date][] = [
+        //             'order_id'   => $order_id,
+        //             'guest_name' => $guest_name,
+        //             'link'       => $order->get_view_order_url(),
+        //             'client'     => $client_data,
+        //         ];
+        //     }
+
+        //     if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
+        //         $calendar_data[$date] = [];
+        //     }
+
+        //     $existing_clients = $calendar_data[$date]['clients'] ?? [];
+        //     if (!is_array($existing_clients)) $existing_clients = [];
+
+        //     $exists = false;
+        //     foreach ($existing_clients as $client) {
+        //         if (isset($client['bookingId']) && $client['bookingId'] === $booking_id) {
+        //             $exists = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!$exists) {
+        //         $existing_clients[] = array_merge($client_data, ['bookingId' => $booking_id]);
+        //     }
+
+        //     $current_data = $calendar_data[$date];
+        //     if (!is_array($current_data)) {
+        //         $current_data = [];
+        //     }
+
+        //     if ($date === $last_date) {
+        //         $calendar_data[$date] = array_merge($current_data, [
+        //             'status' => $current_data['status'] ?? 'available',
+        //             'price' => $current_data['price'] ?? null,
+        //             'priceType' => $current_data['priceType'] ?? null,
+        //             'clients' => $existing_clients,
+        //             'isLeaving' => true,
+        //         ]);
+        //     } else {
+        //         $calendar_data[$date] = array_merge($current_data, [
+        //             'status' => 'booked',
+        //             'price' => $current_data['price'] ?? null,
+        //             'priceType' => $current_data['priceType'] ?? null,
+        //             'clients' => $existing_clients,
+        //         ]);
+        //     }
+        // }
+
+        foreach ($dates as $i => $date) {
+            if (!isset($events[$date])) $events[$date] = [];
+        
+            // Da li je prvi dan ili poslednji
+            $is_checkin  = ($i === 0);
+            $is_checkout = ($i === count($dates) - 1);
+        
             $already_exists = false;
             foreach ($events[$date] as $event) {
                 if (isset($event['order_id']) && $event['order_id'] == $order_id) {
@@ -161,46 +225,36 @@ function ovb_admin_calendar_add_reservation($order_id) {
                     'client'     => $client_data,
                 ];
             }
-
+        
             if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
                 $calendar_data[$date] = [];
             }
-
+        
             $existing_clients = $calendar_data[$date]['clients'] ?? [];
             if (!is_array($existing_clients)) $existing_clients = [];
-
-            $exists = false;
-            foreach ($existing_clients as $client) {
-                if (isset($client['bookingId']) && $client['bookingId'] === $booking_id) {
-                    $exists = true;
-                    break;
-                }
-            }
-            if (!$exists) {
-                $existing_clients[] = array_merge($client_data, ['bookingId' => $booking_id]);
-            }
-
+        
+            // Remove DUPLICATE for bookingId
+            $existing_clients = array_filter($existing_clients, function($cl) use ($booking_id) {
+                return !isset($cl['bookingId']) || $cl['bookingId'] !== $booking_id;
+            });
+        
+            $existing_clients[] = array_merge($client_data, [
+                'bookingId'   => $booking_id,
+                'isCheckin'   => $is_checkin,
+                'isCheckout'  => $is_checkout,
+            ]);
+        
             $current_data = $calendar_data[$date];
             if (!is_array($current_data)) {
                 $current_data = [];
             }
-
-            if ($date === $last_date) {
-                $calendar_data[$date] = array_merge($current_data, [
-                    'status' => $current_data['status'] ?? 'available',
-                    'price' => $current_data['price'] ?? null,
-                    'priceType' => $current_data['priceType'] ?? null,
-                    'clients' => $existing_clients,
-                    'isLeaving' => true,
-                ]);
-            } else {
-                $calendar_data[$date] = array_merge($current_data, [
-                    'status' => 'booked',
-                    'price' => $current_data['price'] ?? null,
-                    'priceType' => $current_data['priceType'] ?? null,
-                    'clients' => $existing_clients,
-                ]);
-            }
+        
+            $calendar_data[$date] = array_merge($current_data, [
+                'status' => $is_checkout ? ($current_data['status'] ?? 'available') : 'booked',
+                'price' => $current_data['price'] ?? null,
+                'priceType' => $current_data['priceType'] ?? null,
+                'clients' => array_values($existing_clients),
+            ]);
         }
 
         update_post_meta($prod_id, '_ov_calendar_events', $events);
@@ -245,7 +299,6 @@ function ovb_update_calendar_on_order_complete($order_id) {
                     'price' => $calendar_data[$date_key]['price'] ?? null,
                     'priceType' => $calendar_data[$date_key]['priceType'] ?? null,
                     'clients' => $calendar_data[$date_key]['clients'] ?? [],
-                    'isLeaving' => true,
                 ];
             } else {
                 $calendar_data[$date_key] = [
@@ -294,7 +347,6 @@ function ovb_release_calendar_dates_on_cancel($order_id) {
                 if (empty($data['clients'])) {
                     $data['clients'] = [];
                     $data['status'] = 'available';
-                    if (isset($data['isLeaving'])) unset($data['isLeaving']);
                 }
             }
         }
@@ -442,11 +494,7 @@ function ovb_remove_order_reservations($order) {
             if (empty($data['clients'])) {
                 $data['clients'] = [];
                 $data['status'] = 'available';
-                if (isset($data['isLeaving'])) {
-                    unset($data['isLeaving']);
-                }
                 ov_log_error("  - No more clients for $date, status reset to available");
-                ov_log_error("  - No more clients for $date, status reset to available & isLeaving removed");
             }
         }
         unset($data);

@@ -83,3 +83,28 @@ add_action('wp_ajax_ovb_delete_booking_and_order', function() {
     }
     wp_send_json_success(['message' => 'Order trashed', 'order_id' => $order_id]);
 });
+
+//check in and check out
+add_action('wp_ajax_ov_save_checkin_checkout', function() {
+    if (!current_user_can('edit_products')) {
+        wp_send_json_error('Unauthorized');
+    }
+
+    $product_id = intval($_POST['product_id'] ?? 0);
+    $checkin_time = sanitize_text_field($_POST['checkin_time'] ?? '');
+    $checkout_time = sanitize_text_field($_POST['checkout_time'] ?? '');
+
+    if (!$product_id || !$checkin_time || !$checkout_time) {
+        wp_send_json_error('Missing required fields');
+    }
+
+    // Učitaj postojeći additional info, update vremena, snimi nazad
+    $additional_info = get_post_meta($product_id, '_apartment_additional_info', true);
+    if (!is_array($additional_info)) $additional_info = [];
+
+    $additional_info['checkin_time'] = $checkin_time;
+    $additional_info['checkout_time'] = $checkout_time;
+    update_post_meta($product_id, '_apartment_additional_info', $additional_info);
+
+    wp_send_json_success('Check-in i check-out vreme sačuvano.');
+});

@@ -275,8 +275,7 @@ function render_calendar_meta_box($post)
         <div id="client_modal">
             <i class="close_modal" onclick="closeClientModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                    <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                    <path fill="#fff"
+                    <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                 </svg>
 
@@ -296,7 +295,14 @@ function render_calendar_meta_box($post)
                 <input type="text" id="client_phone" name="client_phone">
 
                 <label for="client_first_name">Number of guests</label>
-                <input type="number" id="client_guests" name="client_guests">
+                <select id="client_guests" name="client_guests">
+                    <?php
+                    $max_guests = !empty($values['max_guests']) ? absint($values['max_guests']) : 1;
+                    for ($i = 1; $i <= $max_guests; $i++) {
+                        echo '<option value="' . $i . '">' . $i . '</option>';
+                    }
+                    ?>
+                </select>
 
                 <label for="client_first_name">Date range</label>
                 <input type="text" id="client_date_range">
@@ -315,8 +321,7 @@ function render_calendar_meta_box($post)
         <div id="price_modal">
             <i class="close_modal" onclick="jQuery('#price_modal_wrapper').hide()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                    <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                    <path fill="#fff"
+                    <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                 </svg>
             </i>
@@ -332,15 +337,12 @@ function render_calendar_meta_box($post)
     </div>
 
     <!-- edit single price day modal -->
-
-    <!-- remove client modal style="background:#fff; max-width:400px; margin:10% auto; padding:20px; border-radius:10px;"-->
     <div id="client_action_modal_wrapper"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
         <div id="client_action_modal">
             <i class="close_modal" onclick="jQuery('#client_action_modal_wrapper').hide()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                    <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                    <path fill="#fff"
+                    <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                 </svg>
             </i>

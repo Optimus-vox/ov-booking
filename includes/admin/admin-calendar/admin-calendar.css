@@ -474,6 +474,28 @@ td .day-wrapper {
   height: 45px;
 }
 
+.add-information select#client_guests {
+  border: 1px solid #fff;
+  background: #23243a;
+  color: #fff;
+  padding: 10px;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  width: 100%;
+  height: 45px;
+  font-size: 16px;
+  margin-bottom: 8px;
+  appearance: none;  
+  line-height: 1;
+
+  &:focus {
+    border-color: #8B5DFF;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
 #price_modal input:focus,
 .add-information input:focus {
   border-color: #8B5DFF;
@@ -492,10 +514,46 @@ td .day-wrapper {
   top: 10px;
   right: 10px;
   cursor: pointer;
+  transition: all 0.25s ease;
+  svg{
+    color: #fff;
+  }
+  &:hover{
+    svg{
+      color: #8B5DFF;
+    }
+  }
 }
 
 .time-input {
   padding: 10px !important;
+}
+.ovb-booking-dates{
+  height: 16px;
+  position: relative;
+}
+.ovb-booking-dates:hover .tooltip-text {
+  visibility: visible;
+  width: 190px;
+  top: 50%;
+  left: -210px;
+  /* transform: translateY(-50%); */
+  opacity: 1;
+  z-index: 99999;
+}
+
+.ovb-client-info {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  &.has-icon {
+    justify-content: space-between;
+  }
+
+  .icon-spacer {
+    width: 32px;
+    display: inline-block;
+  }
 }
 
 @media screen and (max-width: 1600px) {
