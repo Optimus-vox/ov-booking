@@ -484,8 +484,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarData = JSON.parse(JSON.stringify(rawCalendarData));
 
   const ovStartDate = getQueryParam("ov_start_date");
-  const ovEndDate   = getQueryParam("ov_end_date");
-  const ovGuests    = getQueryParam("ov_guests");
+  const ovEndDate = getQueryParam("ov_end_date");
+  const ovGuests = getQueryParam("ov_guests");
 
   if (ovGuests) {
     const sel = document.querySelector("#ov-guests");
@@ -510,7 +510,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function populateFieldsFromStrings(startStr, endStr) {
     if (!window.moment) return;
     const start = moment(startStr, "YYYY-MM-DD");
-    const end   = moment(endStr,   "YYYY-MM-DD");
+    const end = moment(endStr, "YYYY-MM-DD");
 
     // Popuni vidljivi input
     const input = document.querySelector("#custom-daterange-input");
@@ -520,7 +520,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Hidden inputs za WC
     document.querySelector("#start_date").value = startStr;
-    document.querySelector("#end_date").value   = endStr;
+    document.querySelector("#end_date").value = endStr;
 
     // Sredi niz datuma
     const dates = [];
@@ -563,12 +563,9 @@ document.addEventListener("DOMContentLoaded", function () {
       locale: "sr-RS",
       calendarData,
       defaultStart: ovStartDate || null,
-      defaultEnd:   ovEndDate   || null,
+      defaultEnd: ovEndDate || null,
       onChange(startMoment, endMoment) {
-        populateFieldsFromStrings(
-          startMoment.format("YYYY-MM-DD"),
-          endMoment.format("YYYY-MM-DD")
-        );
+        populateFieldsFromStrings(startMoment.format("YYYY-MM-DD"), endMoment.format("YYYY-MM-DD"));
       },
     });
 
@@ -580,7 +577,7 @@ document.addEventListener("DOMContentLoaded", function () {
       locale: "sr-RS",
       calendarData,
       defaultStart: ovStartDate || null,
-      defaultEnd:   ovEndDate   || null,
+      defaultEnd: ovEndDate || null,
     });
   }
 
@@ -591,32 +588,50 @@ document.addEventListener("DOMContentLoaded", function () {
     const pickContainer = document.querySelector("#date-range-picker");
     if (pickContainer) {
       // start
-      pickContainer.querySelectorAll(`[data-date="${ovStartDate}"]`)
-        .forEach(el => el.classList.add("selected", "start-date"));
+      pickContainer.querySelectorAll(`[data-date="${ovStartDate}"]`).forEach((el) => el.classList.add("selected", "start-date"));
       // end
-      pickContainer.querySelectorAll(`[data-date="${ovEndDate}"]`)
-        .forEach(el => el.classList.add("selected", "end-date"));
+      pickContainer.querySelectorAll(`[data-date="${ovEndDate}"]`).forEach((el) => el.classList.add("selected", "end-date"));
       // between
       let d = new Date(ovStartDate);
       d.setDate(d.getDate() + 1);
       const end = new Date(ovEndDate);
       while (d < end) {
         const key = d.toISOString().slice(0, 10);
-        pickContainer.querySelectorAll(`[data-date="${key}"]`)
-          .forEach(el => el.classList.add("in-range"));
+        pickContainer.querySelectorAll(`[data-date="${key}"]`).forEach((el) => el.classList.add("in-range"));
         d.setDate(d.getDate() + 1);
       }
     }
   }
 
   // --- Form validacija ----------------------------------------------------
+  // const form = document.querySelector("form.ov-booking-form");
+  // if (form) {
+  //   form.addEventListener("submit", function (e) {
+  //     const s  = form.querySelector('input[name="start_date"]')?.value.trim();
+  //     const en = form.querySelector('input[name="end_date"]')?.value.trim();
+  //     const all= form.querySelector('input[name="all_dates"]')?.value.trim();
+  //     if (!s || !en || !all) {
+  //       e.preventDefault();
+  //       alert("Molimo izaberite datume pre nego što nastavite.");
+  //       return;
+  //     }
+  //     const btn = form.querySelector('button[type="submit"]');
+  //     if (btn) {
+  //       btn.disabled = true;
+  //       btn.textContent = "Processing...";
+  //     }
+  //   });
+  // }
+
+  // --- Form validacija (samo ako nema GET parametara) ----------------------
   const form = document.querySelector("form.ov-booking-form");
   if (form) {
     form.addEventListener("submit", function (e) {
-      const s  = form.querySelector('input[name="start_date"]')?.value.trim();
+      const s = form.querySelector('input[name="start_date"]')?.value.trim();
       const en = form.querySelector('input[name="end_date"]')?.value.trim();
-      const all= form.querySelector('input[name="all_dates"]')?.value.trim();
-      if (!s || !en || !all) {
+      const all = form.querySelector('input[name="all_dates"]')?.value.trim();
+      // ovStartDate i ovEndDate dolaze iz GET-a, postavljeni gore u skripti
+      if ((!s || !en || !all) && !(ovStartDate && ovEndDate)) {
         e.preventDefault();
         alert("Molimo izaberite datume pre nego što nastavite.");
         return;

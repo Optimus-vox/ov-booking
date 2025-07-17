@@ -27,7 +27,8 @@ add_action('admin_init', function () {
 
 // Render forma
 function ov_booking_render_settings_page() {
-    $mode = get_option('ov_booking_display_mode', 'shortcode');
+    $mode          = get_option('ov_booking_display_mode', 'shortcode');
+    $contact_email = get_option('ovb_contact_email', '');
     ?>
     <div class="wrap">
         <h1>OV Booking Display Settings</h1>
@@ -35,6 +36,7 @@ function ov_booking_render_settings_page() {
         <form method="post" action="options.php">
             <?php settings_fields('ov_booking_settings_group'); ?>
             <?php do_settings_sections('ov-booking-settings'); ?>
+
             <table class="form-table">
                 <tr>
                     <th scope="row">Display mode</th>
@@ -43,25 +45,32 @@ function ov_booking_render_settings_page() {
                         <label><input type="radio" name="ov_booking_display_mode" value="template" <?php checked($mode, 'template'); ?> /> Override single-product template</label>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">Contact Email</th>
+                    <td>
+                        <input type="email" name="ovb_contact_email" class="regular-text"
+                            value="<?php echo esc_attr($contact_email); ?>" placeholder="you@example.com" />
+                        <p class="description">Email adresa na koju će gosti moći da kontaktiraju smeštaj i koja će biti prikazana u iCal fajlu.</p>
+                    </td>
+                </tr>
             </table>
-            <h2><?php esc_html_e('Google OAuth', 'ov-booking'); ?></h2>
 
+            <h2><?php esc_html_e('Google OAuth', 'ov-booking'); ?></h2>
             <table class="form-table">
                 <tr>
                     <th scope="row"><?php esc_html_e('Google Client ID', 'ov-booking'); ?></th>
                     <td>
                         <input type="text" name="ovb_google_client_id" class="regular-text"
                             value="<?php echo esc_attr(get_option('ovb_google_client_id', '')); ?>" />
-                            <?php
-                                $client_id_ok     = get_option('ovb_google_client_id');
-                                $client_secret_ok = get_option('ovb_google_client_secret');
-
-                                if (!empty($client_id_ok) && !empty($client_secret_ok)) {
-                                    echo '<p style="color:green; margin-top:4px;">✅ ' . esc_html__('Google OAuth podešen', 'ov-booking') . '</p>';
-                                } else {
-                                    echo '<p style="color:red; margin-top:4px;">❌ ' . esc_html__('Google OAuth nije kompletiran', 'ov-booking') . '</p>';
-                                }
-                            ?>
+                        <?php
+                        $client_id_ok     = get_option('ovb_google_client_id');
+                        $client_secret_ok = get_option('ovb_google_client_secret');
+                        if (!empty($client_id_ok) && !empty($client_secret_ok)) {
+                            echo '<p style="color:green; margin-top:4px;">✅ ' . esc_html__('Google OAuth podešen', 'ov-booking') . '</p>';
+                        } else {
+                            echo '<p style="color:red; margin-top:4px;">❌ ' . esc_html__('Google OAuth nije kompletiran', 'ov-booking') . '</p>';
+                        }
+                        ?>
                     </td>
                 </tr>
                 <tr>
@@ -78,9 +87,7 @@ function ov_booking_render_settings_page() {
                 <tr>
                     <th scope="row">Reset settings</th>
                     <td>
-                       
-                            <?php submit_button('Reset WooCommerce stranice', 'delete', 'ovb_reset_wc_pages'); ?>
-                
+                        <?php submit_button('Reset WooCommerce stranice', 'delete', 'ovb_reset_wc_pages'); ?>
                     </td>
                 </tr>
             </table>
@@ -96,8 +103,13 @@ add_action('admin_init', function() {
     register_setting('ov_booking_settings_group', 'ov_booking_display_mode');
     register_setting('ov_booking_settings_group', 'ovb_google_client_id');
     register_setting('ov_booking_settings_group', 'ovb_google_client_secret');
+    register_setting(
+        'ov_booking_settings_group',
+        'ovb_contact_email',
+        [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_email',
+            'default'           => '',
+        ]
+    );
 });
-
-
-// echo '<p class="description">Choose how the product page should be rendered by this plugin.</p>';
-

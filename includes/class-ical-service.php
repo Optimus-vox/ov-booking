@@ -15,22 +15,26 @@ class OVB_iCal_Service {
         $end_meta   = $order->get_meta( 'end_date' );
         $pid        = self::get_product_id( $order );
 
+        // Get Check-in and Check-out times raw
+        $checkin_time_raw = function_exists('ovb_get_checkin_time') ? ovb_get_checkin_time($pid) : '';
+        $checkout_time_raw = function_exists('ovb_get_checkout_time') ? ovb_get_checkout_time($pid) : '';
+
         // Get Check-in and Check-out times 
-        $checkin_time  = function_exists('ovb_get_checkin_time') ? ovb_get_checkin_time($pid) : '14:00';
-        $checkout_time = function_exists('ovb_get_checkout_time') ? ovb_get_checkout_time($pid) : '10:00';
+        $checkin_time = preg_match('/^\d{1,2}:\d{2}$/', $checkin_time_raw) ? $checkin_time_raw : '14:00';
+        $checkout_time = preg_match('/^\d{1,2}:\d{2}$/', $checkout_time_raw) ? $checkout_time_raw : '10:00';
 
         
         // Create DateTime objects with local timezone
-        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
-        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+        $start_obj = new DateTime( $start_meta . ' ' . $checkin_time, $timezone );
+        $end_obj   = new DateTime( $end_meta   . ' ' . $checkout_time, $timezone );
         
         // Convert to UTC for ICS format
         $start_obj->setTimezone( new DateTimeZone( 'UTC' ) );
         $end_obj->setTimezone( new DateTimeZone( 'UTC' ) );
         
-        $start_iso = $start_obj->format( 'Ymd\THis\Z' );
-        $end_iso   = $end_obj->format( 'Ymd\THis\Z' );
-        $dtstamp   = gmdate( 'Ymd\THis\Z' ); // Current UTC time
+        $start_iso = $start_obj->format( 'Ymd\THis' );
+        $end_iso   = $end_obj->format( 'Ymd\THis' );
+        $dtstamp   = gmdate( 'Ymd\THis' ); // Current UTC time
 
         $summary  = self::get_event_summary( $order );
         $details  = self::build_ics_details( $order );
@@ -61,22 +65,30 @@ class OVB_iCal_Service {
      * Build plain‐text details block for ICS file with proper escaping
      */
     private static function build_ics_details( WC_Order $order ): string {
+        
         $pid        = self::get_product_id( $order );
         $apt_type   = self::get_accommodation_type( $pid );
         $apt_title  = get_the_title( $pid );
         $first_name = $order->get_billing_first_name();
         $last_name  = $order->get_billing_last_name();
-
         // Get timezone from WordPress settings
         $timezone = new DateTimeZone( wp_timezone_string() );
         
         // Get check-in and check-out dates from order meta
         $start_meta = $order->get_meta( 'start_date' );
         $end_meta   = $order->get_meta( 'end_date' );
+       
+        // Get Check-in and Check-out times raw
+        $checkin_time_raw = function_exists('ovb_get_checkin_time') ? ovb_get_checkin_time($pid) : '';
+        $checkout_time_raw = function_exists('ovb_get_checkout_time') ? ovb_get_checkout_time($pid) : '';
+        
+        $checkin_time = preg_match('/^\d{1,2}:\d{2}$/', $checkin_time_raw) ? $checkin_time_raw : '14:00';
+        $checkout_time = preg_match('/^\d{1,2}:\d{2}$/', $checkout_time_raw) ? $checkout_time_raw : '10:00';
         
         // Create DateTime objects with local timezone
-        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
-        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+        $start_obj = new DateTime( $start_meta . ' ' . $checkin_time, $timezone );
+        $end_obj   = new DateTime( $end_meta   . ' ' . $checkout_time, $timezone );
+
 
         $items      = $order->get_items();
         $first_item = reset( $items );
@@ -86,17 +98,26 @@ class OVB_iCal_Service {
 
         $address = self::build_location_string( $order );
 
+        // Format date and time
+        $date_fmt = get_option( 'date_format', 'd.m.Y' );
+        $time_fmt = get_option( 'time_format', 'H:i' );
+
+        // Contact email
+        $contact = get_option( 'ovb_contact_email', get_option('admin_email') );
+
         $lines = [
-            "{$apt_type}: {$apt_title}",
-            "Guest: {$first_name} {$last_name}",
-            "Address: {$address}",
-            "Check-in: " . $start_obj->format( 'd.m.Y H:i' ),
-            "Check-out: " . $end_obj->format( 'd.m.Y H:i' ),
-            "Guests: {$guests}",
-            "Apartment page: " . get_permalink( $pid ),
-            "Contact: info@example.com",
-            "Confirmation: #{$order->get_order_number()}",
-            "Payment method: " . $order->get_payment_method_title(),
+            "🏠 {$apt_type}: {$apt_title}",
+            "👤 Guest: {$first_name} {$last_name}",
+            "📍 Address: {$address}",
+            // "Check-in: " . $start_obj->format( 'd.m.Y H:i' ),
+            // "Check-out: " . $end_obj->format( 'd.m.Y H:i' ),
+            "🗓 Check-in: " . $start_obj->format( "{$date_fmt} {$time_fmt}" ),
+            "🚪 Check-out: " . $end_obj->format( "{$date_fmt} {$time_fmt}" ),
+            "👥 Guests: {$guests}",
+            "🔗 Apartment page: " . get_permalink( $pid ),
+            "📞 Contact: {$contact}",
+            "🔐 Confirmation: #{$order->get_order_number()}",
+            "💳 Payment method: " . $order->get_payment_method_title(),
         ];
 
         $inv_path = ABSPATH . "wp-content/uploads/invoices/{$order->get_id()}.pdf";
@@ -182,23 +203,34 @@ class OVB_iCal_Service {
      * Build Google Calendar add-event URL
      */
     public static function get_google_calendar_url( WC_Order $order ): string {
+        $pid = self::get_product_id( $order );
+
         // Get timezone from WordPress settings
         $timezone = new DateTimeZone( wp_timezone_string() );
+
         
         // Get check-in and check-out dates from order meta
         $start_meta = $order->get_meta( 'start_date' );
         $end_meta   = $order->get_meta( 'end_date' );
         
+        // Get Check-in and Check-out times raw
+        $checkin_time_raw = function_exists('ovb_get_checkin_time') ? ovb_get_checkin_time($pid) : '';
+        $checkout_time_raw = function_exists('ovb_get_checkout_time') ? ovb_get_checkout_time($pid) : '';
+
+        // Get Check-in and Check-out times
+        $checkin_time = preg_match('/^\d{1,2}:\d{2}$/', $checkin_time_raw) ? $checkin_time_raw : '14:00';
+        $checkout_time = preg_match('/^\d{1,2}:\d{2}$/', $checkout_time_raw) ? $checkout_time_raw : '10:00';
         // Create DateTime objects with local timezone
-        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
-        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+        $start_obj = new DateTime( $start_meta . ' ' . $checkin_time, $timezone );
+        $end_obj   = new DateTime( $end_meta   . ' ' . $checkout_time, $timezone );
+
         
         // Convert to UTC for Google Calendar format
         $start_obj->setTimezone( new DateTimeZone( 'UTC' ) );
         $end_obj->setTimezone( new DateTimeZone( 'UTC' ) );
         
-        $start_iso = $start_obj->format( 'Ymd\THis\Z' );
-        $end_iso   = $end_obj->format( 'Ymd\THis\Z' );
+        $start_iso = $start_obj->format( 'Ymd\THis' );
+        $end_iso   = $end_obj->format( 'Ymd\THis' );
 
         $summary  = self::get_event_summary( $order );
         $details  = self::build_gcal_details( $order );
@@ -240,14 +272,23 @@ class OVB_iCal_Service {
 
         // Get timezone from WordPress settings
         $timezone = new DateTimeZone( wp_timezone_string() );
+
+        
         
         // Get check-in and check-out dates from order meta
         $start_meta = $order->get_meta( 'start_date' );
         $end_meta   = $order->get_meta( 'end_date' );
-        
+       
+        // Get Check-in and Check-out times raw
+        $checkin_time_raw = function_exists('ovb_get_checkin_time') ? ovb_get_checkin_time($pid) : '';
+        $checkout_time_raw = function_exists('ovb_get_checkout_time') ? ovb_get_checkout_time($pid) : '';
+
+        $checkin_time = preg_match('/^\d{1,2}:\d{2}$/', $checkin_time_raw) ? $checkin_time_raw : '14:00';
+        $checkout_time = preg_match('/^\d{1,2}:\d{2}$/', $checkout_time_raw) ? $checkout_time_raw : '10:00';
         // Create DateTime objects with local timezone
-        $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );
-        $end_obj   = new DateTime( $end_meta . ' 10:00', $timezone );
+        $start_obj = new DateTime( $start_meta . ' ' . $checkin_time, $timezone );
+        $end_obj   = new DateTime( $end_meta   . ' ' . $checkout_time, $timezone );
+
 
         $items      = $order->get_items();
         $first_item = reset( $items );
@@ -255,15 +296,24 @@ class OVB_iCal_Service {
 
         $address = self::build_location_string( $order );
 
+        // Format dates
+        $date_fmt = get_option( 'date_format', 'd.m.Y' );
+        $time_fmt = get_option( 'time_format', 'H:i' );
+
+         // Contact email
+        $contact = get_option( 'ovb_contact_email', get_option('admin_email') );
+
         $lines = [
             "🏠 {$apt_type}: {$apt_title}",
             "👤 Guest: {$first_name} {$last_name}",
             "📍 Address: {$address}",
-            "🗓 Check-in: " . $start_obj->format( 'd.m.Y H:i' ),
-            "🚪 Check-out: " . $end_obj->format( 'd.m.Y H:i' ),
+            // "🗓 Check-in: " . $start_obj->format( 'd.m.Y H:i' ),
+            // "🚪 Check-out: " . $end_obj->format( 'd.m.Y H:i' ),
+            "🗓 Check-in: " . $start_obj->format( "{$date_fmt} {$time_fmt}" ),
+            "🚪 Check-out: " . $end_obj->format( "{$date_fmt} {$time_fmt}" ),
             "👥 Guests: {$guests}",
             "🔗 Apartment page: " . get_permalink( $pid ),
-            "📞 Contact: info@example.com",
+            "📞 Contact: {$contact}",
             "🔐 Confirmation: #{$order->get_order_number()}",
             "💳 Payment method: " . $order->get_payment_method_title(),
         ];
