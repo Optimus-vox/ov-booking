@@ -114,23 +114,103 @@ $checkout = WC()->checkout();
                 </div>
 
                 <div class="checkout-form">
-                  
-                        <!-- CUSTOMER DETAILS -->
-                        <div id="customer_details" class="ovb-customer-details-container">
-                            <?php
-                            // Billing polja
-                            wc_get_template( 'checkout/form-billing.php', array( 'checkout' => $checkout ) );
-                            // Shipping polja (ako koristiš shipping)
-                            wc_get_template( 'checkout/form-shipping.php', array( 'checkout' => $checkout ) );
-                            ?>
-                        </div>
 
-             
-                            <?php
-                               // ovde mogu da stoje payment metode
-                                wc_get_template( 'checkout/payment.php', array( 'checkout' => $checkout ) );
-                            ?>
+                <!-- CUSTOMER DETAILS -->
+                <div id="customer_details" class="ovb-customer-details-container">
+                    <?php wc_get_template('checkout/form-billing.php', array('checkout' => $checkout)); ?>
+
+                    <?php if ($guests > 0): ?>
+    <div id="ovb-guests-section" class="ovb-guests-section">
+        <h4>Podaci o gostima</h4>
+        <label class="ovb-checkbox-label" style="margin-bottom:10px;">
+            <input type="checkbox" id="ovb-different-payer-checkbox" name="ovb_different_payer" value="1">
+            <span>Druga osoba plaća rezervaciju?</span>
+            <span class="ovb-help-text" style="display:block; font-size:12px; #b1b1b1; margin-left:28px;">
+                (Npr. roditelj, firma, posrednik. Ako ste vi gost i plaćate, ostavite prazno.)
+            </span>
+        </label>
+        <div id="ovb-guests-wrapper"></div>
+    </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const guests = <?php echo intval($guests); ?>;
+        const wrapper = document.getElementById('ovb-guests-wrapper');
+        const payerCheckbox = document.getElementById('ovb-different-payer-checkbox');
+
+        function renderGuestFields(count) {
+            wrapper.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                wrapper.innerHTML += `
+                    <div class="ov-guest-row">
+                        <h3 style="margin-bottom:20px;">Gost ${i}</h3>
+                        <div class="ov-form-group">
+                            <label for="ovb_guest[${i}][first_name]">Ime <span class="required">*</span></label>
+                            <input type="text" class="ov-input-regular" name="ovb_guest[${i}][first_name]" required>
+                        </div>
+                        <div class="ov-form-group">
+                            <label for="ovb_guest[${i}][last_name]">Prezime <span class="required">*</span></label>
+                            <input type="text" class="ov-input-regular" name="ovb_guest[${i}][last_name]" required>
+                        </div>
+                        <div class="ov-form-group">
+                            <label for="ovb_guest[${i}][gender]">Pol <span class="required">*</span></label>
+                            <select class="ov-select-regular" name="ovb_guest[${i}][gender]" required>
+                                <option value="">Izaberi...</option>
+                                <option value="male">Muški</option>
+                                <option value="female">Ženski</option>
+                                <option value="diverse">Drugo</option>
+                            </select>
+                        </div>
+                        <div class="ov-form-group">
+                            <label for="ovb_guest[${i}][birthdate]">Datum rođenja <span class="required">*</span></label>
+                            <div class="ovb-date-picker-wrap">
+                                <input type="date" class="ov-input-regular ovb-date-input" name="ovb_guest[${i}][birthdate]" required>
+                                <span class="ovb-date-calendar-icon"></span>
+                            </div>
+                        </div>
+                        <div class="ov-form-group">
+                            <label for="ovb_guest[${i}][phone]">
+                                Telefon${(count >= 2 && i === 1 || count === 2 ) ? ' <span class="required">*</span>' : ''}
+                            </label>
+                            <input type="text" class="ov-input-regular ovb-guest-phone" name="ovb_guest[${i}][phone]" data-guest-idx="${i}" autocomplete="tel"  ${(count >= 2 && i >= 2) ? 'required' : ''}>
+                        </div>
+                        <div class="ov-form-group">
+                            <label for="ovb_guest[${i}][id_number]">Broj pasoša/lične karte (opciono)</label>
+                            <input type="text" class="ov-input-regular" name="ovb_guest[${i}][id_number]">
+                        </div>
+                        <div class="ov-form-group " style="margin-top:6px;">
+                            <label for="is_child_${i}" style="display:inline;">Gost je dete (ispod 18)</label>
+                            <input type="checkbox" name="ovb_guest[${i}][is_child]" value="1" id="is_child_${i}">
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateGuests() {
+            const isDifferentPayer = payerCheckbox && payerCheckbox.checked;
+            // Ako je čekiran — svi gosti su odvojeni od platioca, prikazujemo onoliko koliko je $guests
+            // Ako nije čekiran — prvi gost je platioc (billing), prikazujemo guests-1
+            renderGuestFields(isDifferentPayer ? guests : Math.max(guests - 1, 0));
+        }
+
+        if (payerCheckbox) {
+            payerCheckbox.addEventListener('change', updateGuests);
+        }
+        updateGuests();
+    });
+    </script>
+<?php endif; ?>
+
+
+                    <?php wc_get_template('checkout/form-shipping.php', array('checkout' => $checkout)); ?>
                 </div>
+
+                <?php
+                    // ovde mogu da stoje payment metode
+                    wc_get_template('checkout/payment.php', array('checkout' => $checkout));
+                ?>
+                </div>
+
             </div>
 
             <!-- DESNA STRANA: WooCommerce Checkout Summary -->
@@ -226,6 +306,7 @@ $checkout = WC()->checkout();
                                         // ispišemo detalje po datumima:
                                         if ( ! empty( $cart_item['ov_all_dates'] ) ) {
                                             $dates = explode( ',', $cart_item['ov_all_dates'] );
+                                            $last_date = end($dates);
                                             // niz sa cenama već obračunatim u init.php
                                             $calendar = get_post_meta( $product->get_id(), '_ov_calendar_data', true );
                                             foreach ( $dates as $date ) {
@@ -233,12 +314,21 @@ $checkout = WC()->checkout();
                                                     ? floatval( $calendar[ $date ]['price'] )
                                                     : 0;
                                                 ?>
-                                                                <tr class="ovb-detail-line">
-                                                                    <td class="ovb-detail-date">
-                                                                        <?php echo esc_html( date_i18n( 'd.m.Y', strtotime( $date ) ) ); ?></td>
-                                                                    <td class="ovb-detail-price"><?php echo wc_price( $price ); ?></td>
-                                                                </tr>
-                                                                <?php
+                                                   <tr class="ovb-detail-line">
+                                                        <td class="ovb-detail-date">
+                                                            <?php echo esc_html(date_i18n('d.m.Y', strtotime($date))); ?>
+                                                        </td>
+                                                        <td class="ovb-detail-price">
+                                                            <?php
+                                                            if ($date === $last_date) {
+                                                                echo '<span class="ovb-checkout-label" style="color:#7C4DFF;font-weight:bold;">Checkout</span>';
+                                                            } else {
+                                                                echo wc_price($price);
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    </tr>
+                                    <?php
                                             }
                                         }
                                     endforeach; ?>

@@ -13,6 +13,12 @@ class OVB_iCal_Service {
         // Get check-in and check-out dates from order meta
         $start_meta = $order->get_meta( 'start_date' );
         $end_meta   = $order->get_meta( 'end_date' );
+        $pid        = self::get_product_id( $order );
+
+        // Get Check-in and Check-out times 
+        $checkin_time  = function_exists('ovb_get_checkin_time') ? ovb_get_checkin_time($pid) : '14:00';
+        $checkout_time = function_exists('ovb_get_checkout_time') ? ovb_get_checkout_time($pid) : '10:00';
+
         
         // Create DateTime objects with local timezone
         $start_obj = new DateTime( $start_meta . ' 10:00', $timezone );

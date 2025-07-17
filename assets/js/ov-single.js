@@ -384,70 +384,248 @@
 //   });
 // });
 
-jQuery(document).ready(function ($) {
-  console.log(ov_calendar_vars.calendarData);
 
-  $('.ov-testimonials-carousel').owlCarousel({
-    items: 1,
-    center: true,
-    loop: true,
-    margin: 30,
-    nav: false,
-    dots: true,
-    autoHeight: true,
-    autoplay: true,
-    autoplayTimeout: 5000,
-    autoplayHoverPause: true,
-    smartSpeed: 600,  // ubaci glatku animaciju
-  });
+// odavde
 
-});
+// jQuery(document).ready(function ($) {
+//   console.log(ov_calendar_vars.calendarData);
 
-document.addEventListener("DOMContentLoaded", () => {
+//   $('.ov-testimonials-carousel').owlCarousel({
+//     items: 1,
+//     center: true,
+//     loop: true,
+//     margin: 30,
+//     nav: false,
+//     dots: true,
+//     autoHeight: true,
+//     autoplay: true,
+//     autoplayTimeout: 5000,
+//     autoplayHoverPause: true,
+//     smartSpeed: 600,  // ubaci glatku animaciju
+//   });
 
-  // 1) Inicijalizuj picker za unos datuma
-  initOvDateRangePicker({
-    input: "#custom-daterange-input",
-    container: "#date-range-picker",
-    readonly: false,
-    alwaysOpen: false,
-    locale: "sr-RS",
-    calendarData: window.ov_calendar_vars?.calendarData || {},
-    totalsContainer: "#ov_total_container",
-    initialStartDate: window.ov_calendar_vars?.startDate || null,
-    initialEndDate: window.ov_calendar_vars?.endDate || null,
-  });
+// });
 
-  // 2) Inicijalni readonly prikaz kalendara
-  initOvDateRangePicker({
-    container: "#ov-booking_readonly_calendar",
-    readonly: true,
-    alwaysOpen: true,
-    locale: "sr-RS",
-    calendarData: window.ov_calendar_vars?.calendarData || {},
-  });
+// document.addEventListener("DOMContentLoaded", () => {
+//   function getQueryParam(name) {
+//     const url = new URL(window.location.href);
+//     return url.searchParams.get(name);
+//   }
 
-  // 3) Validacija pre slanja forme
+//   const ovStartDate = getQueryParam("ov_start_date");
+//   const ovEndDate = getQueryParam("ov_end_date");
+//   const ovGuests = getQueryParam("ov_guests");
+
+//   // 1) Inicijalizuj picker za unos datuma
+//   initOvDateRangePicker({
+//     input: "#custom-daterange-input",
+//     container: "#date-range-picker",
+//     readonly: false,
+//     alwaysOpen: false,
+//     locale: "sr-RS",
+//     calendarData: window.ov_calendar_vars?.calendarData || {},
+//     totalsContainer: "#ov_total_container",
+//     // initialStartDate: window.ov_calendar_vars?.startDate || null,
+//     // initialEndDate: window.ov_calendar_vars?.endDate || null,
+//     initialStartDate: ovStartDate || window.ov_calendar_vars?.startDate || null,
+//     initialEndDate: ovEndDate || window.ov_calendar_vars?.endDate || null,
+//   });
+//   // Setuj odmah broj gostiju ako je prosleđen u URL-u
+//   if (ovGuests) {
+//     const sel = document.querySelector("#ov-guests");
+//     if (sel) sel.value = ovGuests;
+//   }
+
+//   // 2) Inicijalni readonly prikaz kalendara
+//   initOvDateRangePicker({
+//     container: "#ov-booking_readonly_calendar",
+//     readonly: true,
+//     alwaysOpen: true,
+//     locale: "sr-RS",
+//     calendarData: window.ov_calendar_vars?.calendarData || {},
+//   });
+
+//   // 3) Validacija pre slanja forme
+//   const form = document.querySelector("form.ov-booking-form");
+//   if (!form) return;
+
+//   form.addEventListener("submit", (e) => {
+//     const startDate = form.querySelector('input[name="start_date"]')?.value.trim();
+//     const endDate = form.querySelector('input[name="end_date"]')?.value.trim();
+//     const allDates = form.querySelector('input[name="all_dates"]')?.value.trim();
+
+//     console.log("Submitting booking with dates:", startDate, endDate, allDates);
+
+//     if (!startDate || !endDate || !allDates) {
+//       e.preventDefault();
+//       alert("Molimo izaberite datume pre nego što nastavite.");
+//       return;
+//     }
+
+//     const btn = form.querySelector('button[type="submit"]');
+//     if (btn) {
+//       btn.disabled = true;
+//       btn.textContent = "Processing...";
+//     }
+//   });
+// });
+// File: assets/js/ov-single.js
+
+// File: assets/js/ov-single.js
+document.addEventListener("DOMContentLoaded", function () {
+  // --- Helpers -------------------------------------------------------------
+  function getQueryParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+  }
+
+  // Kloniraj calendarData i izbriši flag “booked” za trenutnu rezervaciju
+  const rawCalendarData = window.ov_calendar_vars?.calendarData || {};
+  const calendarData = JSON.parse(JSON.stringify(rawCalendarData));
+
+  const ovStartDate = getQueryParam("ov_start_date");
+  const ovEndDate   = getQueryParam("ov_end_date");
+  const ovGuests    = getQueryParam("ov_guests");
+
+  if (ovGuests) {
+    const sel = document.querySelector("#ov-guests");
+    if (sel) sel.value = ovGuests;
+  }
+
+  if (ovStartDate && ovEndDate) {
+    let d = new Date(ovStartDate);
+    const end = new Date(ovEndDate);
+    while (d <= end) {
+      const key = d.toISOString().slice(0, 10);
+      if (calendarData[key]?.status === "booked") {
+        calendarData[key].status = "available";
+      }
+      d.setDate(d.getDate() + 1);
+    }
+  }
+
+  // --------------------------------------------------
+  // Popuni inpute i summary (#ov_total_container)
+  // --------------------------------------------------
+  function populateFieldsFromStrings(startStr, endStr) {
+    if (!window.moment) return;
+    const start = moment(startStr, "YYYY-MM-DD");
+    const end   = moment(endStr,   "YYYY-MM-DD");
+
+    // Popuni vidljivi input
+    const input = document.querySelector("#custom-daterange-input");
+    if (input) {
+      input.value = `${start.format("DD/MM/YYYY")} - ${end.format("DD/MM/YYYY")}`;
+    }
+
+    // Hidden inputs za WC
+    document.querySelector("#start_date").value = startStr;
+    document.querySelector("#end_date").value   = endStr;
+
+    // Sredi niz datuma
+    const dates = [];
+    let dt = new Date(startStr);
+    const dtEnd = new Date(endStr);
+    while (dt <= dtEnd) {
+      dates.push(dt.toISOString().slice(0, 10));
+      dt.setDate(dt.getDate() + 1);
+    }
+    document.querySelector("#all_dates").value = dates.join(",");
+
+    // Izračunaj noći i cenu
+    const totalNights = Math.max(0, dates.length - 1);
+    let totalPrice = 0;
+    for (let i = 0; i < dates.length - 1; i++) {
+      totalPrice += parseFloat(calendarData[dates[i]]?.price || 0);
+    }
+
+    // Ažuriraj i renderuj cene za ukupan broj noci #ov_total_container
+    const container = document.querySelector("#ov_total_container");
+    if (container) {
+      container.innerHTML = `
+        <div class="ov-price-summary-wrapper">
+          <span class="ov-summary-price"><b>€${totalPrice.toFixed(2)}</b></span>
+          <span class="ov-summary-nights">
+            za ${totalNights} ${totalNights === 1 ? "noć" : "noći"}
+          </span>
+        </div>`;
+    }
+  }
+
+  // --- Initialize date-range pickers --------------------------------------
+  if (typeof window.initOvDateRangePicker === "function") {
+    // Editable
+    window.initOvDateRangePicker({
+      input: "#custom-daterange-input",
+      container: "#date-range-picker",
+      readonly: false,
+      alwaysOpen: false,
+      locale: "sr-RS",
+      calendarData,
+      defaultStart: ovStartDate || null,
+      defaultEnd:   ovEndDate   || null,
+      onChange(startMoment, endMoment) {
+        populateFieldsFromStrings(
+          startMoment.format("YYYY-MM-DD"),
+          endMoment.format("YYYY-MM-DD")
+        );
+      },
+    });
+
+    // Read-only
+    window.initOvDateRangePicker({
+      container: "#ov-booking_readonly_calendar",
+      readonly: true,
+      alwaysOpen: true,
+      locale: "sr-RS",
+      calendarData,
+      defaultStart: ovStartDate || null,
+      defaultEnd:   ovEndDate   || null,
+    });
+  }
+
+  // --- On load, popuni i highlight ----------------------------------------
+  if (ovStartDate && ovEndDate) {
+    populateFieldsFromStrings(ovStartDate, ovEndDate);
+
+    const pickContainer = document.querySelector("#date-range-picker");
+    if (pickContainer) {
+      // start
+      pickContainer.querySelectorAll(`[data-date="${ovStartDate}"]`)
+        .forEach(el => el.classList.add("selected", "start-date"));
+      // end
+      pickContainer.querySelectorAll(`[data-date="${ovEndDate}"]`)
+        .forEach(el => el.classList.add("selected", "end-date"));
+      // between
+      let d = new Date(ovStartDate);
+      d.setDate(d.getDate() + 1);
+      const end = new Date(ovEndDate);
+      while (d < end) {
+        const key = d.toISOString().slice(0, 10);
+        pickContainer.querySelectorAll(`[data-date="${key}"]`)
+          .forEach(el => el.classList.add("in-range"));
+        d.setDate(d.getDate() + 1);
+      }
+    }
+  }
+
+  // --- Form validacija ----------------------------------------------------
   const form = document.querySelector("form.ov-booking-form");
-  if (!form) return;
-
-  form.addEventListener("submit", (e) => {
-    const startDate = form.querySelector('input[name="start_date"]')?.value.trim();
-    const endDate = form.querySelector('input[name="end_date"]')?.value.trim();
-    const allDates = form.querySelector('input[name="all_dates"]')?.value.trim();
-
-    console.log("Submitting booking with dates:", startDate, endDate, allDates);
-
-    if (!startDate || !endDate || !allDates) {
-      e.preventDefault();
-      alert("Molimo izaberite datume pre nego što nastavite.");
-      return;
-    }
-
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "Processing...";
-    }
-  });
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      const s  = form.querySelector('input[name="start_date"]')?.value.trim();
+      const en = form.querySelector('input[name="end_date"]')?.value.trim();
+      const all= form.querySelector('input[name="all_dates"]')?.value.trim();
+      if (!s || !en || !all) {
+        e.preventDefault();
+        alert("Molimo izaberite datume pre nego što nastavite.");
+        return;
+      }
+      const btn = form.querySelector('button[type="submit"]');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Processing...";
+      }
+    });
+  }
 });

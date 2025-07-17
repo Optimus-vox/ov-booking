@@ -203,17 +203,26 @@ get_header();
                                     <ul class="ov-price-breakdown-list">
                                         <?php foreach ( $dates_for_breakdown as $date ) :
                                             $day_price = isset( $calendar_data[ $date ]['price'] )
-                                                         ? floatval( $calendar_data[ $date ]['price'] )
-                                                         : 0;
+                                                        ? floatval( $calendar_data[ $date ]['price'] )
+                                                        : 0;
                                             $breakdown_total += $day_price;
                                         ?>
                                         <li>
                                             <?php
                                                 echo esc_html( date_i18n( get_option('date_format'), strtotime( $date ) ) )
-                                                     . ': ' . wc_price( $day_price );
+                                                    . ': ' . wc_price( $day_price );
                                                 ?>
                                         </li>
                                         <?php endforeach; ?>
+
+                                        <?php if ($end_date) : ?>
+                                        <li class="ovb-checkout-date">
+                                            <span style="opacity:.65;">
+                                                <?php echo esc_html(date_i18n(get_option('date_format'), strtotime($end_date))); ?>
+                                            </span>
+                                            <span style="color:#7C4DFF;font-weight:600;margin-left:12px;">Checkout</span>
+                                        </li>
+                                        <?php endif; ?>
 
                                         <li class="ov-breakdown-total">
                                             <strong><?php esc_html_e( 'Total', 'ov-booking' ); ?>:</strong>

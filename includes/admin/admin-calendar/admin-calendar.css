@@ -239,8 +239,9 @@ td .day-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 5px;
   box-sizing: border-box;
-  padding: 13px;
+  padding: 12px 10px;
   position: absolute;
   top: 0;
   left: 0;
@@ -581,6 +582,7 @@ td .day-wrapper {
     align-items: start;
     gap: 5px;
     width: 100%;
+   
   }
 
   .price-row {

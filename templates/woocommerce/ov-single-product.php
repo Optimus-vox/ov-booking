@@ -143,11 +143,6 @@ get_header();
                         </div>
                     </div>
 
-
-
-
-
-
                     <div class="product-details">
                         <div class="product-details-left">
                             <?php
@@ -303,9 +298,14 @@ get_header();
                         <div class="product-details-right">
                             <section class="custom-product-summary">
 
-                                <div class="custom-price" id="ov_total_container"></div>
                                 <div class="custom-dates">
                                     <span class="stay-duration"><?php esc_html_e('Stay Duration', 'ov-booking'); ?></span>
+                                    <div class="custom-price" id="ov_total_container"></div>
+
+                                    <!-- odavde  -->
+                                     
+                                    <!-- odavde  -->
+
 
                                     <?php
                                     // Ako u korpi već postoji neki proizvod:

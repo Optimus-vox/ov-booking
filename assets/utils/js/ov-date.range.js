@@ -8,6 +8,7 @@ function initOvDateRangePicker(config) {
     defaultEnd = null,
     locale = "sr-RS",
     calendarData = {},
+    onChange = null,
   } = config;
 
   const containerEl = document.querySelector(container);
@@ -415,6 +416,11 @@ function initOvDateRangePicker(config) {
 
     let totalNights = Math.max(0, allDates.length - 1);
     let totalPrice = 0;
+
+    if (typeof onChange === 'function') {
+      // šaljemo moment instance, da se poklopi sa tvojim populateFieldsFromStrings
+      onChange(moment(startDate), moment(endDate));
+    }
 
     for (let i = 0; i < allDates.length - 1; i++) {
       const dateKey = allDates[i];

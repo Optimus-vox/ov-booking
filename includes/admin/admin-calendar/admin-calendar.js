@@ -316,8 +316,8 @@ document.addEventListener("DOMContentLoaded", function () {
       $day.attr(
         "data-title",
         `Datum: ${formattedDate}
-  Cena: ${typeof price === "number" ? price + "€" : "-"}
-  Tip: ${status}`
+        Cena: ${typeof price === "number" ? price + "€" : "-"}
+        Tip: ${status}`
       );
 
       $day.addClass("current-month");

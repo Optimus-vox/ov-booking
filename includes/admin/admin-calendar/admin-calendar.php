@@ -240,14 +240,14 @@ function render_calendar_meta_box($post)
                             <th><label for="checkin_time">Check-in Time</label></th>
                             <td>
                                 <input type="time" id="checkin_time" name="additional_info[checkin_time]" class="time-input"
-                                    value="<?php echo esc_attr($checkin_time); ?>" step="600" />
+                                    value="<?php echo esc_attr($checkin_time); ?>" step="any" />
                             </td>
                         </tr>
                         <tr>
                             <th><label for="checkout_time">Check-out Time</label></th>
                             <td>
                                 <input type="time" id="checkout_time" name="additional_info[checkout_time]"
-                                    class="time-input" value="<?php echo esc_attr($checkout_time); ?>" step="600" />
+                                    class="time-input" value="<?php echo esc_attr($checkout_time); ?>" step="any" />
                             </td>
                         </tr>
                     </table>

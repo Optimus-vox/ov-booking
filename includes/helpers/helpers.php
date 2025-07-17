@@ -385,3 +385,13 @@ function ovb_sanitize_calendar_data($calendar_data) {
     unset($data);
 }
 
+// vremena za checkin/out | helper za kalendar
+function ovb_get_checkin_time($product_id) {
+    $info = get_post_meta($product_id, '_apartment_additional_info', true);
+    return !empty($info['checkin_time']) ? $info['checkin_time'] : '14:00';
+}
+function ovb_get_checkout_time($product_id) {
+    $info = get_post_meta($product_id, '_apartment_additional_info', true);
+    return !empty($info['checkout_time']) ? $info['checkout_time'] : '10:00';
+}
+

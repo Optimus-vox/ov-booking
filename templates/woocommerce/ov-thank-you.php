@@ -33,20 +33,34 @@ get_header();
             <ul class="ov-booking-summary">
                 <?php
                 // Preuzimamo datume i goste iz meta polja
-                $dates_meta = $order->get_meta( 'ov_all_dates' );
-                $dates_arr  = is_array( $dates_meta ) ? $dates_meta : ( $dates_meta ? explode( ',', sanitize_text_field( $dates_meta ) ) : [] );
-                sort( $dates_arr );
-                $nights = max( 1, count( $dates_arr ) - 1 );
-                $start  = $order->get_meta( 'start_date' );
-                $end    = $order->get_meta( 'end_date' );
-                $guests = intval( $order->get_meta( 'guests' ) );
+                $dates_meta = $order->get_meta('ov_all_dates');
+                if (!$dates_meta) {
+                    $dates_meta = $order->get_meta('all_dates');
+                }
+                $dates_arr = is_array($dates_meta) ? $dates_meta : ($dates_meta ? explode(',', sanitize_text_field($dates_meta)) : []);
+                sort($dates_arr);
+
+                $start  = $order->get_meta('start_date');
+                $end    = $order->get_meta('end_date');
+                $guests = intval($order->get_meta('guests'));
+
+                // Pravilno računanje broja noćenja:
+                if (count($dates_arr) > 1) {
+                    $nights = count($dates_arr) - 1;
+                } elseif ($start && $end) {
+                    $ts_start = strtotime($start);
+                    $ts_end   = strtotime($end);
+                    $nights   = max(1, (int)round(($ts_end - $ts_start) / DAY_IN_SECONDS));
+                } else {
+                    $nights = 1;
+                }
                 ?>
                 <li><span class="dashicons dashicons-calendar-alt"></span>
                     <?php
                     echo esc_html(
-                        date_i18n( 'd.m.Y', strtotime( $start ) ) .
+                        date_i18n('d.m.Y', strtotime($start)) .
                         ' – ' .
-                        date_i18n( 'd.m.Y', strtotime( $end ) )
+                        date_i18n('d.m.Y', strtotime($end))
                     );
                     ?>
                 </li>
@@ -54,8 +68,8 @@ get_header();
                     <?php
                     printf(
                         '%s %s',
-                        esc_html( $nights ),
-                        esc_html( _n( 'night', 'nights', $nights, 'ov-booking' ) )
+                        esc_html($nights),
+                        esc_html(_n('night', 'nights', $nights, 'ov-booking'))
                     );
                     ?>
                 </li>
@@ -63,8 +77,8 @@ get_header();
                     <?php
                     printf(
                         '%s %s',
-                        esc_html( $guests ),
-                        esc_html( _n( 'guest', 'guests', $guests, 'ov-booking' ) )
+                        esc_html($guests),
+                        esc_html(_n('guest', 'guests', $guests, 'ov-booking'))
                     );
                     ?>
                 </li>
