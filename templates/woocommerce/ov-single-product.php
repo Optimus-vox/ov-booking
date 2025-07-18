@@ -33,6 +33,19 @@ $ov_guests = isset($_GET['ov_guests'])
     ? intval($_GET['ov_guests'])
     : 1;
 
+    // build a comma-separated list of all dates between start and end
+$all_dates = '';
+if ( $ov_start_date && $ov_end_date ) {
+    $current = strtotime( $ov_start_date );
+    $end_ts  = strtotime( $ov_end_date );
+    $dates   = [];
+    while ( $current <= $end_ts ) {
+        $dates[]  = date( 'Y-m-d', $current );
+        $current  = strtotime( '+1 day', $current );
+    }
+    $all_dates = implode( ',', $dates );
+}
+
 // Učitaj dodatne informacije o apartmanu kako bismo dobili max_guests
 $additional_info = get_post_meta($post->ID, '_apartment_additional_info', true) ?: [];
 $max_guests = !empty($additional_info['max_guests'])
@@ -332,9 +345,16 @@ get_header();
                                                 <input type="text" id="custom-daterange-input" class="daterange" readonly
                                                     placeholder="<?php esc_attr_e('DD/MM/YYYY – DD/MM/YYYY', 'ov-booking'); ?>" />
                                                 <!-- SKRIVENA polja koja JS popunjava -->
-                                                <input type="hidden" name="start_date" id="start_date" />
+                                                <!-- <input type="hidden" name="start_date" id="start_date" />
                                                 <input type="hidden" name="end_date" id="end_date" />
-                                                <input type="hidden" name="all_dates" id="all_dates" />
+                                                <input type="hidden" name="all_dates" id="all_dates" /> -->
+<input type="hidden" name="start_date" id="start_date"
+       value="<?php echo esc_attr( $ov_start_date ); ?>" />
+<input type="hidden" name="end_date"   id="end_date"
+       value="<?php echo esc_attr( $ov_end_date ); ?>" />
+<input type="hidden" name="all_dates"  id="all_dates"
+       value="<?php echo esc_attr( $all_dates ); ?>" />
+
                                             </div>
 
                                             <input type="hidden" name="add-to-cart"
@@ -350,6 +370,8 @@ get_header();
                                                     <?php endfor; ?>
                                                 </select>
                                             </div>
+
+
 
                                             <button type="submit" class="single_add_to_cart_button button alt ov-add-to-cart">
                                                 <?php esc_html_e('Book Now', 'ov-booking'); ?>

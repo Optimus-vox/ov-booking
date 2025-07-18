@@ -188,6 +188,10 @@ function ov_enqueue_single_product_assets()
     // CSS/JS for single-product calendar
     wp_enqueue_style('ov-custom-single-style', OV_BOOKING_URL . 'assets/css/ov-single.css');
     wp_enqueue_script('ov-custom-single-script', OV_BOOKING_URL . 'assets/js/ov-single.js', ['jquery', 'daterangepicker-js'], null, true);
+     wp_localize_script( 'ov-single', 'ovBookingI18n', [
+        // ovo će ići kroz __() i biti dostupno u JS
+        'selectEndDate' => __( 'Select end date', 'ov-booking' ),
+    ] );
 
     // WooCommerce skripte za add-to-cart i fragmentaciju
     wp_enqueue_script('wc-add-to-cart');
