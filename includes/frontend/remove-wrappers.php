@@ -1,33 +1,16 @@
 <?php
-defined('ABSPATH') || exit;
+defined( 'ABSPATH' ) || exit;
 
-add_action('init', function() {
-    remove_action('woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10);
-    remove_action('woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10);
-    remove_action('astra_primary_content_top',        'astra_primary_content_top_markup');
-    remove_action('astra_primary_content_bottom',     'astra_primary_content_bottom_markup');
-    remove_action('woocommerce_before_main_content', 'astra_woocommerce_output_content_wrapper', 10);
-    remove_action('woocommerce_after_main_content',  'astra_woocommerce_output_content_wrapper_end', 10);
+// 1) Disable Astra’s WooCommerce integration globally
+add_filter( 'astra_enable_woocommerce_integration', '__return_false' );
 
 
-
-   
-    $theme = wp_get_theme();
-    $is_astra = stripos($theme->get('Name'), 'astra') !== false;
-
-    if ($is_astra) {
-    
-        remove_action('woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10);
-        remove_action('woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10);
-        remove_action('astra_primary_content_top',        'astra_primary_content_top_markup');
-        remove_action('astra_primary_content_bottom',     'astra_primary_content_bottom_markup');
-        remove_action('woocommerce_before_main_content', 'astra_woocommerce_output_content_wrapper', 10);
-        remove_action('woocommerce_after_main_content',  'astra_woocommerce_output_content_wrapper_end', 10);
+// 2) On Cart / Checkout / Thank-You: disable Elementor assets only there
+add_action( 'wp', 'ovb_disable_elementor_on_wc_pages', 1 );
+function ovb_disable_elementor_on_wc_pages() {
+    if ( is_cart() || is_checkout() || is_wc_endpoint_url( 'order-received' ) ) {
+        add_filter( 'elementor/frontend/should_enqueue_scripts', '__return_false' );
+        add_filter( 'elementor/frontend/should_enqueue_styles',  '__return_false' );
+        add_filter( 'elementor/editor/enqueue_scripts',         '__return_false' );
     }
-
-    if (defined('ELEMENTOR_VERSION')) {
-       // elementor remove wrapper hooks 
-    }
-
-
-}, 1);
+}

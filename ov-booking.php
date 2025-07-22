@@ -19,8 +19,34 @@ defined('ABSPATH') || exit;
 define('OV_BOOKING_PATH', plugin_dir_path(__FILE__));
 define('OV_BOOKING_URL', plugin_dir_url(__FILE__));
 
+
+// Blokiraj WP.org update-check zahteve na frontend-u 
+add_filter( 'pre_http_request', 'ovb_block_wporg_update_checks', 10, 3 );
+function ovb_block_wporg_update_checks( $preempt, $args, $url ) {
+    // samo na javnom delu sajta
+    if ( ! is_admin() ) {
+        // update-check endpointi
+        $patterns = [
+            'api.wordpress.org/plugins/update-check',
+            'api.wordpress.org/themes/update-check',
+            'api.wordpress.org/core/version-check',
+        ];
+        foreach ( $patterns as $p ) {
+            if ( strpos( $url, $p ) !== false ) {
+                return [
+                    'headers'  => [],
+                    'body'     => 'false',
+                    'response' => [ 'code' => 200, 'message' => 'OK' ],
+                ];
+            }
+        }
+    }
+    return $preempt;
+}
+
 // Load plugin translations
 load_plugin_textdomain('ov-booking', false, dirname(plugin_basename(__FILE__)) . '/languages');
+
 
 /**
  * WooCommerce dependency check on activation
@@ -39,6 +65,8 @@ function ovb_check_woocommerce_dependency() {
     }
 }
 
+
+
 // Activation logic
 register_activation_hook(__FILE__, function () {
     ovb_check_woocommerce_dependency();
@@ -55,6 +83,16 @@ register_activation_hook(__FILE__, function () {
         disable_woocommerce_shipping_on_activation();
     }
 });
+
+//test
+/**
+ * Očisti WooCommerce cron task prilikom deaktivacije plugina
+ */
+register_deactivation_hook( __FILE__, 'ovb_plugin_deactivate' );
+function ovb_plugin_deactivate() {
+    wp_clear_scheduled_hook( 'woocommerce_cancel_unpaid_orders' );
+}
+//test
 
 // Load plugin logic
 require_once OV_BOOKING_PATH . 'includes/init.php';

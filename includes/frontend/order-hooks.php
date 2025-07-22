@@ -936,3 +936,15 @@ function ovb_handle_order_deletion($post_id) {
     if (!$order) return;
     ovb_remove_order_reservations($order);
 }
+
+
+
+// Samo za potrebe testa i debug-a obrisi ovo posle
+
+add_action('woocommerce_checkout_process', function() {
+    if ( ! isset($_POST['payment_method']) ) {
+        wc_add_notice('⚠️ Nema payment_method u POST!', 'error');
+    } else {
+        wc_add_notice('✅ Payment method POST: ' . sanitize_text_field($_POST['payment_method']), 'notice');
+    }
+});

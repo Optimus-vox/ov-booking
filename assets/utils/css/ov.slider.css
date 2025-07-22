@@ -42,7 +42,7 @@
   
   .custom-slider-main {
     flex: 1;
-    max-width: 1000px;
+    max-width: 1240px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -65,13 +65,17 @@
     position: absolute;
     width: 50px;
     height: 50px;
-    background-color: #000;
+    background-color: rgba(0, 0, 0, 0.35);
     color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     z-index: 10001;
+    transition: background-color 0.2s ease-in-out;
+  }
+  .custom-slider-arrow:hover{
+    background-color: rgba(0, 0, 0, 0.55);
   }
   .custom-slider-arrow.left-arrow  { left: 10px; }
   .custom-slider-arrow.right-arrow { right: 10px; }
@@ -139,19 +143,20 @@
     .product-gallery-grid {
       display: grid;
       gap: 20px;
-      /* VISINU i overflow ne diramo ovde! */
+      min-width: 0;
+      min-height: 0;
+      height: 100%; /* Dodano - grid mora imati definisanu visinu */
       
       /* 2 slike */
       &.images-2 {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
       }
   
       /* 3 slike */
       &.images-3 {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: auto auto;
-        /* auto-auto dozvoljava prvi i drugi red da se prilagode */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: 1fr 1fr; /* Promenjeno sa auto auto na 1fr 1fr */
         .hreff-wrap {
           &:nth-of-type(1),
           &:nth-of-type(2) { grid-row: 1; }
@@ -164,16 +169,14 @@
   
       /* 4 slike */
       &.images-4 {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
       }
   
       /* 5 slika */
       &.images-5 {
-        display: grid;
-        gap: 20px;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: auto auto;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: 1fr 1fr; /* Promenjeno sa auto auto na 1fr 1fr */
         .hreff-wrap {
           &:nth-of-type(-n+3) { grid-row: 1; }
           &:nth-of-type(n+4)  { grid-row: 2; }
@@ -183,8 +186,8 @@
   
       /* 6 ili više */
       &.images-6 {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(3, minmax(0, 1fr));
         .hreff-wrap {
           &:nth-of-type(1),
           &:nth-of-type(3) { grid-row: 1 / span 2; }
@@ -195,14 +198,17 @@
   
       /* Default stavke */
       .hreff-wrap {
-        height: auto;
+        height: 100%;
+        min-height: 0; /* Dodano za bolje ponašanje u grid-u */
         .gallery-product-img {
+          min-width: 0;
+          min-height: 0;
           display: block;
           width: 100%;
           height: 100%;
           object-fit: cover;
+          aspect-ratio: 1/1;
         }
       }
     }
   }
-  

@@ -71,8 +71,6 @@ if (WC()->cart && !WC()->cart->is_empty()) {
 $cart_not_empty = WC()->cart && WC()->cart->get_cart_contents_count() > 0;
 
 $product_title_js = esc_js(get_the_title());
-echo "<script>var ovProductName = '{$product_title_js}';</script>";
-echo '<div id="ov-booking-container" class="ov-atomic-reset">';
 
 get_header();
 ?>
@@ -213,7 +211,8 @@ get_header();
                                 $rules_ikone = get_post_meta(get_the_ID(), '_apartment_rules_icons', true);
                                 $checkin_time = !empty($additional_info['checkin_time']) ? esc_html($additional_info['checkin_time']) : '';
                                 $checkout_time = !empty($additional_info['checkout_time']) ? esc_html($additional_info['checkout_time']) : '';
-                                echo $checkin_time;
+                                echo $checkin_time . '<br>';
+                                echo $checkout_time;
 
                                 if (!empty($rules_ikone)): ?>
                                     <div class="apartment-rules-section">
@@ -312,8 +311,8 @@ get_header();
                             <section class="custom-product-summary">
 
                                 <div class="custom-dates">
-                                    <span class="stay-duration"><?php esc_html_e('Stay Duration', 'ov-booking'); ?></span>
                                     <div class="custom-price" id="ov_total_container"></div>
+                                    <span class="stay-duration"><?php esc_html_e('Stay Duration', 'ov-booking'); ?></span>
 
                                     <!-- odavde  -->
                                      
@@ -410,7 +409,7 @@ get_header();
                                                     echo '<span style="color:#8B5DFF;">★</span>';
                                                 }
                                                 if ($half_star) {
-                                                    echo '<span style="color:#8B5DFF;">⯨</span>';
+                                                    echo '<span class="half-star" style="color:#8B5DFF;">★</span>';
                                                 }
                                                 ?>
                                             </div>

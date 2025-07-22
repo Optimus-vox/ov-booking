@@ -42,6 +42,9 @@ html {
           .hreff-wrap {
             display: flex;
             height: 100%;
+            align-items: flex-start;
+            justify-content: flex-start;
+            flex-wrap: wrap;
 
             .gallery-main-img {
               height: 100%;
@@ -291,7 +294,7 @@ html {
           width: 100%;
           height: fit-content;
           gap: 20px;
-          margin-bottom: 20px;
+          margin-bottom: 12px;
 
           &.added-to-cart {
             gap: 0px;
@@ -313,6 +316,17 @@ html {
           .total-nights {
             font-size: 19px;
             line-height: 22.5px;
+          }
+
+          .ov-price-summary-wrapper{
+            .ov-summary-price{
+              b{
+                font-size: 36px;
+              }
+            }
+            .ov-summary-nights{
+              font-size: 19px;
+            }
           }
         }
 
@@ -347,9 +361,10 @@ html {
             padding: 13px 25px;
             font-size: 19px;
             line-height: 22.5px;
-            margin: 15px 0;
-            width: calc(100% - 50px);
+            margin: 5px 0 15px 0;
+            width: 100%;
             height: auto;
+            box-sizing: border-box;
           }
         }
 
@@ -376,7 +391,7 @@ html {
           select,
           ::picker(select) {
             appearance: base-select;
-            margin-top: 10px;
+            margin-top: 0;
             margin-bottom: 10px;
             height: auto;
           }
@@ -469,6 +484,7 @@ html {
         margin: 0 0 24px 0;
         font-size: 45px;
         line-height: 100%;
+        color: #fff;
       }
 
       .map-wrap {
@@ -553,9 +569,15 @@ html {
   height: 100% !important;
   border: 0;
 }
+.ov-testimonials-wrapper{
+  
+}
 
 .ov-testimonials-wrapper h3 {
-  margin: 30px 0;
+  margin: 60px 0 80px;
+  color: #fff;
+  text-align: center;
+  font-size: 45px;
 }
 
 .ov-testimonials-carousel .owl-item {
@@ -596,18 +618,33 @@ html {
 .ov-testimonial-rating {
   span {
     font-size: 30px;
+    &.half-star{
+      position: relative;
+      &::after{
+        content: '';
+        background-color: #1b203a;
+        position: absolute;
+        left: 50%;
+        width: 50%;
+        height: 100%;
+        top: 0;
+      }
+    }
   }
 }
 
 .ov-testimonial-text {
   position: relative;
   font-style: italic;
-  padding: 20px 40px;
+  padding: 30px 40px;
   color: #fff;
+}
+.ov-testimonial-text p {
+  font-size: 21px;
 }
 
 .ov-testimonial-text .big-quote {
-  font-size: 100px;
+  font-size: 60px;
   color: #8B5DFF;
   line-height: 1;
   font-family: Georgia, serif;
@@ -616,13 +653,13 @@ html {
 
 .big-quote.open {
   position: absolute;
-  top: -10px;
+  top: 0px;
   left: -10px;
 }
 
 .big-quote.close {
   position: absolute;
-  bottom: -40px;
+  bottom: -33px;
   right: -10px;
 }
 
