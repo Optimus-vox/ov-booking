@@ -51,8 +51,8 @@ function render_testimonials_meta_box($post) {
         echo '</div>';
     }
     
-    echo '<button type="button" id="add-testimonial" class="button">+ Add Testimonial</button>';
     echo '</div>';
+    echo '<button type="button" id="add-testimonial" class="button">+ Add Testimonial</button>';
     
     // PURE JAVASCRIPT ZA DINAMIČKO DODAVANJE
     echo '

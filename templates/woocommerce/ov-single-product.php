@@ -302,7 +302,9 @@ get_header();
                                     </h3>
                                     <span><?php esc_html_e('Select your dates', 'ov-booking'); ?></span>
                                 <?php } ?>
-
+                                    <script>
+                                        window.ovb_product_title = "<?php echo esc_js(get_the_title()); ?>";
+                                    </script>
                                 <div id="ov-booking_readonly_calendar" class="ov-booking_readonly_calendar"></div>
                             </div>
                         </div> <!-- product-details-left -->

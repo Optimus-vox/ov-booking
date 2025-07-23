@@ -32,7 +32,7 @@ function ov_booking_render_settings_page() {
     ?>
     <div class="wrap">
         <h1>OV Booking Display Settings</h1>
-        <p class="description">Choose how the product page should be rendered by this plugin.</p>
+        <!-- <p class="description">Choose how the product page should be rendered by this plugin.</p> -->
         <form method="post" action="options.php">
             <?php settings_fields('ov_booking_settings_group'); ?>
             <?php do_settings_sections('ov-booking-settings'); ?>
@@ -50,7 +50,7 @@ function ov_booking_render_settings_page() {
                     <td>
                         <input type="email" name="ovb_contact_email" class="regular-text"
                             value="<?php echo esc_attr($contact_email); ?>" placeholder="you@example.com" />
-                        <p class="description">Email adresa na koju će gosti moći da kontaktiraju smeštaj i koja će biti prikazana u iCal fajlu.</p>
+                        <p class="description" style="font-size: 12px"><?php esc_html_e('Enter contact email address(it will be used in emails).', 'ov-booking'); ?></p>
                     </td>
                 </tr>
             </table>
@@ -66,9 +66,9 @@ function ov_booking_render_settings_page() {
                         $client_id_ok     = get_option('ovb_google_client_id');
                         $client_secret_ok = get_option('ovb_google_client_secret');
                         if (!empty($client_id_ok) && !empty($client_secret_ok)) {
-                            echo '<p style="color:green; margin-top:4px;">✅ ' . esc_html__('Google OAuth podešen', 'ov-booking') . '</p>';
+                            echo '<p style="color:green; margin-top:4px;">✅ ' . esc_html__('Google OAuth is configured', 'ov-booking') . '</p>';
                         } else {
-                            echo '<p style="color:red; margin-top:4px;">❌ ' . esc_html__('Google OAuth nije kompletiran', 'ov-booking') . '</p>';
+                            echo '<p style="color:red; margin-top:4px;">❌ ' . esc_html__('Google OAuth isn\'t configured', 'ov-booking') . '</p>';
                         }
                         ?>
                     </td>
@@ -87,7 +87,7 @@ function ov_booking_render_settings_page() {
                 <tr>
                     <th scope="row">Reset settings</th>
                     <td>
-                        <?php submit_button('Reset WooCommerce stranice', 'delete', 'ovb_reset_wc_pages'); ?>
+                        <?php submit_button('Reset WooCommerce pages', 'delete', 'ovb_reset_wc_pages'); ?>
                     </td>
                 </tr>
             </table>

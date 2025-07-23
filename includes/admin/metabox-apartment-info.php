@@ -50,18 +50,18 @@ function show_custom_icons_fields($post, $meta_key, $nonce_name) {
                         <?php endif; ?>
                     </div>
                     <input type="text" name="<?php echo $meta_key; ?>[<?php echo $index; ?>][ikona_url]" 
-                           value="<?php echo esc_attr($ik['ikona_url']); ?>" placeholder="URL ikonice" class="ikona-url" />
-                    <button type="button" class="upload-ikona-button">Choose image</button>
+                           value="<?php echo esc_attr($ik['ikona_url']); ?>" placeholder="Enter image URL or upload" class="ikona-url" />
+                    <button type="button" class="upload-ikona-button" style="padding: 0 10px;">Choose image</button>
                     
                     <input type="text" name="<?php echo $meta_key; ?>[<?php echo $index; ?>][tekst]" 
-                           value="<?php echo esc_attr($ik['tekst']); ?>" placeholder="Tekst pored ikonice" />
+                           value="<?php echo esc_attr($ik['tekst']); ?>" placeholder="Icon text" />
                     
-                    <button type="button" class="remove-ikonica">Remove</button>
+                    <button type="button" class="remove-ikonica" style="padding: 0 10px; margin-left: 5px;">Remove</button>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
-    <button type="button" class="dodaj-ikonicu" data-meta-key="<?php echo $meta_key; ?>">Dodaj ikonicu</button>
+    <button type="button" class="dodaj-ikonicu" data-meta-key="<?php echo $meta_key; ?>">&#43; Add icon</button>
 
     <?php if(!$script_loaded) : // Loadujemo skriptu samo jednom ?>
     <script>
@@ -75,9 +75,9 @@ function show_custom_icons_fields($post, $meta_key, $nonce_name) {
              const html = `
                 <div class="ikonica-item">
                     <div class="image-preview"></div>
-                    <input type="text" name="${metaKey}[${index}][ikona_url]" placeholder="URL ikonice" class="ikona-url" />
+                    <input type="text" name="${metaKey}[${index}][ikona_url]" placeholder="Enter image URL or upload" class="ikona-url" />
                     <button type="button" class="upload-ikona-button">Choose image</button>
-                    <input type="text" name="${metaKey}[${index}][tekst]" placeholder="Tekst pored ikonice" />
+                    <input type="text" name="${metaKey}[${index}][tekst]" placeholder="Icon text" />
                     <button type="button" class="remove-ikonica">Remove</button>
                 </div>
             `;
@@ -133,9 +133,17 @@ function show_custom_icons_fields($post, $meta_key, $nonce_name) {
         }
         .dodaj-ikonicu{
             height: 50px;
+            width: 120px;
+            padding: 0 10px;
+            cursor: pointer;
+            font-size: 15px;
         }
         .upload-ikona-button {
-            margin: 0 10px;
+            margin: 0 10px 0 5px;
+            cursor: pointer;
+        }
+        .remove-ikonica{
+            cursor: pointer;
         }
     </style>
     <?php

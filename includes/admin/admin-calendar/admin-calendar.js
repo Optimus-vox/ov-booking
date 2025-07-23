@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log(ov_calendar_vars.calendarData);
   var CURRENT_DATE = new Date();
   var d = new Date();
-  var content = "Januar Februar Mart April Maj Jun Jul Avgust Septembar Oktobar Novembar Decembar".split(" ");
+  var content = "January February March April May June July August September October November December".split(" ");
   var daysOfMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   let calendarData = {};
@@ -200,9 +200,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             </svg>`
                         : ""
                     }
-                    ${typeof price === "number" ? price + "€" : "Dodaj cenu"}
+                    ${typeof price === "number" ? price + "€" : "Add price"}
                     <span class="tooltip-text">
-                        Cena: ${typeof price === "number" ? price + "€" : "Nije postavljeno"}<br>
+                        Price: ${typeof price === "number" ? price + "€" : "Price not set"}<br>
                         Status: ${status}
                     </span>
                 </div>

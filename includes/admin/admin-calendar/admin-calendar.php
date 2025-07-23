@@ -49,13 +49,13 @@ function render_calendar_meta_box($post)
             <table class="admin-table table table-bordered">
                 <thead>
                     <tr>
-                        <th>P</th>
-                        <th>U</th>
-                        <th>S</th>
-                        <th>Č</th>
-                        <th>P</th>
-                        <th>S</th>
-                        <th>N</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                        <th>Sunday</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -185,9 +185,9 @@ function render_calendar_meta_box($post)
                             <th><label for="apply_rule">Apply to:</label></th>
                             <td>
                                 <select id="apply_rule" style="width: 140px;">
+                                    <option value="full_month">Full Month</option>
                                     <option value="weekdays">Weekdays</option>
                                     <option value="weekends">Weekends</option>
-                                    <option value="full_month">Full Month</option>
                                     <option value="custom">Custom Range</option>
                                 </select>
                             </td>
@@ -309,8 +309,8 @@ function render_calendar_meta_box($post)
                 <input type="hidden" id="client_modal_date_input">
             </div>
             <div class="buttons">
-                <button id="client_modal_save">Sačuvaj</button>
-                <button onclick="closeClientModal()">Otkaži</button>
+                <button id="client_modal_save">Save</button>
+                <button onclick="closeClientModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -325,13 +325,13 @@ function render_calendar_meta_box($post)
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                 </svg>
             </i>
-            <h3>Unesi cenu za <span id="price_modal_date"></span></h3>
+            <h3>Enter price for this date:<span id="price_modal_date"></span></h3>
             <input type="hidden" id="price_modal_date_input" />
-            <input type="number" id="price_modal_input" placeholder="Unesi cenu" style="width:100%; padding:10px;">
+            <input type="number" id="price_modal_input" placeholder="Enter price" style="width:100%; padding:10px;">
             <br><br>
             <div class="buttons">
-                <button id="price_modal_save">Sačuvaj</button>
-                <button onclick="jQuery('#price_modal_wrapper').hide()">Otkaži</button>
+                <button id="price_modal_save">Save</button>
+                <button onclick="jQuery('#price_modal_wrapper').hide()">Cancel</button>
             </div>
         </div>
     </div>
@@ -347,21 +347,21 @@ function render_calendar_meta_box($post)
                 </svg>
             </i>
             <div>
-                <h3>Gost: <span id="client_action_name"></span></h3>
+                <h3>Guest: <span id="client_action_name"></span></h3>
                 <h3>Email: <span id="client_action_email"></span></h3>
-                <h3>Telefon: <span id="client_action_phone"></span></h3>
-                <h3>Broj Osoba: <span id="client_action_number_of_guests"></span></h3>
-                <h3>Raspon dana: <span id="client_action_date_range"></span></h3>
-                <h3>Datum: <span id="client_action_date"></span></h3>
+                <h3>Phone: <span id="client_action_phone"></span></h3>
+                <h3>Guest number: <span id="client_action_number_of_guests"></span></h3>
+                <h3>Date range: <span id="client_action_date_range"></span></h3>
+                <h3>Date: <span id="client_action_date"></span></h3>
                 <input type="hidden" id="client_action_date_input" />
                 <input type="hidden" id="client_action_email_input" />
                 <input type="hidden" id="client_action_bookingid_input" />
             </div>
             <br>
             <div class="buttons">
-                <button id="delete_client_single">Obriši samo ovaj dan</button>
-                <button id="delete_client_all">Obriši celu rezervaciju</button>
-                <button onclick="jQuery('#client_action_modal_wrapper').hide()">Otkaži</button>
+                <button id="delete_client_single">Delete reservation for this day</button>
+                <button id="delete_client_all">Delete reservation</button>
+                <button onclick="jQuery('#client_action_modal_wrapper').hide()">Cancel</button>
             </div>
             
         </div>

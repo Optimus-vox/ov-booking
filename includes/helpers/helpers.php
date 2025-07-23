@@ -11,7 +11,7 @@ function add_calendar_meta_box()
     if (current_user_can('manage_woocommerce')) {
         add_meta_box(
             'product_calendar_meta_box',
-            'Kalendar za cenu po danima',
+            'Calendar Settings',
             'render_calendar_meta_box',
             'product',
             'normal',

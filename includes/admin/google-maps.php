@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 function google_maps_iframe_meta_box_callback($post) {
     $iframe = get_post_meta($post->ID, '_google_maps_iframe', true);
     wp_nonce_field('google_maps_iframe_nonce_action', 'google_maps_iframe_nonce');
-    echo '<label for="google_maps_iframe">Google Maps iframe kod:</label>';
+    echo '<label for="google_maps_iframe">Google Maps iframe:</label>';
     echo '<textarea id="google_maps_iframe" name="google_maps_iframe" rows="4" style="width:100%;">' . esc_textarea($iframe) . '</textarea>';
 }
 

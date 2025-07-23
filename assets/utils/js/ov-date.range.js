@@ -414,6 +414,25 @@ function initOvDateRangePicker(config) {
     containerEl.querySelector('#end_date').value = endDate ? formatDate(endDate) : '';
     containerEl.querySelector('#all_dates').value = allDates.join(",");
 
+    const calendarSectionReadOnly = document.querySelector(".ov-booking-calendar-section");
+    if (calendarSectionReadOnly) {
+    const h3 = calendarSectionReadOnly.querySelector('h3');
+    const span = calendarSectionReadOnly.querySelector('span');
+
+    const startLabel = formatDate(startDate);
+    const endLabel = formatDate(endDate);
+    const nights = Math.max(0, Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
+    const title = window.ovb_product_title || '';
+
+    if (h3 && span) {
+      h3.textContent = nights > 0
+        ? `${nights} ${nights === 1 ? 'night' : 'nights'} in ${title}`
+        : 'Make a reservation';
+
+      span.textContent = `${startLabel} – ${endLabel}`;
+    }
+  }
+
     let totalNights = Math.max(0, allDates.length - 1);
     let totalPrice = 0;
 
