@@ -35,11 +35,47 @@ add_action('woocommerce_after_checkout_validation', function($data, $errors){
 
 
 // ČUVANJE gostiju u order meta 
+// add_action('woocommerce_checkout_update_order_meta', function($order_id, $data = []) {
+//     $order = wc_get_order($order_id);
+//     if (!$order) return;
+
+//     // Pronađi podatke iz prve stavke korpe koja ima rezervacione datume
+//     foreach (WC()->cart->get_cart() as $item) {
+//         if (!empty($item['ov_all_dates'])) {
+//             $order->update_meta_data('all_dates', sanitize_text_field($item['ov_all_dates']));
+//             if (!empty($item['start_date'])) {
+//                 $order->update_meta_data('start_date', sanitize_text_field($item['start_date']));
+//             }
+//             if (!empty($item['end_date'])) {
+//                 $order->update_meta_data('end_date', sanitize_text_field($item['end_date']));
+//             }
+//             if (isset($item['guests'])) {
+//                 $order->update_meta_data('guests', intval($item['guests']));
+//             }
+//             break; // koristi samo prvi item sa podacima
+//         }
+//     }
+
+//     // ISPRAVNO: Sačuvaj goste direktno iz $_POST
+//     $guests = isset($_POST['ovb_guest']) && is_array($_POST['ovb_guest']) ? $_POST['ovb_guest'] : [];
+//     $order->update_meta_data('_ovb_guests', $guests);
+
+//     // Sačuvaj podatke o platilacu (billing fields) u order meta
+//     $billing_fields = ['first_name', 'last_name', 'email', 'phone'];
+//     foreach ($billing_fields as $field) {
+//         $value = isset($_POST['billing_' . $field]) ? sanitize_text_field($_POST['billing_' . $field]) : '';
+//         if ($value) {
+//             $order->update_meta_data('booking_client_' . $field, $value);
+//         }
+//     }
+
+//     $order->save();
+// }, 10, 2);
+
 add_action('woocommerce_checkout_update_order_meta', function($order_id, $data = []) {
     $order = wc_get_order($order_id);
     if (!$order) return;
 
-    // Pronađi podatke iz prve stavke korpe koja ima rezervacione datume
     foreach (WC()->cart->get_cart() as $item) {
         if (!empty($item['ov_all_dates'])) {
             $order->update_meta_data('all_dates', sanitize_text_field($item['ov_all_dates']));
@@ -52,15 +88,15 @@ add_action('woocommerce_checkout_update_order_meta', function($order_id, $data =
             if (isset($item['guests'])) {
                 $order->update_meta_data('guests', intval($item['guests']));
             }
-            break; // koristi samo prvi item sa podacima
+            break;
         }
     }
 
-    // ISPRAVNO: Sačuvaj goste direktno iz $_POST
+    // ✅ Snimi sve goste
     $guests = isset($_POST['ovb_guest']) && is_array($_POST['ovb_guest']) ? $_POST['ovb_guest'] : [];
     $order->update_meta_data('_ovb_guests', $guests);
 
-    // Sačuvaj podatke o platilacu (billing fields) u order meta
+    // ✅ Snimi podatke o platilacu
     $billing_fields = ['first_name', 'last_name', 'email', 'phone'];
     foreach ($billing_fields as $field) {
         $value = isset($_POST['billing_' . $field]) ? sanitize_text_field($_POST['billing_' . $field]) : '';
@@ -69,8 +105,13 @@ add_action('woocommerce_checkout_update_order_meta', function($order_id, $data =
         }
     }
 
+    // ✅ NOVO: Snimi info da li je plaćeno od strane druge osobe
+    $is_paid_by_other = !empty($_POST['ovb_paid_by_other']) ? 'yes' : 'no';
+    $order->update_meta_data('_ovb_paid_by_other', $is_paid_by_other);
+
     $order->save();
 }, 10, 2);
+
 
 
 
@@ -401,57 +442,148 @@ add_action('woocommerce_admin_order_data_after_shipping_address', function($orde
 });
 
 
+// add_action('woocommerce_admin_order_item_headers', function($order){
+//     // 1. Prikaz podataka o platilacu
+//     echo '<div class="ovb-order-customer" style="margin:0 0 20px 0; padding:16px; background:#f5f5fa; border-radius:0;">';
+//     echo '<h3 style="margin-bottom:10px;">' . __('Details of the Payer:', 'ov-booking') . '</h3>';
+//     echo '<ul style="margin-left:0; padding-left:0; width:fit-content;">';
+
+//     $fields = [
+//         'Full Name' => 
+//         ($order->get_meta('booking_client_first_name') ?: $order->get_billing_first_name()) . ' ' .
+//         ($order->get_meta('booking_client_last_name') ?: $order->get_billing_last_name()),
+//         'Email'           => $order->get_meta('booking_client_email') ?: $order->get_billing_email(),
+//         'Phone'           => $order->get_meta('booking_client_phone') ?: $order->get_billing_phone(),
+//         'Address'         => $order->get_billing_address_1(),
+//         'City'            => $order->get_billing_city(),
+//         'Country'         => WC()->countries->countries[ $order->get_billing_country() ] ?? $order->get_billing_country(),
+//         'Country Code'    => $order->get_billing_country(),
+//         'Post Code'       => $order->get_billing_postcode(),
+
+      
+//     ];
+// foreach ($fields as $label => $val) {
+//     if ($val) {
+//         // Telefonski broj kao klikabilan link
+//         if ($label === 'Phone') {
+//             if (is_array($val)) {
+//                 $val = implode(', ', $val);
+//             }
+//             echo '<li><strong>' . esc_html($label) . ':</strong> <a href="tel:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
+
+//         // Email kao mailto link
+//         } elseif ($label === 'Email') {
+//             echo '<li><strong>' . esc_html($label) . ':</strong> <a href="mailto:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
+
+//         // Svi ostali kao običan tekst
+//         } else {
+//             echo '<li><strong>' . esc_html($label) . ':</strong> ' . esc_html($val) . '</li>';
+//         }
+//     }
+// }
+//     echo '</ul>';
+//     echo '</div>';
+
+//     // 2. Prikaz gostiju
+//     $guests = $order->get_meta('_ovb_guests');
+//     // var_dump($guests);
+//     echo '<div style="display:flex; flex-wrap:wrap; gap:30px;">'; // ovo okružuje sve goste horizontalno
+
+//     foreach ($guests as $i => $guest) {
+//         echo '<div style="flex: 1 1 300px; background:#fff; padding:15px; border:1px solid #e5e5e5; border-radius:6px;">';
+
+//         echo '<strong style="display:block; margin-bottom:10px;">Guest #' . ($i+1) . '</strong>';
+
+//         echo '<ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px;">';
+
+//         $full_name = trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? ''));
+//         if ($full_name) {
+//             echo '<li><strong>Full Name:</strong> ' . esc_html($full_name) . '</li>';
+//         }
+
+//         if (!empty($guest['email'])) {
+//             echo '<li><strong>Email:</strong> <a href="mailto:' . esc_attr($guest['email']) . '">' . esc_html($guest['email']) . '</a></li>';
+//         }
+
+//         if (!empty($guest['phone'])) {
+//             echo '<li><strong>Phone:</strong> <a href="tel:' . esc_attr($guest['phone']) . '">' . esc_html($guest['phone']) . '</a></li>';
+//         }
+
+//         if (!empty($guest['birthdate'])) {
+//             $birth_ts = strtotime($guest['birthdate']);
+//             $birth_formatted = $birth_ts ? date_i18n(get_option('date_format'), $birth_ts) : $guest['birthdate'];
+//             echo '<li><strong>Date of Birth:</strong> ' . esc_html($birth_formatted) . '</li>';
+//         }
+
+//         if (!empty($guest['gender'])) {
+//             echo '<li><strong>Gender:</strong> ' . esc_html(ucfirst($guest['gender'])) . '</li>';
+//         }
+
+//         if (!empty($guest['id_number'])) {
+//             echo '<li><strong>ID Number:</strong> ' . esc_html($guest['id_number']) . '</li>';
+//         }
+
+//         echo '</ul>';
+//         echo '</div>';
+//     }
+
+//     echo '</div>'; // kraj wrappera za sve goste
+// });
+
 add_action('woocommerce_admin_order_item_headers', function($order){
-    // 1. Prikaz podataka o platilacu
     echo '<div class="ovb-order-customer" style="margin:0 0 20px 0; padding:16px; background:#f5f5fa; border-radius:0;">';
     echo '<h3 style="margin-bottom:10px;">' . __('Details of the Payer:', 'ov-booking') . '</h3>';
     echo '<ul style="margin-left:0; padding-left:0; width:fit-content;">';
 
     $fields = [
-        'Full Name' => 
+        'Full Name' =>
         ($order->get_meta('booking_client_first_name') ?: $order->get_billing_first_name()) . ' ' .
         ($order->get_meta('booking_client_last_name') ?: $order->get_billing_last_name()),
-        'Email'           => $order->get_meta('booking_client_email') ?: $order->get_billing_email(),
-        'Phone'           => $order->get_meta('booking_client_phone') ?: $order->get_billing_phone(),
-        'Address'         => $order->get_billing_address_1(),
-        'City'            => $order->get_billing_city(),
-        'Country'         => WC()->countries->countries[ $order->get_billing_country() ] ?? $order->get_billing_country(),
-        'Country Code'    => $order->get_billing_country(),
-        'Post Code'       => $order->get_billing_postcode(),
-
-      
+        'Email'         => $order->get_meta('booking_client_email') ?: $order->get_billing_email(),
+        'Phone'         => $order->get_meta('booking_client_phone') ?: $order->get_billing_phone(),
+        'Address'       => $order->get_billing_address_1(),
+        'City'          => $order->get_billing_city(),
+        'Country'       => WC()->countries->countries[ $order->get_billing_country() ] ?? $order->get_billing_country(),
+        'Country Code'  => $order->get_billing_country(),
+        'Post Code'     => $order->get_billing_postcode(),
     ];
-foreach ($fields as $label => $val) {
-    if ($val) {
-        // Telefonski broj kao klikabilan link
-        if ($label === 'Phone') {
-            if (is_array($val)) {
-                $val = implode(', ', $val);
+
+    foreach ($fields as $label => $val) {
+        if ($val) {
+            if ($label === 'Phone') {
+                if (is_array($val)) $val = implode(', ', $val);
+                echo '<li><strong>' . esc_html($label) . ':</strong> <a href="tel:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
+            } elseif ($label === 'Email') {
+                echo '<li><strong>' . esc_html($label) . ':</strong> <a href="mailto:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
+            } else {
+                echo '<li><strong>' . esc_html($label) . ':</strong> ' . esc_html($val) . '</li>';
             }
-            echo '<li><strong>' . esc_html($label) . ':</strong> <a href="tel:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
-
-        // Email kao mailto link
-        } elseif ($label === 'Email') {
-            echo '<li><strong>' . esc_html($label) . ':</strong> <a href="mailto:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
-
-        // Svi ostali kao običan tekst
-        } else {
-            echo '<li><strong>' . esc_html($label) . ':</strong> ' . esc_html($val) . '</li>';
         }
     }
-}
+
     echo '</ul>';
     echo '</div>';
 
-    // 2. Prikaz gostiju
+    // ✅ Prikaz gostiju
     $guests = $order->get_meta('_ovb_guests');
-    // var_dump($guests);
-    echo '<div style="display:flex; flex-wrap:wrap; gap:30px;">'; // ovo okružuje sve goste horizontalno
+    $is_paid_by_other = $order->get_meta('_ovb_paid_by_other') === 'yes';
+
+    echo '<div style="display:flex; flex-wrap:wrap; gap:30px;">';
 
     foreach ($guests as $i => $guest) {
         echo '<div style="flex: 1 1 300px; background:#fff; padding:15px; border:1px solid #e5e5e5; border-radius:6px;">';
 
-        echo '<strong style="display:block; margin-bottom:10px;">Guest #' . ($i+1) . '</strong>';
+        // ✅ Brojčani label
+        $label = 'Guest #' . ($is_paid_by_other ? ($i + 1) : $i);
+        if (!$is_paid_by_other && $i === 0) {
+            $label = 'Booking Person';
+        }
+
+        echo '<strong style="display:block; margin-bottom:10px;">' . esc_html($label) . '</strong>';
+
+        if ($is_paid_by_other && $i === 0) {
+            echo '<span style="font-size:12px; color:#7c3aed; margin-top:4px; display:block;">(Different from payer)</span>';
+        }
 
         echo '<ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px;">';
 
@@ -486,9 +618,7 @@ foreach ($fields as $label => $val) {
         echo '</div>';
     }
 
-    echo '</div>'; // kraj wrappera za sve goste
-
-
+    echo '</div>';
 });
 
 function ovb_remove_order_reservations($order) {

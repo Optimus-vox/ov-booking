@@ -18,3 +18,7 @@ html,body{
 #order_data  h3 {
     display: none !important;
 }
+
+body.hidden {
+  overflow: hidden !important;
+}

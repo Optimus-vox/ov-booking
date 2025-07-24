@@ -61,7 +61,7 @@
                                             (Npr. roditelj, firma, posrednik. Ako ste vi gost i plaćate, ostavite prazno.)
                                         </span>
                                     </label>
-                                    <div id="ovb-guests-wrapper"></div>
+                                    <div id="ovb-guests-wrapper" class="ovb-guests-wrapper"></div>
                                 </div>
 
                                 <script>
@@ -273,29 +273,3 @@
 
     </div> <!-- /.ov-checkout-container -->
 </div>
-
-<script>
-jQuery(document).ready(function($) {
-    // Debugging za Klarna
-    console.log('Checkout initialized');
-    
-    // Check for Klarna
-    setTimeout(function() {
-        var klarnaElements = $('.payment_method_klarna_payments');
-        console.log('Klarna elements found:', klarnaElements.length);
-        
-        if (klarnaElements.length === 0) {
-            console.log('Klarna not found. Available payment methods:');
-            $('.payment_methods li').each(function() {
-                console.log('- ' + $(this).attr('class'));
-            });
-        }
-    }, 2000);
-    
-    // Force update checkout on country/postcode change for Klarna
-    $(document).on('change', '#billing_country, #billing_postcode', function() {
-        console.log('Country/postcode changed, updating checkout for Klarna');
-        $('body').trigger('update_checkout');
-    });
-});
-</script>

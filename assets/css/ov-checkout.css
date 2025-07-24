@@ -51,6 +51,9 @@
   height: 100%;
   right: 10px;
   color: #fff !important;
+  b{
+      filter: invert(1);
+  }
 }
 
 .select2-container--default.select2-container--focus .select2-selection--single {
@@ -101,7 +104,60 @@
   border-radius: 4px;
   border: 2px solid #1B203A;
 }
+.p-ThirdPartyButtonContainer{
+  border: none !important;
 }
+}
+
+/* loader */
+
+/* Modern mini loader for payment methods */
+.ovb-mini-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 0 10px 0;
+    background: #eaecf3;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px 0 rgba(17,21,39,0.09);
+    font-size: 1.08em;
+    font-weight: 500;
+    color: #1a2756;
+    margin-bottom: 10px;
+    gap: 12px;
+    letter-spacing: 0.01em;
+    border: 0;
+    border-top: 1.5px solid #dbe3ee;
+    border-bottom: 1.5px solid #e4e8f2;
+}
+
+.ovb-mini-loader .loader {
+  width: 44px;
+  aspect-ratio: .75;
+  --c: no-repeat linear-gradient(#3559db 0 0); /* promeni boju po potrebi */
+  background: 
+    var(--c) 0%   50%,
+    var(--c) 50%  50%,
+    var(--c) 100% 50%;
+  animation: l7 1s infinite linear alternate;
+}
+
+@keyframes l7 {
+  0%  {background-size: 20% 50% ,20% 50% ,20% 50% }
+  20% {background-size: 20% 20% ,20% 50% ,20% 50% }
+  40% {background-size: 20% 100%,20% 20% ,20% 50% }
+  60% {background-size: 20% 50% ,20% 100%,20% 20% }
+  80% {background-size: 20% 50% ,20% 50% ,20% 100%}
+  100%{background-size: 20% 50% ,20% 50% ,20% 50% }
+}
+
+/* loader */
+/* Placeholder stilovi za payment buttons */
+.payment-request-button { min-height: 44px; }
+.paypal-buttons { min-height: 44px; }
+.klarna-payments-container { min-height: 60px; }
+
 .required_field{
   .required{
     color: red;
@@ -209,6 +265,32 @@
                 h3{
                   color: #fff;
                 }
+                p{
+                  label{
+                    color: #fff;
+                  }
+                    span{
+                      input {
+                        border: 1px solid #fff;
+                        background: transparent;
+                        color: white;
+                        padding: 10px;
+                        border-radius: 0;
+                        outline: none;
+                        box-shadow: none;
+                        width: 100%;
+                        height: 45px;
+                      }
+                      input::placeholder{
+                        color: #ffffff66;
+                      }
+                      input:focus{
+                        border-color: #8B5DFF;
+                        outline: none;
+                        box-shadow: none;
+                      }
+                    }
+                  }
                 .woocommerce-billing-fields__field-wrapper{
                   p{
                     label{
@@ -234,6 +316,24 @@
                         outline: none;
                         box-shadow: none;
                       }
+                    }
+                  }
+                }
+              }
+              .ovb-guests-section{
+                h4{
+                  color: #fff;
+                }
+                p{
+                  label{
+                    color: #fff;
+                  }
+                }
+                .ovb-guests-wrapper{
+                  margin-top: 35px;
+                  .ov-guest-row{
+                    h3{
+                      color: #fff;
                     }
                   }
                 }
