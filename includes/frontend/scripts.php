@@ -398,11 +398,9 @@ function ovb_optimized_checkout_init()
             var contentCheck = setInterval(function() {
                 // .ov-checkout-content je tvoj glavni content wraper!
                 if (document.querySelector('.ov-checkout-content')) {
-                    hideMainLoader();
                     clearInterval(contentCheck);
                 }
             }, 80);
-            setTimeout(hideMainLoader, 5000); // safety fallback (retko treba)
 
             // Mini loader samo dok nema StripeElement dugmeta!
             showMiniLoader();
