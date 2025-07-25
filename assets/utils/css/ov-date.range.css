@@ -73,11 +73,12 @@
   grid-template-columns: repeat(7, 1fr);
   gap: 3px;
   text-align: center;
+  grid-auto-rows: 58px;
 }
 
 /* === Jedan dan === */
 .ov-day {
-  height: 50px;
+  min-height: 50px;
   padding: 8px 4px;
   display: flex;
   flex-direction: column;
@@ -90,6 +91,7 @@
   transition: background-color 0.2s ease;
   position: relative;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .ov-day.differentDay {
@@ -171,6 +173,22 @@
     }
   }
 }
+
+
+/* Read only styles
+.ov-booking_readonly_calendar{
+  .ov-picker-container{
+    .ov-calendars-wrapper{
+      .ov-calendar{
+        .ov-days{
+          .ov-day{
+            min-height: 40px;
+          }
+        }
+      }
+    }
+  }
+} */
 
 /* === Sakrivanje === */
 .hidden {

@@ -2,6 +2,12 @@
 defined('ABSPATH') || exit;
 require_once dirname(__DIR__) . '/helpers/logger.php';
 
+add_action('wp_head', function() {
+    if (ovb_is_woo_page()) {
+        echo '<script>window.elementorFrontendConfig = window.elementorFrontendConfig || {};</script>';
+    }
+}, 1);
+
 // Register dashicons globally
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('dashicons');

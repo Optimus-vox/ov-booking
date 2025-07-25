@@ -30,10 +30,10 @@ jQuery(function ($) {
 
   // Continue → checkout
   $(document).on("click", ".js-continue", function (e) {
-    console.log(ovCartVars);
+    // console.log(ovCartVars);
     e.preventDefault();
     if (ovCartVars.checkoutUrl) {
-      console.log(ovCartVars.checkoutUrl);
+      // console.log(ovCartVars.checkoutUrl);
       window.location.href = ovCartVars.checkoutUrl;
     }else{
       alert("Checkout URL is not set.");

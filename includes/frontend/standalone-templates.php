@@ -16,15 +16,7 @@ add_action('template_redirect', function () {
             <?php wp_head(); ?>
         </head>
         <body <?php body_class('ov-single-product-body'); ?>>
-            <header class="ovb-standalone-header">
-                <?php wp_nav_menu([
-                    'theme_location' => 'primary',
-                    'container' => 'nav',
-                    'container_class' => 'ovb-primary-nav',
-                    'menu_class' => 'ovb-nav-list',
-                    'fallback_cb' => false,
-                ]); ?>
-            </header>
+      
             <!-- include __DIR__ . '/../templates/woocommerce/ov-single-product.php'; -->
             <?php include OV_BOOKING_PATH . 'templates/woocommerce/ov-single-product.php'; ?>
 

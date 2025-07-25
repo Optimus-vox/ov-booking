@@ -1,6 +1,4 @@
 jQuery(document).ready(function ($) {
-  console.log(ov_calendar_vars.calendarData);
-
   $('.ov-testimonials-carousel').owlCarousel({
     items: 1,
     center: true,

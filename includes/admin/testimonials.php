@@ -126,4 +126,3 @@ function save_testimonials_meta_data($post_id) {
     
     update_post_meta($post_id, '_product_testimonials', $testimonials);
 }
-//testimonials

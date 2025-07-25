@@ -31,4 +31,3 @@ add_action('woocommerce_order_item_meta_start', function($item_id, $item, $order
         echo '<p class="ovb-order-guests"><strong>Broj gostiju:</strong> ' . esc_html($guests) . '</p>';
     }
 }, 10, 4);
-

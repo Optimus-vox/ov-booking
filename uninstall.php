@@ -44,4 +44,3 @@ foreach ($products as $post_id) {
 delete_option('ov_booking_settings');
 delete_option( 'ov_booking_display_mode' );
 // delete_option('ov_booking_version');
-

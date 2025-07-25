@@ -209,15 +209,37 @@ get_header();
                             <div class="product-details-things-to-know">
                                 <?php
                                 $rules_ikone = get_post_meta(get_the_ID(), '_apartment_rules_icons', true);
-                                $checkin_time = !empty($additional_info['checkin_time']) ? esc_html($additional_info['checkin_time']) : '';
-                                $checkout_time = !empty($additional_info['checkout_time']) ? esc_html($additional_info['checkout_time']) : '';
-                                echo $checkin_time . '<br>';
-                                echo $checkout_time;
+                                // Dohvati sirovo vreme iz baze (bez esc_html!)
+                                $raw_checkin_time  = !empty($additional_info['checkin_time'])  ? $additional_info['checkin_time']  : '';
+                                $raw_checkout_time = !empty($additional_info['checkout_time']) ? $additional_info['checkout_time'] : '';
+
+                                // Pretvori u timestamp za danasnji dan (safety fallback na null)
+                                $checkin_timestamp  = $raw_checkin_time  ? strtotime( date('Y-m-d') . ' ' . $raw_checkin_time )  : null;
+                                $checkout_timestamp = $raw_checkout_time ? strtotime( date('Y-m-d') . ' ' . $raw_checkout_time ) : null;
+
+                                // Formatiraj prema WP settings
+                                $checkin_time  = $checkin_timestamp  ? date_i18n( get_option('time_format'), $checkin_timestamp )  : '';
+                                $checkout_time = $checkout_timestamp ? date_i18n( get_option('time_format'), $checkout_timestamp ) : '';
 
                                 if (!empty($rules_ikone)): ?>
                                     <div class="apartment-rules-section">
                                         <h3>Things to know</h3>
                                         <div class="apartment-rules-icons">
+
+                                        <div class="icon-wrapper">
+                                            <div class="icon-item">
+                                                     <img src="<?php echo esc_url(plugins_url('assets/images/check-in.png', dirname(__DIR__))); ?>" alt="Check-in" class="rule-icon">
+                                            </div>
+                                            <span class="icon-text"> <?php echo esc_html__('Check-in', 'ov-booking') . ': ' . esc_html($checkin_time); ?></span>
+                                        </div>
+                                        <div class="icon-wrapper">
+                                            <div class="icon-item">
+                                                     <img src="<?php echo esc_url(plugins_url('assets/images/check-out.png', dirname(__DIR__))); ?>" alt="Check-out" class="rule-icon">
+                                            </div>
+                                            <span class="icon-text"> <?php echo esc_html__('Check-out', 'ov-booking') . ': ' . esc_html($checkout_time); ?></span>
+                                        </div>
+
+
                                             <?php foreach ($rules_ikone as $ikona): ?>
                                                 <?php if (!empty($ikona['ikona_url']) || !empty($ikona['tekst'])): ?>
                                                     <div class="icon-wrapper">
@@ -314,13 +336,6 @@ get_header();
 
                                 <div class="custom-dates">
                                     <div class="custom-price" id="ov_total_container"></div>
-                                    <span class="stay-duration"><?php esc_html_e('Stay Duration', 'ov-booking'); ?></span>
-
-                                    <!-- odavde  -->
-                                     
-                                    <!-- odavde  -->
-
-
                                     <?php
                                     // Ako u korpi već postoji neki proizvod:
                                     if ($cart_not_empty || $in_cart):
@@ -340,21 +355,19 @@ get_header();
                                     else:
                                         // Korpa je prazna → prikaži standardnu formu za “Book Now”
                                         ?>
+                                        <span class="stay-duration"><?php esc_html_e('Stay Duration', 'ov-booking'); ?></span>
                                         <form class="cart ov-booking-form" method="post" enctype="multipart/form-data">
                                             <div id="date-range-picker" class="daterange-picker">
                                                 <!-- VIDLJIVI picker input -->
                                                 <input type="text" id="custom-daterange-input" class="daterange" readonly
                                                     placeholder="<?php esc_attr_e('DD/MM/YYYY – DD/MM/YYYY', 'ov-booking'); ?>" />
                                                 <!-- SKRIVENA polja koja JS popunjava -->
-                                                <!-- <input type="hidden" name="start_date" id="start_date" />
-                                                <input type="hidden" name="end_date" id="end_date" />
-                                                <input type="hidden" name="all_dates" id="all_dates" /> -->
-<input type="hidden" name="start_date" id="start_date"
-       value="<?php echo esc_attr( $ov_start_date ); ?>" />
-<input type="hidden" name="end_date"   id="end_date"
-       value="<?php echo esc_attr( $ov_end_date ); ?>" />
-<input type="hidden" name="all_dates"  id="all_dates"
-       value="<?php echo esc_attr( $all_dates ); ?>" />
+                                                <input type="hidden" name="start_date" id="start_date"
+                                                    value="<?php echo esc_attr( $ov_start_date ); ?>" />
+                                                <input type="hidden" name="end_date"   id="end_date"
+                                                    value="<?php echo esc_attr( $ov_end_date ); ?>" />
+                                                <input type="hidden" name="all_dates"  id="all_dates"
+                                                    value="<?php echo esc_attr( $all_dates ); ?>" />
 
                                             </div>
 

@@ -55,8 +55,24 @@ if (!is_array($calendar_data)) {
     $calendar_data = [];
 }
 
-$breakdown_total = 0;
+// Pripremi datume i cene po danu TEST !!!! obrisi ako ne radi
+$dates_output = '';
+$subtotal = 0;
+foreach ($all_dates as $i => $date) {
+    $timestamp = strtotime($date);
+    $pretty_date = date_i18n('d.m.Y', $timestamp);
 
+    // Poslednji dan je checkout → ispiši "Checkout"
+    if ($i === count($all_dates) - 1) {
+        $dates_output .= '<tr class="ovb-checkout-row"><td class="ovb-date-label">' . esc_html($pretty_date) . ':</td><td class="ovb-date-value">' . esc_html__('Checkout', 'ov-booking') . '</td></tr>';
+    } else {
+        // Prikaži cenu za tu noć
+        $day_price = !empty($calendar_data[$date]['price']) ? floatval($calendar_data[$date]['price']) : 0;
+        $subtotal += $day_price;
+        $dates_output .= '<tr class="ovb-checkout-row"><td class="ovb-date-label">' . esc_html($pretty_date) . ':</td><td class="ovb-date-value">' . wc_price($day_price) . '</td></tr>';
+    }
+}
+// Pripremi datume i cene po danu
 get_header();
 
 if ( function_exists('is_checkout') && is_checkout() && ! is_wc_endpoint_url('order-received') ) {

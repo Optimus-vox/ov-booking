@@ -394,4 +394,3 @@ function ovb_get_checkout_time($product_id) {
     $info = get_post_meta($product_id, '_apartment_additional_info', true);
     return !empty($info['checkout_time']) ? $info['checkout_time'] : '10:00';
 }
-

@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log(ov_calendar_vars.calendarData);
   var CURRENT_DATE = new Date();
   var d = new Date();
   var content = "January February March April May June July August September October November December".split(" ");
@@ -30,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function renderCalendar(startDay, totalDays, currentDate, month, year) {
-    console.log("calendarData snapshot:", calendarData);
 
     const calendar = document.querySelector(".admin-table tbody");
     if (!calendar) return;
@@ -883,7 +881,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     jQuery("#client_modal").hide();
 
-    console.log("calendarData to save:", calendarData);
+    // console.log("calendarData to save:", calendarData);
 
     const productId = jQuery("#ov_product_id").val();
     for (const key in calendarData) {
@@ -928,7 +926,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }),
       },
       success: function (res) {
-        console.log("Manual order created!", res);
+        // console.log("Manual order created!", res);
         // opciono: reload/refresh orders tab
       },
       error: function (err) {
@@ -1211,7 +1209,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         success: function (res) {
           // (opciono) Prikaži notifikaciju
-          console.log("Order trashed: ", res);
+          // console.log("Order trashed: ", res);
 
           // Nastavi sa lokalnim brisanjem iz calendarData kao i do sada:
           for (const day in calendarData) {

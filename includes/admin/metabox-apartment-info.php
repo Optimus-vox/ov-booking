@@ -96,7 +96,7 @@ function show_custom_icons_fields($post, $meta_key, $nonce_name) {
             }).on('select', function() {
                 const attachment = custom_uploader.state().get('selection').first().toJSON();
                 button.siblings('.ikona-url').val(attachment.url);
-                button.siblings('.image-preview').html(`<img src="${attachment.url}" style="max-height: 50px; display: inline-block; background: #1b203a;" />`);
+                button.siblings('.image-preview').html(`<img src="${attachment.url}" style="max-height: 50px; display: inline-block; background: #99a2d3;" />`);
             }).open();
         });
 
@@ -140,6 +140,7 @@ function show_custom_icons_fields($post, $meta_key, $nonce_name) {
         }
         .upload-ikona-button {
             margin: 0 10px 0 5px;
+            padding: 0 10px;
             cursor: pointer;
         }
         .remove-ikonica{

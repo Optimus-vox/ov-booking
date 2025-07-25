@@ -58,6 +58,8 @@ require_once __DIR__ . '/ical/ical-init.php';
 /** -----------------------------
  *  ADMIN - BACKEND
  * ----------------------------- */
+if (is_admin()) require_once __DIR__ . '/admin/custom-admin-dash.php';
+
 require_once __DIR__ . '/admin/product-hooks.php';
 require_once __DIR__ . '/admin/settings.php';
 require_once __DIR__ . '/admin/metabox-cleanup.php';
@@ -78,7 +80,6 @@ require_once __DIR__ . '/helpers/helpers.php';
 if(file_exists(__DIR__ . '/helpers/logger.php')){
     require_once __DIR__ . '/helpers/logger.php';
 }
-
 
 
 add_action('wp_enqueue_scripts', 'ovb_enqueue_checkout_scripts');
