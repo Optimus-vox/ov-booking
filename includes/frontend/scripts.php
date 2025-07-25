@@ -29,6 +29,17 @@ function ov_enqueue_public_assets()
 }
 add_action('wp_enqueue_scripts', 'ov_enqueue_public_assets', 20);
 
+add_action('wp_enqueue_scripts', function() {
+    if (ovb_is_woo_page()) {
+        // Dodaj šta koristiš za header/footer (prilagodi prema sajtu):
+        // Ako koristiš Elementor header:
+        wp_enqueue_style('elementor-frontend');
+        wp_enqueue_style('elementor-icons');
+        wp_enqueue_style('elementor-kit');
+        // Ako koristiš Astra Customizer (klasičan header/footer):
+        wp_enqueue_style('astra-theme-css');
+    }
+}, 18); // Uvek PRE asset cleanup, ali posle glavnih enqueue
 /**
  * Product page specific assets
  */
@@ -62,46 +73,40 @@ add_action('wp_enqueue_scripts', 'ovb_minimize_theme_and_builder_assets', 1000);
 function ovb_minimize_theme_and_builder_assets() {
     if (!ovb_is_woo_page()) return;
 
-    // Nemoj nikad gasiti ove payment handle-ove!
     $payment_scripts = [
         'stripe-js', 'wc-stripe-payment-request', 'wc-stripe-elements', 'wc-stripe', 'stripe-v3', 'woocommerce-gateway-stripe',
         'paypal-checkout-js', 'wc-paypal-payments', 'klarna-payments', 'wc-checkout', 'wc-payment-form'
     ];
 
-    $core = [
-        'wp-block-library', 'wp-block-library-theme', 'admin-bar', 'wp-embed', 'wp-polyfill', 'wp-polyfill-inert', 'regenerator-runtime'
+    $keep = [ // OVDE SU HANDLEOVI KOJE HOĆEŠ DA OSTAVIŠ
+        'elementor-frontend', 'elementor-icons', 'elementor-kit', 'astra-theme-css'
     ];
 
+    $core = [
+        'wp-block-library', 'wp-block-library-theme',
+        //  'admin-bar',
+          'wp-embed', 'wp-polyfill', 'wp-polyfill-inert', 'regenerator-runtime'
+    ];
     $wc_blocks = [
         'wc-blocks-style', 'wc-blocks-checkout-style', 'wc-checkout-block', 'wc-blocks-checkout', 'wc-blocks-cart-style'
     ];
-
-    // *** ELEMENTOR ***
     $elementor = [
         'elementor-frontend', 'elementor-post', 'elementor-icons', 'e-animations', 'elementor-global',
         'elementor-pro', 'elementor-kit', 'elementor-library', 'elementor-webpack-runtime', 'elementor-waypoints'
     ];
-
-    // *** ASTRA ***
     $astra = [
         'astra-addon-css', 'astra-addon-js', 'astra-google-fonts', 'astra-fonts', 'astra-theme-css', 'astra-mobile-css'
     ];
-
     $fonts = [
         'font-awesome', 'wpb-fa', 'elementor-icons-shared-0', 'astra-google-fonts', 'astra-fonts'
     ];
-
     $woo_styles = [
         'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-general'
     ];
-
-    // Woo galerija/sliders
     $woo_gallery = [];
     if (is_checkout()) {
         $woo_gallery = ['flexslider', 'photoswipe', 'photoswipe-ui-default', 'photoswipe-default-skin'];
     }
-
-    // jQuery migrate
     $other = ['jquery-migrate'];
 
     $to_dequeue = array_merge(
@@ -109,12 +114,13 @@ function ovb_minimize_theme_and_builder_assets() {
     );
 
     foreach ($to_dequeue as $handle) {
-        if (!in_array($handle, $payment_scripts)) {
-            wp_dequeue_script($handle); 
+        if (!in_array($handle, array_merge($payment_scripts, $keep))) {
+            wp_dequeue_script($handle);
             wp_dequeue_style($handle);
         }
     }
 }
+
 
 
 function ovb_is_woo_page() {
@@ -368,7 +374,7 @@ function ovb_optimized_checkout_init()
 
             var loader = document.createElement('div');
             loader.className = 'ovb-mini-loader';
-            loader.style.cssText = "display:flex;justify-content:center;align-items:center;height:60px;background:#7C4DFF;border-radius:7px;font-size:1.06em;font-weight:500;color:#163260;margin-bottom:7px;transition:opacity 0.4s;gap:10px;";
+            loader.style.cssText = "display:flex;justify-content:center;align-items:center;height:50px;background:#7C4DFF;font-size:1.06em;font-weight:500;color:#fff;margin-bottom:15px;transition:opacity 0.4s;gap:10px;";
             loader.innerHTML = '<span class="loader"></span> <span>Payment methods loading…</span>';
             wrapper.insertBefore(loader, wrapper.firstChild);
         }
