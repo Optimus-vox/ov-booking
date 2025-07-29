@@ -76,7 +76,8 @@ function ovb_generate_all_dates($start, $end)
     $current = strtotime($start);
     $end_ts = strtotime($end);
     while ($current <= $end_ts) {
-        $arr[] = date('YYYY-MM-DD' === 'YYYY-MM-DD' ? 'Y-m-d' : 'Y-m-d', $current);
+        // $arr[] = date('YYYY-MM-DD' === 'YYYY-MM-DD' ? 'Y-m-d' : 'Y-m-d', $current);
+        $arr[] = date('Y-m-d', $current);
         $current = strtotime('+1 day', $current);
     }
     return $arr;
@@ -160,20 +161,14 @@ function ov_save_bulk_status_rule($post_id)
 }
 
 // Manual from admin
-// Bulletproof: Kreiranje manuelnog Woo ordera iz admin kalendara (AJAX)
 add_action('wp_ajax_ovb_admin_create_manual_order', 'ovb_admin_create_manual_order');
 function ovb_admin_create_manual_order() {
-    // Log za debug
-    error_log('🔥 POZVAN ADMIN MANUAL ORDER HANDLER');
-
     // 1. Security
     if (!current_user_can('edit_products')) {
-        error_log('❌ Unauthorized user tried to create manual order');
         wp_send_json_error('Unauthorized');
         return;
     }
     if (isset($_POST['security']) && !wp_verify_nonce($_POST['security'], 'ov_calendar_nonce')) {
-        error_log('❌ Security check (nonce) failed');
         wp_send_json_error('Security check failed');
         return;
     }
@@ -181,17 +176,9 @@ function ovb_admin_create_manual_order() {
     // 2. Input parsing
     $product_id = intval($_POST['product_id'] ?? 0);
     $client_data_input = $_POST['client_data'] ?? '';
-if (is_array($client_data_input)) {
-    $client_data = $client_data_input;
-} else {
-    $client_data = json_decode(stripslashes($client_data_input), true);
-}
-error_log('🔥 client_data array: ' . print_r($client_data, true));
-    error_log('🔥 product_id: ' . $product_id);
-    
+    $client_data = is_array($client_data_input) ? $client_data_input : json_decode(stripslashes($client_data_input), true);
 
     if (!$product_id || !is_array($client_data)) {
-        error_log('❌ Invalid data: product_id or client_data');
         wp_send_json_error('Invalid data provided');
         return;
     }
@@ -200,32 +187,22 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
     $required_fields = ['rangeStart', 'rangeEnd', 'firstName', 'lastName', 'email'];
     foreach ($required_fields as $field) {
         if (empty($client_data[$field])) {
-            error_log("❌ Missing required field: $field");
             wp_send_json_error("Missing required field: $field");
             return;
         }
     }
-
     $start = sanitize_text_field($client_data['rangeStart']);
-    $end = sanitize_text_field($client_data['rangeEnd']);
+    $end   = sanitize_text_field($client_data['rangeEnd']);
 
     // 4. Validacija datuma
-    if (!DateTime::createFromFormat('Y-m-d', $start) || !DateTime::createFromFormat('Y-m-d', $end)) {
-        error_log('❌ Invalid date format');
-        wp_send_json_error('Invalid date format. Use YYYY-MM-DD');
-        return;
-    }
-    if (strtotime($start) > strtotime($end)) {
-        error_log('❌ Start date after end date');
-        wp_send_json_error('Start date cannot be after end date');
+    if (!DateTime::createFromFormat('Y-m-d', $start) || !DateTime::createFromFormat('Y-m-d', $end) || strtotime($start) > strtotime($end)) {
+        wp_send_json_error('Invalid or inconsistent date range.');
         return;
     }
 
-    // 5. Preuzmi i validiraj kalendar
+    // 5. Kalendar data (provera duplikata i upis cene)
     $calendar_data = get_post_meta($product_id, '_ov_calendar_data', true);
     if (!is_array($calendar_data)) $calendar_data = [];
-
-    // 6. Kreiraj niz datuma, računaj total cenu, i proveri duplikate
     $dates = [];
     $total_price = 0;
     $current = strtotime($start);
@@ -234,12 +211,9 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
     do {
         $date = date('Y-m-d', $current);
         $dates[] = $date;
-
-        // Provera duplog bookinga po bookingId
         if (!empty($calendar_data[$date]['clients'])) {
             foreach ($calendar_data[$date]['clients'] as $cl) {
                 if (isset($cl['bookingId']) && $cl['bookingId'] == ($client_data['bookingId'] ?? '')) {
-                    error_log("❌ Date $date already booked for this bookingId");
                     wp_send_json_error("Date $date is already booked for this client");
                     return;
                 }
@@ -251,7 +225,6 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
     } while ($current <= $end_ts);
 
     if (empty($dates)) {
-        error_log('❌ No valid dates in range');
         wp_send_json_error('No valid dates found in range');
         return;
     }
@@ -260,52 +233,87 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
     $guests = intval($client_data['guests'] ?? 1);
     if ($guests < 1) $guests = 1;
 
-    // 7. Kreiraj order sa try/catch za debug
+    // 6. PRAVI STANDARDIZOVANI GUEST ARRAY — kao i na frontendu
+    // Ovdje je SAMO platilac, ali array je istog formata kao na checkoutu!
+    $guest_arr = [[
+        'first_name' => sanitize_text_field($client_data['firstName']),
+        'last_name'  => sanitize_text_field($client_data['lastName']),
+        'email'      => sanitize_email($client_data['email']),
+        'phone'      => sanitize_text_field($client_data['phone'] ?? ''),
+        'birthdate'  => '', // možeš popuniti ako imaš
+        'gender'     => '', // možeš popuniti ako imaš
+        'id_number'  => '', // možeš popuniti ako imaš
+        'is_child'   => false,
+    ]];
+
+    // 7. Kreiranje ordera i item meta
     try {
         $order = wc_create_order();
         if (!$order || is_wp_error($order)) {
-            error_log('❌ Failed to create order: ' . print_r($order, true));
             throw new Exception('Failed to create WooCommerce order');
         }
-        error_log("✅ Order kreiran: " . $order->get_id());
         $item_id = $order->add_product(wc_get_product($product_id), 1, [
             'subtotal' => $total_price,
-            'total' => $total_price,
+            'total'    => $total_price,
         ]);
         if (!$item_id) throw new Exception('Failed to add product to order');
-
-        // Order item meta sa prefiksima (za future-proofing)
         $order_item = $order->get_item($item_id);
         if ($order_item) {
             $order_item->add_meta_data('_ovb_booking_dates', implode(',', $dates));
-            $order_item->add_meta_data('_ovb_first_name', sanitize_text_field($client_data['firstName']));
-            $order_item->add_meta_data('_ovb_last_name', sanitize_text_field($client_data['lastName']));
-            $order_item->add_meta_data('_ovb_email', sanitize_email($client_data['email']));
-            $order_item->add_meta_data('_ovb_phone', sanitize_text_field($client_data['phone'] ?? ''));
-            $order_item->add_meta_data('_ovb_guests', $guests);
+            $order_item->add_meta_data('_ovb_first_name', $guest_arr[0]['first_name']);
+            $order_item->add_meta_data('_ovb_last_name',  $guest_arr[0]['last_name']);
+            $order_item->add_meta_data('_ovb_email',      $guest_arr[0]['email']);
+            $order_item->add_meta_data('_ovb_phone',      $guest_arr[0]['phone']);
+            $order_item->add_meta_data('_ovb_guests',     $guests);
             $order_item->add_meta_data('_ovb_range_start', $start);
             $order_item->add_meta_data('_ovb_range_end', $end);
             $order_item->add_meta_data('_ovb_booking_id', $booking_id);
+
+            // Neprefiksirani za prikaz/kompatibilnost
+            $order_item->add_meta_data('booking_dates', implode(',', $dates));
+            $order_item->add_meta_data('first_name', $guest_arr[0]['first_name']);
+            $order_item->add_meta_data('last_name', $guest_arr[0]['last_name']);
+            $order_item->add_meta_data('email', $guest_arr[0]['email']);
+            $order_item->add_meta_data('phone', $guest_arr[0]['phone']);
+            $order_item->add_meta_data('guests', $guests);
+            $order_item->add_meta_data('rangeStart', $start);
+            $order_item->add_meta_data('rangeEnd', $end);
+            $order_item->add_meta_data('booking_id', $booking_id);
             $order_item->save();
         }
 
-        // Order meta
-        $order->update_meta_data('_ovb_first_name', sanitize_text_field($client_data['firstName']));
-        $order->update_meta_data('_ovb_last_name', sanitize_text_field($client_data['lastName']));
-        $order->update_meta_data('_ovb_email', sanitize_email($client_data['email']));
-        $order->update_meta_data('_ovb_phone', sanitize_text_field($client_data['phone'] ?? ''));
-        $order->update_meta_data('_ovb_guests', $guests);
+        // 8. PUNI SVA ORDER META POLJA — identično kao kod checkouta na frontendu!
+        // Woo billing standard
+        $order->update_meta_data('_billing_first_name', $guest_arr[0]['first_name']);
+        $order->update_meta_data('_billing_last_name', $guest_arr[0]['last_name']);
+        $order->update_meta_data('_billing_email', $guest_arr[0]['email']);
+        $order->update_meta_data('_billing_phone', $guest_arr[0]['phone']);
+
+        // Custom meta za prikaz platilaca (booking_client_*)
+        $order->update_meta_data('booking_client_first_name', $guest_arr[0]['first_name']);
+        $order->update_meta_data('booking_client_last_name',  $guest_arr[0]['last_name']);
+        $order->update_meta_data('booking_client_email',      $guest_arr[0]['email']);
+        $order->update_meta_data('booking_client_phone',      $guest_arr[0]['phone']);
+
+        // Upisi GOSTE U ORDER (uvek array!)
+        $order->update_meta_data('_ovb_guests', $guest_arr);
+
+        // Standardna meta polja — za prikaz checkin/checkout
+        $order->update_meta_data('start_date', $start);
+        $order->update_meta_data('end_date',   $end);
+        $order->update_meta_data('guests',     $guests);
+
+        // Ostala polja radi kompatibilnosti
         $order->update_meta_data('_ovb_start_date', $start);
-        $order->update_meta_data('_ovb_end_date', $end);
+        $order->update_meta_data('_ovb_end_date',   $end);
+        $order->update_meta_data('_ovb_guests_num', $guests);
         $order->update_meta_data('_ovb_booking_id', $booking_id);
 
         $order->set_total($total_price);
         $order->save();
-
-        // Automatski status na "completed"
         $order->update_status('completed');
 
-        // 8. Update kalendara (za svaki dan u nizu)
+        // 9. Update kalendara za svaki dan
         foreach ($dates as $date) {
             if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
                 $calendar_data[$date] = [
@@ -326,13 +334,12 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
                     return !isset($c['bookingId']) || $c['bookingId'] !== $booking_id;
                 }
             ));
-            // Upisi novog klijenta
             $calendar_data[$date]['clients'][] = [
                 'bookingId'   => $booking_id,
-                'firstName'   => sanitize_text_field($client_data['firstName']),
-                'lastName'    => sanitize_text_field($client_data['lastName']),
-                'email'       => sanitize_email($client_data['email']),
-                'phone'       => sanitize_text_field($client_data['phone'] ?? ''),
+                'firstName'   => $guest_arr[0]['first_name'],
+                'lastName'    => $guest_arr[0]['last_name'],
+                'email'       => $guest_arr[0]['email'],
+                'phone'       => $guest_arr[0]['phone'],
                 'guests'      => $guests,
                 'rangeStart'  => $start,
                 'rangeEnd'    => $end,
@@ -342,7 +349,7 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
             ];
             $calendar_data[$date]['status'] = 'booked';
         }
-        // Checkout dan = available (sve prazno)
+        // Checkout dan = available (prazno)
         $checkout_date = date('Y-m-d', strtotime($end . ' +1 day'));
         if (!isset($calendar_data[$checkout_date]) || !is_array($calendar_data[$checkout_date])) {
             $calendar_data[$checkout_date] = [
@@ -358,14 +365,11 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
         }
         update_post_meta($product_id, '_ov_calendar_data', $calendar_data);
 
-        // Success log
-        error_log("✅ Manual booking created - Order ID: {$order->get_id()}, Booking ID: $booking_id");
-
         wp_send_json_success([
             'order_id'   => $order->get_id(),
             'order_status' => $order->get_status(),
-            'first_name' => $client_data['firstName'],
-            'last_name'  => $client_data['lastName'],
+            'first_name' => $guest_arr[0]['first_name'],
+            'last_name'  => $guest_arr[0]['last_name'],
             'booking_id' => $booking_id,
             'total'      => $total_price,
             'dates'      => $dates,
@@ -374,10 +378,10 @@ error_log('🔥 client_data array: ' . print_r($client_data, true));
         ]);
 
     } catch (Exception $e) {
-        error_log("❌ Manual booking creation failed: " . $e->getMessage());
         wp_send_json_error('Failed to create booking: ' . $e->getMessage());
     }
 }
+
 
 
 // Manual from admin dodavanje nove kolone "Guest Name i surname"
@@ -447,17 +451,17 @@ function ovb_reset_woocommerce_pages()
     }
 }
 
-function ovb_sanitize_calendar_data($calendar_data) {
-    foreach ($calendar_data as $date => &$data) {
-        if (!isset($data['clients']) || !is_array($data['clients'])) {
-            $data['clients'] = [];
-        }
-        if (empty($data['clients'])) {
-            $data['status'] = 'available';
-        }
-    }
-    unset($data);
-}
+// function ovb_sanitize_calendar_data($calendar_data) { ne koristi se nigde
+//     foreach ($calendar_data as $date => &$data) {
+//         if (!isset($data['clients']) || !is_array($data['clients'])) {
+//             $data['clients'] = [];
+//         }
+//         if (empty($data['clients'])) {
+//             $data['status'] = 'available';
+//         }
+//     }
+//     unset($data);
+// }
 
 // vremena za checkin/out | helper za kalendar
 function ovb_get_checkin_time($product_id) {
