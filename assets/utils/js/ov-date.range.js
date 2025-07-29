@@ -337,11 +337,9 @@ function initOvDateRangePicker(config) {
       }
       renderPickers();
     });
+    nav.appendChild(prev);
+    nav.appendChild(next);
 
-    if (!readonly) {
-      nav.appendChild(prev);
-      nav.appendChild(next);
-    }
 
     picker.appendChild(nav);
 

@@ -33,17 +33,17 @@ $ov_guests = isset($_GET['ov_guests'])
     ? intval($_GET['ov_guests'])
     : 1;
 
-    // build a comma-separated list of all dates between start and end
+// build a comma-separated list of all dates between start and end
 $all_dates = '';
-if ( $ov_start_date && $ov_end_date ) {
-    $current = strtotime( $ov_start_date );
-    $end_ts  = strtotime( $ov_end_date );
-    $dates   = [];
-    while ( $current <= $end_ts ) {
-        $dates[]  = date( 'Y-m-d', $current );
-        $current  = strtotime( '+1 day', $current );
+if ($ov_start_date && $ov_end_date) {
+    $current = strtotime($ov_start_date);
+    $end_ts = strtotime($ov_end_date);
+    $dates = [];
+    while ($current <= $end_ts) {
+        $dates[] = date('Y-m-d', $current);
+        $current = strtotime('+1 day', $current);
     }
-    $all_dates = implode( ',', $dates );
+    $all_dates = implode(',', $dates);
 }
 
 // Učitaj dodatne informacije o apartmanu kako bismo dobili max_guests
@@ -210,34 +210,38 @@ get_header();
                                 <?php
                                 $rules_ikone = get_post_meta(get_the_ID(), '_apartment_rules_icons', true);
                                 // Dohvati sirovo vreme iz baze (bez esc_html!)
-                                $raw_checkin_time  = !empty($additional_info['checkin_time'])  ? $additional_info['checkin_time']  : '';
+                                $raw_checkin_time = !empty($additional_info['checkin_time']) ? $additional_info['checkin_time'] : '';
                                 $raw_checkout_time = !empty($additional_info['checkout_time']) ? $additional_info['checkout_time'] : '';
 
                                 // Pretvori u timestamp za danasnji dan (safety fallback na null)
-                                $checkin_timestamp  = $raw_checkin_time  ? strtotime( date('Y-m-d') . ' ' . $raw_checkin_time )  : null;
-                                $checkout_timestamp = $raw_checkout_time ? strtotime( date('Y-m-d') . ' ' . $raw_checkout_time ) : null;
+                                $checkin_timestamp = $raw_checkin_time ? strtotime(date('Y-m-d') . ' ' . $raw_checkin_time) : null;
+                                $checkout_timestamp = $raw_checkout_time ? strtotime(date('Y-m-d') . ' ' . $raw_checkout_time) : null;
 
                                 // Formatiraj prema WP settings
-                                $checkin_time  = $checkin_timestamp  ? date_i18n( get_option('time_format'), $checkin_timestamp )  : '';
-                                $checkout_time = $checkout_timestamp ? date_i18n( get_option('time_format'), $checkout_timestamp ) : '';
+                                $checkin_time = $checkin_timestamp ? date_i18n(get_option('time_format'), $checkin_timestamp) : '';
+                                $checkout_time = $checkout_timestamp ? date_i18n(get_option('time_format'), $checkout_timestamp) : '';
 
                                 if (!empty($rules_ikone)): ?>
                                     <div class="apartment-rules-section">
                                         <h3>Things to know</h3>
                                         <div class="apartment-rules-icons">
 
-                                        <div class="icon-wrapper">
-                                            <div class="icon-item">
-                                                     <img src="<?php echo esc_url(plugins_url('assets/images/check-in.png', dirname(__DIR__))); ?>" alt="Check-in" class="rule-icon">
+                                            <div class="icon-wrapper">
+                                                <div class="icon-item">
+                                                    <img src="<?php echo esc_url(plugins_url('assets/images/check-in.png', dirname(__DIR__))); ?>"
+                                                        alt="Check-in" class="rule-icon">
+                                                </div>
+                                                <span class="icon-text">
+                                                    <?php echo esc_html__('Check-in', 'ov-booking') . ': ' . esc_html($checkin_time); ?></span>
                                             </div>
-                                            <span class="icon-text"> <?php echo esc_html__('Check-in', 'ov-booking') . ': ' . esc_html($checkin_time); ?></span>
-                                        </div>
-                                        <div class="icon-wrapper">
-                                            <div class="icon-item">
-                                                     <img src="<?php echo esc_url(plugins_url('assets/images/check-out.png', dirname(__DIR__))); ?>" alt="Check-out" class="rule-icon">
+                                            <div class="icon-wrapper">
+                                                <div class="icon-item">
+                                                    <img src="<?php echo esc_url(plugins_url('assets/images/check-out.png', dirname(__DIR__))); ?>"
+                                                        alt="Check-out" class="rule-icon">
+                                                </div>
+                                                <span class="icon-text">
+                                                    <?php echo esc_html__('Check-out', 'ov-booking') . ': ' . esc_html($checkout_time); ?></span>
                                             </div>
-                                            <span class="icon-text"> <?php echo esc_html__('Check-out', 'ov-booking') . ': ' . esc_html($checkout_time); ?></span>
-                                        </div>
 
 
                                             <?php foreach ($rules_ikone as $ikona): ?>
@@ -300,35 +304,24 @@ get_header();
                                         <?php
                                         echo esc_html(
                                             sprintf(
-                                                _n('%1$d night in %2$s', '%1$d nights in %2$s', $nights, 'ov-booking'),
+                                                _n('Viewing %1$d night in %2$s', 'Viewing %1$d nights in %2$s', $nights, 'ov-booking'),
                                                 $nights,
                                                 get_the_title()
                                             )
                                         );
                                         ?>
                                     </h3>
-                                    <span>
-                                        <?php echo esc_html($start_label . ' – ' . $end_label); ?>
-                                    </span>
+                                    <span><?php echo esc_html($start_label . ' – ' . $end_label); ?></span>
                                 <?php } else { ?>
-                                    <h3>
-                                        <?php
-                                        echo esc_html(
-                                            sprintf(
-                                                _n('Make a reservation', '%1$d nights in %2$s', 1, 'ov-booking'),
-                                                1,
-                                                get_the_title()
-                                            )
-                                        );
-                                        ?>
-                                    </h3>
-                                    <span><?php esc_html_e('Select your dates', 'ov-booking'); ?></span>
+                                    <h3><?php esc_html_e('Reservation details', 'ov-booking'); ?></h3>
+                                    <span><?php esc_html_e('Check dates below.', 'ov-booking'); ?></span>
                                 <?php } ?>
-                                    <script>
-                                        window.ovb_product_title = "<?php echo esc_js(get_the_title()); ?>";
-                                    </script>
+                                <script>
+                                    window.ovb_product_title = "<?php echo esc_js(get_the_title()); ?>";
+                                </script>
                                 <div id="ov-booking_readonly_calendar" class="ov-booking_readonly_calendar"></div>
                             </div>
+
                         </div> <!-- product-details-left -->
 
                         <div class="product-details-right">
@@ -363,9 +356,9 @@ get_header();
                                                     placeholder="<?php esc_attr_e('DD/MM/YYYY – DD/MM/YYYY', 'ov-booking'); ?>" />
                                                 <!-- SKRIVENA polja koja JS popunjava -->
                                                 <input type="hidden" name="start_date" id="start_date"
-                                                    value="<?php echo esc_attr( $ov_start_date ); ?>" />
-                                                <input type="hidden" name="end_date"   id="end_date"
-                                                    value="<?php echo esc_attr( $ov_end_date ); ?>" />
+                                                    value="<?php echo esc_attr($ov_start_date); ?>" />
+                                                <input type="hidden" name="end_date" id="end_date"
+                                                    value="<?php echo esc_attr($ov_end_date); ?>" />
 
 
                                             </div>

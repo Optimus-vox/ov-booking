@@ -12,7 +12,7 @@ if ( function_exists('wc_print_notices') ) {
 if ( ! class_exists('WC_Cart') || ! WC()->cart || WC()->cart->is_empty() ) {
     get_header();
     echo '<div class="ov-cart page-cart"><div class="ov-cart-container empty">';
-    echo '<p class="ov-cart-empty">' . esc_html__( 'Vaša korpa je prazna.', 'ov-booking' ) . '</p>';
+    echo '<p class="ov-cart-empty">' . esc_html__( 'No reservations yet', 'ov-booking' ) . '</p>';
 
     // Uzmi ID Shop stranice, pa dobij URL preko get_permalink()
     $shop_id  = wc_get_page_id( 'shop' );
