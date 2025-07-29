@@ -160,7 +160,6 @@ function ov_save_bulk_status_rule($post_id)
     update_post_meta($post_id, '_ov_calendar_data', $calendar);
 }
 
-// Manual from admin
 add_action('wp_ajax_ovb_admin_create_manual_order', 'ovb_admin_create_manual_order');
 function ovb_admin_create_manual_order() {
     // 1. Security
@@ -233,32 +232,35 @@ function ovb_admin_create_manual_order() {
     $guests = intval($client_data['guests'] ?? 1);
     if ($guests < 1) $guests = 1;
 
-    // 6. PRAVI STANDARDIZOVANI GUEST ARRAY — kao i na frontendu
-    // Ovdje je SAMO platilac, ali array je istog formata kao na checkoutu!
+    // 6. Guest array (uvek array, kao i kod checkouta)
     $guest_arr = [[
         'first_name' => sanitize_text_field($client_data['firstName']),
         'last_name'  => sanitize_text_field($client_data['lastName']),
         'email'      => sanitize_email($client_data['email']),
         'phone'      => sanitize_text_field($client_data['phone'] ?? ''),
-        'birthdate'  => '', // možeš popuniti ako imaš
-        'gender'     => '', // možeš popuniti ako imaš
-        'id_number'  => '', // možeš popuniti ako imaš
+        'birthdate'  => sanitize_text_field($client_data['birthdate'] ?? ''),
+        'gender'     => sanitize_text_field($client_data['gender'] ?? ''),
+        'id_number'  => sanitize_text_field($client_data['id_number'] ?? ''),
         'is_child'   => false,
     ]];
 
-    // 7. Kreiranje ordera i item meta
     try {
+        // 7. Kreiraj order
         $order = wc_create_order();
         if (!$order || is_wp_error($order)) {
             throw new Exception('Failed to create WooCommerce order');
         }
+        
         $item_id = $order->add_product(wc_get_product($product_id), 1, [
             'subtotal' => $total_price,
             'total'    => $total_price,
         ]);
+        
         if (!$item_id) throw new Exception('Failed to add product to order');
+        
         $order_item = $order->get_item($item_id);
         if ($order_item) {
+            // Meta podaci za order item (sa prefiksom _ovb_)
             $order_item->add_meta_data('_ovb_booking_dates', implode(',', $dates));
             $order_item->add_meta_data('_ovb_first_name', $guest_arr[0]['first_name']);
             $order_item->add_meta_data('_ovb_last_name',  $guest_arr[0]['last_name']);
@@ -282,38 +284,52 @@ function ovb_admin_create_manual_order() {
             $order_item->save();
         }
 
-        // 8. PUNI SVA ORDER META POLJA — identično kao kod checkouta na frontendu!
-        // Woo billing standard
-        $order->update_meta_data('_billing_first_name', $guest_arr[0]['first_name']);
-        $order->update_meta_data('_billing_last_name', $guest_arr[0]['last_name']);
-        $order->update_meta_data('_billing_email', $guest_arr[0]['email']);
-        $order->update_meta_data('_billing_phone', $guest_arr[0]['phone']);
+        // 8. Woo billing polja
+        $order->set_billing_first_name($guest_arr[0]['first_name']);
+        $order->set_billing_last_name($guest_arr[0]['last_name']);
+        $order->set_billing_email($guest_arr[0]['email']);
+        $order->set_billing_phone($guest_arr[0]['phone']);
 
-        // Custom meta za prikaz platilaca (booking_client_*)
+        // 9. Custom meta za prikaz platilaca - DODANO za konzistentnost
         $order->update_meta_data('booking_client_first_name', $guest_arr[0]['first_name']);
         $order->update_meta_data('booking_client_last_name',  $guest_arr[0]['last_name']);
         $order->update_meta_data('booking_client_email',      $guest_arr[0]['email']);
         $order->update_meta_data('booking_client_phone',      $guest_arr[0]['phone']);
 
-        // Upisi GOSTE U ORDER (uvek array!)
+        // 10. Upisi goste u order (_ovb_guests kao array)
         $order->update_meta_data('_ovb_guests', $guest_arr);
 
-        // Standardna meta polja — za prikaz checkin/checkout
+        // 11. Osnovna meta polja za prikaz boravka i gostiju
         $order->update_meta_data('start_date', $start);
         $order->update_meta_data('end_date',   $end);
         $order->update_meta_data('guests',     $guests);
-
-        // Ostala polja radi kompatibilnosti
         $order->update_meta_data('_ovb_start_date', $start);
         $order->update_meta_data('_ovb_end_date',   $end);
         $order->update_meta_data('_ovb_guests_num', $guests);
         $order->update_meta_data('_ovb_booking_id', $booking_id);
 
+        // 12. DODANO - Meta podaci koji se koriste u regularnim rezervacijama
+        $order->update_meta_data('first_name', $guest_arr[0]['first_name']);
+        $order->update_meta_data('last_name', $guest_arr[0]['last_name']);
+        $order->update_meta_data('email', $guest_arr[0]['email']);
+        $order->update_meta_data('phone', $guest_arr[0]['phone']);
+        
+        // 13. DODANO - Dodatni guest podaci za konzistentnost sa regularnim rezervacijama
+        if (!empty($client_data['birthdate'])) {
+            $order->update_meta_data('birthdate', $client_data['birthdate']);
+        }
+        if (!empty($client_data['gender'])) {
+            $order->update_meta_data('gender', $client_data['gender']);
+        }
+        if (!empty($client_data['id_number'])) {
+            $order->update_meta_data('id_number', $client_data['id_number']);
+        }
+
         $order->set_total($total_price);
         $order->save();
         $order->update_status('completed');
 
-        // 9. Update kalendara za svaki dan
+        // 14. Update kalendara za svaki dan
         foreach ($dates as $date) {
             if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
                 $calendar_data[$date] = [
@@ -349,6 +365,7 @@ function ovb_admin_create_manual_order() {
             ];
             $calendar_data[$date]['status'] = 'booked';
         }
+        
         // Checkout dan = available (prazno)
         $checkout_date = date('Y-m-d', strtotime($end . ' +1 day'));
         if (!isset($calendar_data[$checkout_date]) || !is_array($calendar_data[$checkout_date])) {
