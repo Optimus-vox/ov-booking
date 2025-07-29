@@ -313,9 +313,9 @@ function ov_enqueue_astra_overrides()
         wp_enqueue_style('ovb-astra-overrides', plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css', 
             [], filemtime($css_file));
         
-        if (function_exists('ov_log_error')) {
-            ov_log_error('✅ Astra detected, OVB override stylesheet enqueued.', 'general');
-        }
+        // if (function_exists('ov_log_error')) {
+        //     ov_log_error('✅ Astra detected, OVB override stylesheet enqueued.', 'general');
+        // }
     }
 }
 add_action('wp_enqueue_scripts', 'ov_enqueue_astra_overrides', 99);
