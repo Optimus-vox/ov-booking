@@ -64,7 +64,7 @@ foreach ($all_dates as $i => $date) {
 
     // Poslednji dan je checkout → ispiši "Checkout"
     if ($i === count($all_dates) - 1) {
-        $dates_output .= '<tr class="ovb-checkout-row"><td class="ovb-date-label">' . esc_html($pretty_date) . ':</td><td class="ovb-date-value">' . esc_html__('Checkout', 'ov-booking') . '</td></tr>';
+        $dates_output .= '<tr class="ovb-checkout-row"><td class="ovb-date-label">' . esc_html($pretty_date) . ':</td><td class="ovb-date-value ovb-checkout">' . esc_html__('Checkout', 'ov-booking') . '</td></tr>';
     } else {
         // Prikaži cenu za tu noć
         $day_price = !empty($calendar_data[$date]['price']) ? floatval($calendar_data[$date]['price']) : 0;

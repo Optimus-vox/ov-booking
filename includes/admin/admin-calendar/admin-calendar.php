@@ -273,45 +273,47 @@ function render_calendar_meta_box($post)
     <!-- add client modal -->
     <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
         <div id="client_modal">
-            <i class="close_modal" onclick="closeClientModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                    <path fill="currentColor"
-                        d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-                </svg>
+                <form id="client_form" > 
+                <i class="close_modal" onclick="closeClientModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path fill="currentColor"
+                            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                    </svg>
 
-            </i>
-            <h3>Dodaj korisnika</h3>
-            <div class="add-information">
-                <label for="client_first_name">First name</label>
-                <input type="text" id="client_first_name" name="client_first_name">
+                </i>
+                <h3>Add Client</h3>
+                <div class="add-information">
+                    <label for="client_first_name">First name</label>
+                    <input type="text" id="client_first_name" name="client_first_name" required>
 
-                <label for="client_first_name">Last name</label>
-                <input type="text" id="client_last_name" name="client_last_name">
+                    <label for="client_first_name">Last name</label>
+                    <input type="text" id="client_last_name" name="client_last_name" required>
 
-                <label for="client_first_name">Email</label>
-                <input type="email" id="client_email" name="client_email">
+                    <label for="client_first_name">Email</label>
+                    <input type="email" id="client_email" name="client_email" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" required>
 
-                <label for="client_first_name">Phone</label>
-                <input type="text" id="client_phone" name="client_phone">
+                    <label for="client_first_name">Phone</label>
+                    <input type="text" id="client_phone" name="client_phone" required>
 
-                <label for="client_first_name">Number of guests</label>
-                <select id="client_guests" name="client_guests">
-                    <?php
-                    $max_guests = !empty($values['max_guests']) ? absint($values['max_guests']) : 1;
-                    for ($i = 1; $i <= $max_guests; $i++) {
-                        echo '<option value="' . $i . '">' . $i . '</option>';
-                    }
-                    ?>
-                </select>
+                    <label for="client_first_name">Number of guests</label>
+                    <select id="client_guests" name="client_guests" required>
+                        <?php
+                        $max_guests = !empty($values['max_guests']) ? absint($values['max_guests']) : 1;
+                        for ($i = 1; $i <= $max_guests; $i++) {
+                            echo '<option value="' . $i . '">' . $i . '</option>';
+                        }
+                        ?>
+                    </select>
 
-                <label for="client_first_name">Date range</label>
-                <input type="text" id="client_date_range">
-                <input type="hidden" id="client_modal_date_input">
-            </div>
-            <div class="buttons">
-                <button id="client_modal_save">Save</button>
-                <button onclick="closeClientModal()">Cancel</button>
-            </div>
+                    <label for="client_first_name">Date range</label>
+                    <input type="text" id="client_date_range">
+                    <input type="hidden" id="client_modal_date_input">
+                </div>
+                <div class="buttons">
+                    <button id="client_modal_save" type="submit">Save</button>
+                    <button onclick="closeClientModal()">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
     <!-- add client modal -->
@@ -367,10 +369,14 @@ function render_calendar_meta_box($post)
         </div>
     </div>
     <script>
+        // function closeClientModal() {
+        //     jQuery('#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input').val('');
+        //     jQuery("#client_modal_wrapper").hide();
+        // }
         function closeClientModal() {
-            jQuery('#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input').val('');
+            jQuery("#client_form")[0].reset();
             jQuery("#client_modal_wrapper").hide();
-        }
+      }
     </script>
     <!-- remove client modal -->
 

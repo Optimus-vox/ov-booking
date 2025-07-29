@@ -214,7 +214,42 @@
                         
                         <div id="order_review" class="woocommerce-checkout-review-order">
                             <!-- ORDER SUMMARY TABELA -->
-                            <?php wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
+                               <!-- Tvoj custom summary -->
+    <div class="ovb-summary-custom">
+        <table class="ovb-review-order-table">
+            <tr>
+                <td colspan="2" class="ovb-table-section-title"><?php esc_html_e('Trip Details', 'ov-booking'); ?></td>
+            </tr>
+            <tr>
+                <td class="ovb-label"><?php echo esc_html($start_label . ' – ' . $end_label); ?></td>
+                <td class="ovb-value" style="text-align:right;">
+                    <?php echo esc_html($nights . ' ' . _n('night', 'nights', $nights, 'ov-booking')); ?>
+                </td>
+            </tr>
+            <?php echo $dates_output; ?>
+     
+            <tr class="ovb-subtotal-row">
+                <td class="ovb-label"><?php esc_html_e('Subtotal', 'ov-booking'); ?></td>
+                <td class="ovb-value" style="text-align:right;"><?php echo wc_price($subtotal); ?></td>
+            </tr>
+            <tr>
+                <td class="ovb-label"><?php esc_html_e('VAT', 'ov-booking'); ?></td>
+                <td class="ovb-value" style="text-align:right;"><?php echo wc_price(WC()->cart->get_taxes_total()); ?></td>
+            </tr>
+            <tr>
+                <td class="ovb-label"><?php esc_html_e('Total', 'ov-booking'); ?></td>
+                <td class="ovb-value" style="text-align:right; font-weight:700;"><?php echo wc_price(WC()->cart->get_total('edit')); ?></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Dummy WC tabela za gateway compatibility -->
+    <!-- <div class="woocommerce-checkout-review-order-table" style="display:none"></div> -->
+
+    <!-- Ovde IDE tvoj stari wc_get_template('checkout/review-order.php'), ali on sada ne prikazuje ništa korisniku! -->
+    <?php  //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
+</div>
+                            <?php //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
 
                             <!-- PAYMENT METHODS - KLARNA TREBA OVO -->
                             <?php if (WC()->cart->needs_payment()) : ?>

@@ -107,6 +107,14 @@
 .p-ThirdPartyButtonContainer{
   border: none !important;
 }
+  input#Field-numberInput {
+        border-radius: 0;
+    background: transparent;
+    color: #fff !important;
+    &:placeholder{
+      color: #fff !important;
+    }
+  }
 }
 
 /* loader */
@@ -741,6 +749,35 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
     }
   }
 
+abbr[title] {
+    text-decoration: none !important;
+    border: none !important;
+}
+  .woocommerce-checkout #payment div.payment_box{
+    background-color: unset !important;
+    color: #fff !important;
+    padding: 0 !important;
+    &:before{
+      content: none !important;
+    }
+    fieldset{
+      border-color: #7C4DFF !important;
+    }
+  }
+  .ovb-review-order-table{
+    color: #fff;
+  }
+  .ovb-subtotal-row{
+    td{
+          border-top: 2px solid #fff !important;
+    }
+  }
+  .ovb-date-value{
+    text-align: right;
+  }
+  .ovb-checkout{
+    color: #7C4DFF;
+  }
   .ov-form-group{
     display: flex;
     flex-direction: column;

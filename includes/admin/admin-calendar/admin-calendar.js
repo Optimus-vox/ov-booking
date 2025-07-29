@@ -835,6 +835,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const phone = jQuery("#client_phone").val();
     const guests = jQuery("#client_guests").val();
     const range = jQuery("#client_date_range").data("daterangepicker");
+
+  
     const start = range.startDate;
     const end = range.endDate;
     const bookingId = Date.now() + "_" + Math.floor(Math.random() * 10000);
@@ -901,7 +903,12 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       success: function (res) {
         // return;
-        Swal.fire("Uspešno!", "Podaci su sačuvani.", "success");
+        jQuery("#client_modal_wrapper").hide();
+        Swal.fire("Success!", "Data successfully saved.", "success");
+          jQuery(
+            "#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input"
+          ).val("");
+      
       },
       error: function (err) {
         console.error("Greška pri čuvanju klijenta:", err);

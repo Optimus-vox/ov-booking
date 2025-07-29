@@ -566,10 +566,11 @@ add_action('woocommerce_admin_order_item_headers', function($order){
 
     // ✅ Prikaz gostiju
     $guests = $order->get_meta('_ovb_guests');
+    $guests = is_array($guests) ? $guests : [];
     $is_paid_by_other = $order->get_meta('_ovb_paid_by_other') === 'yes';
 
     echo '<div style="display:flex; flex-wrap:wrap; gap:30px;">';
-
+  
     foreach ($guests as $i => $guest) {
         echo '<div style="flex: 1 1 300px; background:#fff; padding:15px; border:1px solid #e5e5e5; border-radius:6px;">';
 
