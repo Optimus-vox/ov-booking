@@ -366,8 +366,7 @@ get_header();
                                                     value="<?php echo esc_attr( $ov_start_date ); ?>" />
                                                 <input type="hidden" name="end_date"   id="end_date"
                                                     value="<?php echo esc_attr( $ov_end_date ); ?>" />
-                                                <input type="hidden" name="all_dates"  id="all_dates"
-                                                    value="<?php echo esc_attr( $all_dates ); ?>" />
+
 
                                             </div>
 

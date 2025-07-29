@@ -363,7 +363,18 @@ function initOvDateRangePicker(config) {
 
     applyResponsiveClass();
   }
+  function updatePickerPosition() {
+    if (!inputEl || !picker) return;
 
+    const rect = inputEl.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+
+    if (spaceBelow < 500) {
+      picker.classList.add("open-above");
+    } else {
+      picker.classList.remove("open-above");
+    }
+  }
   function closePicker() {
     if (!alwaysOpen) {
       picker.classList.add("hidden");
@@ -452,17 +463,19 @@ function initOvDateRangePicker(config) {
 
     // Ažuriranje readonly sekcije
     const calendarSectionReadOnly = document.querySelector(".ov-booking-calendar-section");
-    if (calendarSectionReadOnly && startDate && endDate) {
-      const h3 = calendarSectionReadOnly.querySelector("h3");
-      const span = calendarSectionReadOnly.querySelector("span");
+    if (calendarSectionReadOnly) {
+      const h3 = calendarSectionReadOnly.querySelector('h3');
+      const span = calendarSectionReadOnly.querySelector('span');
 
       const startLabel = formatDate(startDate);
       const endLabel = formatDate(endDate);
       const nights = Math.max(0, Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
-      const title = window.ovb_product_title || "";
+      const title = window.ovb_product_title || '';
 
-      if (h3 && span && startLabel && endLabel) {
-        h3.textContent = nights > 0 ? `${nights} ${nights === 1 ? "night" : "nights"} in ${title}` : "Make a reservation";
+      if (h3 && span) {
+        h3.textContent = nights > 0
+          ? `${nights} ${nights === 1 ? 'night' : 'nights'} in ${title}`
+          : 'Make a reservation';
 
         span.textContent = `${startLabel} – ${endLabel}`;
       }
@@ -525,6 +538,7 @@ function initOvDateRangePicker(config) {
       if (!isPickerOpen) {
         isPickerOpen = true;
         renderPickers();
+        updatePickerPosition();
       }
     });
 
@@ -540,7 +554,10 @@ function initOvDateRangePicker(config) {
     document.addEventListener("keydown", handleEscapeKey);
   }
 
-  window.addEventListener("resize", applyResponsiveClass);
+  window.addEventListener("resize", () => {
+    applyResponsiveClass();
+    updatePickerPosition();
+  });
 
   // Brisanje hover efekata kada se izađe iz pickera
   picker.addEventListener("mouseleave", () => {
