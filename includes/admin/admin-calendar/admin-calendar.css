@@ -23,6 +23,10 @@ input {
   width: fit-content;
 }
 
+.input-error {
+  border: 1px solid #842029 !important;
+}
+
 .calendar-nav i {
   cursor: pointer;
   transform: rotate(270deg);
@@ -447,7 +451,7 @@ td .day-wrapper {
   button {
     width: 100%;
     color: #fff;
-    background-color:#8B5DFF;
+    background-color: #8B5DFF;
     border: 0;
     outline: none;
     padding: 10px;
@@ -463,6 +467,7 @@ td .day-wrapper {
 }
 
 .add-information input,
+#other_payer_fields input,
 #price_modal input {
   border: 1px solid #fff;
   background: transparent;
@@ -475,7 +480,8 @@ td .day-wrapper {
   height: 45px;
 }
 
-.add-information select#client_guests {
+.add-information select#client_guests,
+#other_payer_fields select {
   border: 1px solid #fff;
   background: #23243a;
   color: #fff;
@@ -487,7 +493,7 @@ td .day-wrapper {
   height: 45px;
   font-size: 16px;
   margin-bottom: 8px;
-  appearance: none;  
+  appearance: none;
   line-height: 1;
 
   &:focus {
@@ -497,14 +503,14 @@ td .day-wrapper {
   }
 }
 
-#price_modal input:focus,
+#price_modal input:focus,#other_payer_fields input:focus,
 .add-information input:focus {
   border-color: #8B5DFF;
   outline: none;
   box-shadow: none;
 }
 
-.add-information input::placeholder,
+.add-information input::placeholder,#other_payer_fields input::placeholder,
 #price_modal input::placeholder {
   color: #ffffff66;
 }
@@ -516,11 +522,13 @@ td .day-wrapper {
   right: 10px;
   cursor: pointer;
   transition: all 0.25s ease;
-  svg{
+
+  svg {
     color: #fff;
   }
-  &:hover{
-    svg{
+
+  &:hover {
+    svg {
       color: #8B5DFF;
     }
   }
@@ -529,10 +537,12 @@ td .day-wrapper {
 .time-input {
   padding: 10px !important;
 }
-.ovb-booking-dates{
+
+.ovb-booking-dates {
   height: 16px;
   position: relative;
 }
+
 .ovb-booking-dates:hover .tooltip-text {
   visibility: visible;
   width: 190px;
@@ -546,7 +556,8 @@ td .day-wrapper {
 .ovb-client-info {
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
+
   &.has-icon {
     justify-content: space-between;
   }
@@ -582,7 +593,7 @@ td .day-wrapper {
     align-items: start;
     gap: 5px;
     width: 100%;
-   
+
   }
 
   .price-row {
