@@ -2,28 +2,16 @@
    CART SPECIFIC STYLES
 ============================================== */
 
-.ov-cart {
-  background-color: red; /* fallback for specific cart styling */
-
-  .ov-cart-container {
-    @extend .ov-container;
-  }
-}
-
 /* Cart Page Layout */
 .ov-cart.page-cart {
-  @extend .ov-page-bg;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
+
 
   .ov-cart-container {
-    @extend .ov-container;
-
     &.empty {
       max-width: 400px;
-      text-align: center;
       padding: 0;
 
       .ov-cart-empty {
@@ -41,55 +29,16 @@
   }
 }
 
-/* Cart Header */
-.ov-cart-header {
-  @extend .ov-header;
-  
-  .ov-cart-back {
-    @extend .ov-back-btn;
-  }
-
-  .ov-cart-title {
-    @extend .ov-title;
-  }
-}
-
-/* Cart Content Layout */
-.ov-cart-content {
-  @extend .ov-two-column;
-}
-
-/* Cart Steps */
-.ov-cart-steps {
-  @extend .ov-steps;
-}
-
 .ov-step-button {
-  @extend .ov-btn;
   white-space: nowrap;
 
   &.ov-empty-cart-button {
     width: fit-content;
     margin-right: auto;
-    @extend .ov-btn-outline;
   }
 }
 
-/* Cart Summary */
-.ov-cart-summary .ov-summary-card {
-  @extend .ov-card;
-}
-
-.ov-summary-image img {
-  @extend .ov-card-image img;
-}
-
-.ov-summary-details {
-  @extend .ov-card-body;
-}
-
 .ov-summary-title {
-  @extend .ov-heading-small;
   margin: 0 0 12px;
 }
 
@@ -99,7 +48,6 @@
   line-height: 1.4;
 
   a {
-    @extend .ov-link-white;
     font-weight: bold;
     margin-left: 5px;
   }
@@ -107,8 +55,6 @@
 
 /* Summary rows use common styling */
 .ov-summary-row {
-  @extend .ov-summary-row;
-  
   &:first-of-type {
     @media(max-width:500px) {
       flex-direction: column;
@@ -117,9 +63,31 @@
   }
 }
 
-/* Total */
-.ov-summary-total-row {
-  /* Uses base summary row styling */
+.ov-price-details-accordion {
+  summary {
+    list-style: none;
+    /* Uklanja marker */
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+    /* Uklanja marker u WebKit browserima */
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.ov-price-breakdown-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .ov-summary-total-label {
@@ -137,183 +105,154 @@
 ============================================== */
 
 .ov-login-register-cart-modal {
-  @extend .ov-modal;
+  .ov-social-logins {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 
-  .ov-modal-backdrop {
-    @extend .ov-modal-backdrop;
-  }
-
-  .ov-modal-inner {
-    @extend .ov-modal-content;
-
-    .ov-modal-inner-header {
-      @extend .ov-modal-header;
-    }
-
-    .ov-modal-title {
-      @extend .ov-modal-title;
-    }
-
-    .ov-modal-close {
-      @extend .ov-modal-close;
-    }
-
-    .ov-modal-subtitle {
-      @extend .ov-modal-subtitle;
-    }
-
-    .ov-social-logins {
-      width: 100%;
+    .ov-social-button {
+      background: #fff;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      outline: none;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 20px;
 
-      .ov-social-button {
-        background: #fff;
+      .ov-social-button-icon {
         display: flex;
+        justify-content: center;
         align-items: center;
-        outline: none;
-        border: none;
-        border-radius: 6px;
-        padding: 6px 20px;
-
-        .ov-social-button-icon {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 20px;
-          height: 20px;
-          box-sizing: border-box;
-        }
-
-        span {
-          display: block;
-          width: 100%;
-          text-align: center;
-          padding: 10px 0;
-          color: #000;
-          text-transform: uppercase;
-          font-size: 16px;
-        }
-
-        .ov-spacing-helper {
-          width: 20px;
-          height: 20px;
-          flex-shrink: 0;
-        }
-      }
-    }
-
-    .ov-divider {
-      text-align: center;
-      position: relative;
-      margin: 24px auto;
-
-      &:before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: #fff;
-        z-index: -1;
+        width: 20px;
+        height: 20px;
+        box-sizing: border-box;
       }
 
       span {
-        background: #1B203A;
-        color: #FFFFFF99;
-        padding: 0 24px;
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        color: #000;
+        text-transform: uppercase;
         font-size: 16px;
+      }
+
+      .ov-spacing-helper {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
       }
     }
   }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    background-color: transparent;
+  .ov-divider {
+    text-align: center;
+    position: relative;
+    margin: 24px auto;
 
-    input {
-      @extend .ov-input;
-      margin-bottom: 12px;
-      height: auto;
-
-      &:last-of-type {
-        margin-bottom: 0;
-      }
-    }
-
-    .ov-login-password {
-      position: relative;
-      margin-bottom: 12px;
-
-      input {
-        height: auto;
-      }
-    }
-
-    .ov-forgot-password {
-      a {
-        @extend .ov-link-white;
-        font-weight: bold;
-      }
-    }
-
-    .ov-login-actions {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-
-      .ov-button {
-        margin-top: 24px;
-        width: 100%;
-        max-width: 50%;
-        border-radius: 6px;
-        padding: 15px 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-transform: uppercase;
-        color: #fff;
-        transition: all 0.28s ease;
-        outline: none;
-        box-sizing: border-box;
-        font-size: 16px;
-        font-family: inherit;
-
-        &.login {
-          @extend .ov-btn;
-          padding: 21px 30px;
-        }
-
-        &.register {
-          @extend .ov-btn-white-outline;
-          text-decoration: none;
-        }
-      }
-    }
-
-    .ov-toggle-password {
+    &:before {
+      content: "";
       position: absolute;
       top: 50%;
-      right: 1rem;
-      transform: translateY(-80%);
-      background: none;
-      border: none;
-      font-size: 1.25rem;
-      cursor: pointer;
-      color: #666;
-      transition: color 0.2s ease;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: #fff;
+      z-index: -1;
+    }
 
-      &:hover {
-        color: #fff;
-      }
+    span {
+      background: #1B203A;
+      color: #FFFFFF99;
+      padding: 0 24px;
+      font-size: 16px;
     }
   }
 }
+
+form {
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+
+  input {
+    margin-bottom: 12px;
+    height: auto;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .ov-login-password {
+    display: flex;
+    align-items: center;
+
+
+    input {
+      padding: 0;
+      margin: 0;
+      border: 0;
+
+    }
+  }
+
+  .ov-forgot-password {
+    a {
+      font-weight: bold;
+    }
+  }
+
+  .ov-login-actions {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    .ov-button {
+      margin-top: 24px;
+      width: 100%;
+      max-width: 50%;
+      border-radius: 6px;
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      color: #fff;
+      transition: all 0.28s ease;
+      outline: none;
+      box-sizing: border-box;
+      font-size: 16px;
+      font-family: inherit;
+
+      &.login {
+        padding: 21px 30px;
+      }
+
+      &.register {
+        text-decoration: none;
+      }
+    }
+  }
+
+  .ov-toggle-password {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}
+
 
 /* Google Login Button Helper */
 .google-login-button {

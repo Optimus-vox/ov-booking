@@ -9,221 +9,155 @@
 
 /* Checkout Page Layout */
 .ov-checkout.page-checkout {
-  @extend .ov-page-bg;
-
   .ov-checkout-container {
-    @extend .ov-container;
 
-    .ov-checkout-header {
-      @extend .ov-header;
-
-      .ov-checkout-back {
-        @extend .ov-back-btn;
-      }
-
-      .ov-checkout-title {
-        @extend .ov-title;
-      }
-    }
-
-    .ov-checkout-content {
-      @extend .ov-two-column;
-
-      /* Left Side - Steps */
-      .ov-checkout-steps {
-        @extend .ov-steps;
-      }
-
-      /* Checkout Form */
-      .checkout-form {
-        .ovb-customer-details-container {
-          .woocommerce-billing-fields {
-            h3 {
-              color: #fff;
-            }
-
-            p {
-              label {
-                color: #fff;
-              }
-
-              span {
-                input {
-                  @extend .ov-input;
-                }
-              }
-            }
-
-            .woocommerce-billing-fields__field-wrapper {
-              p {
-                label {
-                  color: #fff;
-                }
-
-                span {
-                  input {
-                    @extend .ov-input;
-                  }
-                }
-              }
-            }
-          }
-
-          .ovb-guests-section {
-            h4 {
-              color: #fff;
-            }
-
-            p {
-              label {
-                color: #fff;
-              }
-            }
-
-            .ovb-guests-wrapper {
-              margin-top: 35px;
-
-              .ov-guest-row {
-                h3 {
-                  color: #fff;
-                }
-              }
-            }
-          }
-
-          /* Order Notes Field */
-          #order_comments_field {
-            margin-top: 30px;
-
-            label {
-              color: #fff;
-              font-weight: 600;
-              font-size: 16px;
-              margin-bottom: 8px;
-              display: block;
-            }
-
-            textarea#order_comments {
-              @extend .ov-textarea;
-              @extend .ov-scrollbar;
-            }
-          }
-        }
-
-        .woocommerce-additional-fields {
+    /* Checkout Form */
+    .checkout-form {
+      .ovb-customer-details-container {
+        .woocommerce-billing-fields {
           h3 {
             color: #fff;
           }
-        }
 
-        /* Payment Section */
-        .woocommerce-checkout-payment {
-          background: #23254a;
-          border-radius: 7px;
-          padding: 30px 24px 24px 24px;
-          margin-bottom: 28px;
-          border: 1px solid #ffffff22;
-          box-shadow: 0 2px 8px 0 rgba(17, 21, 39, 0.11);
-          color: #fff;
-
-          .wc_payment_methods {
-            margin-bottom: 0;
-            border-bottom: none;
-
-            .wc_payment_method {
-              margin-bottom: 20px;
-              background: transparent;
-              padding: 0;
-              border-radius: 5px;
-              border: none;
-              display: flex;
-              align-items: flex-start;
-              gap: 14px;
-              position: relative;
-
-              label {
-                color: #fff !important;
-                font-size: 16px;
-              }
+          p {
+            label {
+              color: #fff;
             }
           }
 
-          .form-row.place-order {
-            .woocommerce-terms-and-conditions-wrapper {
-              font-size: 16px;
-              letter-spacing: 1;
-              font-family: inherit;
-
-              .woocommerce-privacy-policy-text {
-                p {
-                  a {
-                    @extend .ov-link;
-                  }
-                }
+          .woocommerce-billing-fields__field-wrapper {
+            p {
+              label {
+                color: #fff;
               }
             }
+          }
+        }
 
-            button#place_order {
-              @extend .ov-btn;
-            }
+
+
+        /* Order Notes Field */
+        #order_comments_field {
+          margin-top: 30px;
+
+          label {
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: block;
           }
         }
       }
 
-      /* Right Side - Summary */
-      .ov-checkout-summary {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: fit-content;
-        border: 1px solid #fff;
-        border-radius: 1px;
-        padding: 24px;
-        color: #ffffff;
-        max-width: 100%;
-        box-sizing: border-box;
-        background-color: transparent;
-
-        @media(max-width:450px) {
-          padding: 16px;
+      .woocommerce-additional-fields {
+        h3 {
+          color: #fff;
         }
+      }
 
-        .ov-summary-card {
-          .ovb-product-image {
-            width: 100%;
-            overflow: hidden;
+      /* Payment Section */
+      .woocommerce-checkout-payment {
+        background: #23254a;
+        border-radius: 7px;
+        padding: 30px 24px 24px 24px;
+        margin-bottom: 28px;
+        border: 1px solid #ffffff22;
+        box-shadow: 0 2px 8px 0 rgba(17, 21, 39, 0.11);
+        color: #fff;
 
-            img {
-              @extend .ov-card-image img;
-              object-fit: cover;
+        .wc_payment_methods {
+          margin-bottom: 0;
+          border-bottom: none;
+
+          .wc_payment_method {
+            margin-bottom: 20px;
+            background: transparent;
+            padding: 0;
+            border-radius: 5px;
+            border: none;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            position: relative;
+
+            label {
+              color: #fff !important;
+              font-size: 16px;
             }
           }
+        }
 
-          .ovb-trip-details-summary {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #fff;
+        .form-row.place-order {
+          .woocommerce-terms-and-conditions-wrapper {
+            font-size: 16px;
+            letter-spacing: 1;
+            font-family: inherit;
+          }
+        }
+      }
+    }
 
-            .ovb-trip-details-title {
-              font-size: 22px;
-              margin: 24px 0 12px;
-              text-transform: uppercase;
-              letter-spacing: .05em;
-              color: #ffffff;
-            }
+    /* Right Side - Summary */
+    .ov-checkout-summary {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: fit-content;
+      border: 1px solid #fff;
+      border-radius: 1px;
+      padding: 24px;
+      color: #ffffff;
+      max-width: 100%;
+      box-sizing: border-box;
+      background-color: transparent;
 
-            .ovb-trip-details {
-              .ovb-trip-detail-item {
+      @media(max-width:450px) {
+        padding: 16px;
+      }
+
+      .ov-summary-card {
+        .ovb-trip-details-summary {
+          margin-bottom: 20px;
+          border-bottom: 1px solid #fff;
+
+          .ovb-trip-details-title {
+            font-size: 22px;
+            margin: 24px 0 12px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #ffffff;
+          }
+
+          .ovb-trip-details {
+            .ovb-trip-detail-item {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 10px;
+
+              @media(max-width:450px) {
+                flex-direction: column;
+                align-items: flex-start;
+              }
+
+              .trip-details-stay {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
-                margin-bottom: 10px;
+                gap: 3px;
 
-                @media(max-width:450px) {
-                  flex-direction: column;
-                  align-items: flex-start;
+                .ovb-trip-detail-text {
+                  margin-top: 5px;
                 }
+              }
 
-                .trip-details-stay {
+              .trip-details-accommodation-details {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+
+                .ovb-trip-detail-nights,
+                .ovb-trip-detail-guests {
                   display: flex;
                   align-items: center;
                   gap: 3px;
@@ -232,87 +166,70 @@
                     margin-top: 5px;
                   }
                 }
-
-                .trip-details-accommodation-details {
-                  display: flex;
-                  align-items: center;
-                  gap: 15px;
-
-                  .ovb-trip-detail-nights,
-                  .ovb-trip-detail-guests {
-                    display: flex;
-                    align-items: center;
-                    gap: 3px;
-
-                    .ovb-trip-detail-text {
-                      margin-top: 5px;
-                    }
-                  }
-                }
               }
             }
           }
+        }
 
-          .ovb-order-review-container {
-            width: 100% !important;
-            padding: 0 !important;
-            border: none !important;
+        .ovb-order-review-container {
+          width: 100% !important;
+          padding: 0 !important;
+          border: none !important;
 
-            .shop_table {
-              @extend .ov-table;
+          .shop_table {
+            @extend .ov-table;
 
-              thead {
-                th.product-subtotal {
-                  text-align: right;
-                }
+            thead {
+              th.product-subtotal {
+                text-align: right;
               }
+            }
 
-              tbody {
-                tr.cart_item {
-                  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            tbody {
+              tr.cart_item {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
 
-                  td {
-                    border-bottom: none !important;
-                  }
-                }
-
-                td.product-name {
-                  border: none;
-                }
-
-                td.product-subtotal {
-                  text-align: right;
-                }
-              }
-
-              .ovb-details-label {
                 td {
-                  background: rgba(255, 255, 255, 0.05);
-                  font-style: italic;
-                  color: #ddd;
-                  font-size: 14px !important;
-                  padding-top: 16px !important;
-                  padding-bottom: 16px !important;
-                  text-align: left !important;
+                  border-bottom: none !important;
                 }
               }
 
-              .ovb-detail-line {
-                td {
-                  padding: 12px 16px !important;
-                  font-size: 0.85rem;
-                  color: #ccc;
-                }
-
-                td.ovb-detail-price {
-                  text-align: right;
-                }
+              td.product-name {
+                border: none;
               }
 
-              tfoot {
-                .order-total {
-                  @extend .ov-table-total;
-                }
+              td.product-subtotal {
+                text-align: right;
+              }
+            }
+
+            .ovb-details-label {
+              td {
+                background: rgba(255, 255, 255, 0.05);
+                font-style: italic;
+                color: #ddd;
+                font-size: 14px !important;
+                padding-top: 16px !important;
+                padding-bottom: 16px !important;
+                text-align: left !important;
+              }
+            }
+
+            .ovb-detail-line {
+              td {
+                padding: 12px 16px !important;
+                font-size: 0.85rem;
+                color: #ccc;
+              }
+
+              td.ovb-detail-price {
+                text-align: right;
+              }
+            }
+
+            tfoot {
+              .order-total {
+                @extend .ov-table-total;
               }
             }
           }
@@ -321,6 +238,7 @@
     }
   }
 }
+
 
 /* Form Elements */
 abbr[title] {
@@ -380,8 +298,10 @@ abbr[title] {
 ============================================== */
 
 .woocommerce-form-coupon-toggle {
+  margin: auto;
   margin-bottom: 20px;
   transition: border 0.2s;
+  max-width: 1200px;
 
   .woocommerce-info {
     background-color: #7C4DFF;
@@ -513,5 +433,31 @@ input#Field-numberInput {
 
   &:placeholder {
     color: #fff !important;
+  }
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  color: #fff !important;
+}
+
+.ov-guests-section {
+  h4 {
+    color: #fff;
+  }
+
+  p {
+    label {
+      color: #fff;
+    }
+  }
+
+  .ovb-guests-wrapper {
+    margin-top: 35px;
+
+    .ov-guest-row {
+      h3 {
+        color: #fff;
+      }
+    }
   }
 }

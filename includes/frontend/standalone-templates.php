@@ -10,23 +10,19 @@ add_action('template_redirect', function () {
 
         ?><!DOCTYPE html>
         <html <?php language_attributes(); ?>>
-
         <head>
             <meta charset="<?php bloginfo('charset'); ?>">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <?php wp_head(); ?>
         </head>
-
         <body <?php body_class('ov-single-product-body'); ?>>
-
+      
             <!-- include __DIR__ . '/../templates/woocommerce/ov-single-product.php'; -->
             <?php include OV_BOOKING_PATH . 'templates/woocommerce/ov-single-product.php'; ?>
 
             <?php wp_footer(); ?>
         </body>
-
-        </html>
-        <?php
+        </html><?php
 
         wp_reset_postdata();
         exit;
@@ -37,27 +33,23 @@ add_action('template_redirect', function () {
 add_action('template_redirect', function () {
     if (function_exists('is_cart') && is_cart() && !is_admin()) {
         WC()->cart;
-        ?>
-        <!DOCTYPE html>
+        ?><!DOCTYPE html>
         <html <?php language_attributes(); ?>>
-
         <head>
             <meta charset="<?php bloginfo('charset'); ?>">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <?php wp_head(); ?>
         </head>
-
         <body <?php body_class('ov-cart-page-body'); ?>>
 
-            <?php
-            if (file_exists(OV_BOOKING_PATH . 'templates/woocommerce/ov-cart.php')) {
-                include OV_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
-            }
-            ?>
+        <?php
+        if (file_exists(OV_BOOKING_PATH . 'templates/woocommerce/ov-cart.php')) {
+            include OV_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
+        }
+        ?>
 
-            <?php wp_footer(); ?>
+        <?php wp_footer(); ?>
         </body>
-
         </html><?php
 
         exit;

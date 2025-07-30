@@ -73,14 +73,17 @@ body.hidden {
 .ov-header {
     display: flex;
     align-items: center;
+    margin: auto;
+
     margin-bottom: 30px;
     position: relative;
+    max-width: 1200px;
 
-    @media(max-width:1100px) {
+    @media(max-width:1200px) {
         margin-inline: auto;
     }
 
-    .ov-back-btn {
+    .ov-back-btn{
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 100%;
         display: flex;
@@ -159,7 +162,8 @@ body.hidden {
 ============================================== */
 
 /* Input Fields */
-.ov-input {
+.ov-input,
+.input-text {
     background-color: transparent;
     border: 1px solid #fff;
     color: #fff;
@@ -334,7 +338,7 @@ body.hidden {
 .ov-summary-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 16px;
 
     .ov-summary-left {
@@ -380,6 +384,10 @@ body.hidden {
             }
         }
     }
+}
+
+.ov-summary-price-row {
+    align-items: flex-start;
 }
 
 .ov-summary-value {
@@ -809,10 +817,12 @@ body.hidden {
     }
 }
 
-.ov-link-white {
+.ov-link-white,
+.woocommerce-privacy-policy-link {
     color: #fff;
     text-decoration: underline;
     transition: color 0.2s ease;
+
 }
 
 .ov-heading-large {
@@ -834,6 +844,7 @@ body.hidden {
     font-weight: 600;
     color: #fff;
     margin: 0 0 16px 0;
+    text-align: left;
 }
 
 /* ==============================================
