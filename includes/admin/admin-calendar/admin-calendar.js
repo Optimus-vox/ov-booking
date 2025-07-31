@@ -18,11 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
     typeof ovbAdminCalendar !== "undefined" && ovbAdminCalendar.priceTypes
       ? ovbAdminCalendar.priceTypes
       : {
-          regular: 0,
-          weekend: 0,
-          discount: 0,
-          custom: 0,
-        };
+        regular: 0,
+        weekend: 0,
+        discount: 0,
+        custom: 0,
+      };
 
   for (const key in definedPriceTypes) {
     if (typeof definedPriceTypes[key] === "string") {
@@ -120,20 +120,19 @@ document.addEventListener("DOMContentLoaded", function () {
         isPast: isPast,
       };
 
-   let dayHTML = `
+      let dayHTML = `
       <div class="day-wrapper">
         <div class="day-header">
           <div class="day-number ${i === currentDate ? "today-number" : ""}">${i}</div>
           <div class="price-row">
             ${isPast ? `<span class="past-badge">Past</span>` : ""}
             <div class="day-price editable-price" data-date="${formattedDate}">
-              ${
-                !isPast
-                  ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              ${!isPast
+          ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
                 </svg>`
-                  : ""
-              }
+          : ""
+        }
               ${typeof price === "number" ? price + "€" : "Add price"}
               <span class="tooltip-text">
                 Price: ${typeof price === "number" ? price + "€" : "Price not set"}<br>
@@ -188,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
       dayHTML += `<div class="day-actions">`;
 
       // Show "+" button only for non-booked, non-past days
-      if (!hasClients && !isPast ) {
+      if (!hasClients && !isPast) {
         dayHTML += `
         <button class="add-client-button" data-date="${formattedDate}" title="Dodaj korisnika">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -692,51 +691,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   // SAVE CHECK-IN/CHECK-OUT
-  jQuery("#save_checkin_checkout").on("click", function (e) {
-    e.preventDefault();
-
-    const checkinTime = jQuery("#checkin_time").val();
-    const checkoutTime = jQuery("#checkout_time").val();
-    const productId = jQuery("#ovb_product_id").val();
-
-    if (!checkinTime || !checkoutTime) {
-      Swal.fire("Missing data", "Please enter both check-in and check-out times.", "warning");
-      return;
-    }
-
-    Swal.fire({
-      title: "Confirm time update",
-      html: `You're about to save:<br><b>Check-in:</b> ${checkinTime}<br><b>Check-out:</b> ${checkoutTime}<br><br>Proceed?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, save",
-      cancelButtonText: "Cancel",
-    }).then((result) => {
-      if (!result.isConfirmed) return;
-
-      jQuery.ajax({
-        url: ovbAdminCalendar.ajax_url,
-        method: "POST",
-        data: {
-          action: "ovb_save_checkin_checkout",
-          product_id: productId,
-          checkin_time: checkinTime,
-          checkout_time: checkoutTime,
-        },
-        success: function (res) {
-          Swal.fire("Saved!", "Check-in and check-out times have been updated.", "success");
-        },
-        error: function (err) {
-          Swal.fire("Error", "There was an error saving the times.", "error");
-          console.error("Error saving times:", err);
-        },
-      });
-    });
-  });
-
-  // CLIENT MODAL LOGIC ─────────────────────────────────────────────────────────────
   jQuery(() => {
     const $modal = jQuery("#client_modal_wrapper");
+
     const $inputs = {
       firstName: jQuery("#client_first_name"),
       lastName: jQuery("#client_last_name"),
@@ -747,7 +704,7 @@ document.addEventListener("DOMContentLoaded", function () {
       productId: jQuery("#ovb_product_id"),
     };
 
-    const showToast = (msg) =>
+    const showToast = (msg) => {
       Swal.fire({
         toast: true,
         position: "bottom",
@@ -759,22 +716,14 @@ document.addEventListener("DOMContentLoaded", function () {
         background: "#f8d7da",
         color: "#842029",
       });
+    };
 
-    const parseDMY = (s) => {
-      // expects "DD/MM/YYYY"
-      const [d, m, y] = s.split("/").map((n) => parseInt(n, 10));
+    const parseDMY = (str) => {
+      const [d, m, y] = str.split("/").map(Number);
       return new Date(y, m - 1, d);
     };
 
-    jQuery("#client_modal_save").on("click", async () => {
-      // gather + trim
-      const data = {};
-      for (let key of ["firstName", "lastName", "email", "phone", "guests", "range"]) {
-        data[key] = $inputs[key].val().trim();
-      }
-
-      // simple validation
-      $modal.find(".input-error").removeClass("input-error");
+    const validateInput = (data) => {
       const rules = {
         firstName: (v) => v.length >= 2,
         lastName: (v) => v.length >= 2,
@@ -783,76 +732,120 @@ document.addEventListener("DOMContentLoaded", function () {
         guests: (v) => Number(v) > 0,
         range: (v) => v.includes("–") || v.includes("-"),
       };
-      for (let [k, fn] of Object.entries(rules)) {
-        if (!fn(data[k])) {
-          $inputs[k].addClass("input-error");
-          showToast("Please fill all fields correctly.");
-          return;
+
+      $modal.find(".input-error").removeClass("input-error");
+
+      let isValid = true;
+
+      for (let [key, validate] of Object.entries(rules)) {
+        const value = data[key];
+        const isFieldValid = validate(value);
+        if (!isFieldValid) {
+          $inputs[key].addClass("input-error");
+          isValid = false;
         }
       }
 
-      // parse range "DD/MM/YYYY – DD/MM/YYYY"
-      const [rawStart, rawEnd] = data.range.split("–").map((s) => s.trim());
-      const startDate = parseDMY(rawStart),
-        endDate = parseDMY(rawEnd);
-      if (startDate > endDate) {
-        showToast("Start date cannot be after end date.");
-        return;
+      if (!isValid) {
+        showToast("Please fill all fields correctly.");
       }
 
-      const isoStart = startDate.toISOString().split("T")[0],
-        isoEnd = endDate.toISOString().split("T")[0],
-        bookingId = Date.now() + "_" + Math.floor(Math.random() * 10000);
+      return isValid;
+    };
 
-      // update local calendarData
+    const clearInputs = () => {
+      Object.values($inputs).forEach(($el) => $el.val("").removeClass("input-error"));
+    };
+    const fillCalendarData = (startDate, endDate, clientInfo) => {
+      const isoStart = startDate.toISOString().split("T")[0];
+      const isoEnd = endDate.toISOString().split("T")[0];
+
       for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-        calendarData[key] = calendarData[key] || { clients: [] };
+        const key = d.toISOString().split("T")[0];
+
+        // 🔒 Osiguraj da postoji entry i da ima clients niz
+        if (!calendarData[key]) {
+          calendarData[key] = {};
+        }
+        if (!Array.isArray(calendarData[key].clients)) {
+          calendarData[key].clients = [];
+        }
+
         calendarData[key].clients.push({
-          bookingId,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          guests: data.guests,
-          rangeStart: isoStart,
-          rangeEnd: isoEnd,
+          ...clientInfo,
           isCheckin: key === isoStart,
           isCheckout: key === isoEnd,
         });
+
         calendarData[key].status = "booked";
       }
+    };
 
-      // AJAX → create WP order
-      jQuery
-        .post(
-          ovbAdminCalendar.ajax_url,
-          {
-            action: "ovb_admin_create_manual_order",
-            nonce: ovbAdminCalendar.nonce,
-            product_id: $inputs.productId.val(),
-            client_data: JSON.stringify({ bookingId, ...data, rangeStart: isoStart, rangeEnd: isoEnd }),
-          },
-          (res) => {
-            if (!res.success) {
-              showToast(res.data || "Server error creating booking.");
-              return;
-            }
-            // save calendar & rerender
-            saveCalendarDataSafely("Booking created!").then(() => {
-              myCalendar();
-              $modal.hide();
-              Object.values($inputs).forEach(($el) => $el.val(""));
-              jQuery("body").css("overflow", "auto");
-            });
+
+    jQuery("#client_modal_save").on("click", () => {
+      const formData = {};
+
+      for (let key in $inputs) {
+        if (key !== "productId") {
+          formData[key] = $inputs[key].val().trim();
+        }
+      }
+
+      if (!validateInput(formData)) {
+        return;
+      }
+
+      const [rawStart, rawEnd] = formData.range.split("–").map((s) => s.trim());
+      const startDate = parseDMY(rawStart);
+      const endDate = parseDMY(rawEnd);
+
+      if (startDate > endDate) {
+        showToast("Start date cannot be after end date.");
+        $inputs.range.addClass("input-error");
+        return;
+      }
+
+      const bookingId = `${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+      const isoStart = startDate.toISOString().split("T")[0];
+      const isoEnd = endDate.toISOString().split("T")[0];
+
+      const clientPayload = {
+        bookingId,
+        ...formData,
+        rangeStart: isoStart,
+        rangeEnd: isoEnd,
+      };
+
+      fillCalendarData(startDate, endDate, clientPayload);
+
+      jQuery.post(
+        ovbAdminCalendar.ajax_url,
+        {
+          action: "ovb_admin_create_manual_order",
+          nonce: ovbAdminCalendar.nonce,
+          product_id: $inputs.productId.val(),
+          client_data: JSON.stringify(clientPayload),
+        },
+        (res) => {
+          if (!res.success) {
+            showToast(res.data || "Server error creating booking.");
+            return;
           }
-        )
-        .fail((err) => {
-          console.error("AJAX error:", err);
-          showToast("AJAX request failed.");
-        });
+
+          saveCalendarDataSafely("Booking created!").then(() => {
+            myCalendar();
+            $modal.hide();
+            clearInputs();
+            jQuery("body").css("overflow", "auto");
+          });
+        }
+      ).fail((err) => {
+        console.error("AJAX error:", err);
+        showToast("AJAX request failed.");
+      });
     });
   });
+
 
   function myCalendar() {
     console.log("Rendering calendar with data:", calendarData);

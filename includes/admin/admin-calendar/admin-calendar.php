@@ -272,7 +272,7 @@ function render_calendar_meta_box($post)
     <input type="hidden" name="ovb_status_daterange" id="ovb_status_daterange_input" value="">
 
     <!-- add client modal -->
-    <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
+    <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1001;">
         <div id="client_modal">
             <i class="close_modal" onclick="closeClientModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">

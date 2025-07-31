@@ -417,7 +417,10 @@ td .day-wrapper {
     color: #fff;
   }
 }
-
+.input-error {
+  border: 1px solid #dc3545 !important;
+  background-color: #fff5f5;
+}
 #client_action_modal {
   h3 {
     display: flex;
