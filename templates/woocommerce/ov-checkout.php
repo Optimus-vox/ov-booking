@@ -50,7 +50,7 @@ $nights = isset($cart_item['nights']) ? intval($cart_item['nights']) : max(0, co
 
 $start_label = $start_date ? date_i18n(get_option('date_format'), strtotime($start_date)) : '';
 $end_label = $end_date ? date_i18n(get_option('date_format'), strtotime($end_date)) : '';
-$calendar_data = get_post_meta($product->get_id(), '_ov_calendar_data', true);
+$calendar_data = get_post_meta($product->get_id(), '_ovb_calendar_data', true);
 if (!is_array($calendar_data)) {
     $calendar_data = [];
 }

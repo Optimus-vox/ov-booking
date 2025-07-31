@@ -28,8 +28,8 @@ add_action('save_post_product', function($post_id) {
 function ovb_create_woocommerce_pages() {
     // Provera da li je WooCommerce aktiviran
     if (!class_exists('WooCommerce')) {
-        if (function_exists('ov_log_error')) {
-            ov_log_error("❌ WooCommerce nije aktiviran - preskačem kreiranje stranica", 'general');
+        if (function_exists('ovb_log_error')) {
+            ovb_log_error("❌ WooCommerce nije aktiviran - preskačem kreiranje stranica", 'general');
         }
         return;
     }
@@ -100,11 +100,11 @@ function ovb_create_woocommerce_pages() {
                     // Ažuriranje WooCommerce postavki
                     update_option("woocommerce_{$key}_page_id", $page_id);
                     
-                    if (function_exists('ov_log_error')) {
-                        ov_log_error("✅ Kreirana WooCommerce stranica: {$key} (ID: {$page_id})", 'general');
+                    if (function_exists('ovb_log_error')) {
+                        ovb_log_error("✅ Kreirana WooCommerce stranica: {$key} (ID: {$page_id})", 'general');
                     }
-                } elseif (function_exists('ov_log_error')) {
-                    ov_log_error("❌ Greška pri kreiranju stranice {$key}: " . $page_id->get_error_message(), 'general');
+                } elseif (function_exists('ovb_log_error')) {
+                    ovb_log_error("❌ Greška pri kreiranju stranice {$key}: " . $page_id->get_error_message(), 'general');
                 }
             } else {
                 // Ako postoji stranica sa istim slugom ali nije u WooCommerce postavkama
@@ -117,8 +117,8 @@ function ovb_create_woocommerce_pages() {
                     ]);
                 }
                 
-                if (function_exists('ov_log_error')) {
-                    ov_log_error("🔗 Postojeća stranica povezana za {$key} (ID: {$page_exists->ID})", 'general');
+                if (function_exists('ovb_log_error')) {
+                    ovb_log_error("🔗 Postojeća stranica povezana za {$key} (ID: {$page_exists->ID})", 'general');
                 }
             }
         } elseif (!$has_shortcode) {
@@ -129,11 +129,11 @@ function ovb_create_woocommerce_pages() {
             ]);
             
             if (!is_wp_error($update_result)) {
-                if (function_exists('ov_log_error')) {
-                    ov_log_error("🔧 Shortcode dodat na postojeću stranicu: {$key} (ID: {$existing_post->ID})", 'general');
+                if (function_exists('ovb_log_error')) {
+                    ovb_log_error("🔧 Shortcode dodat na postojeću stranicu: {$key} (ID: {$existing_post->ID})", 'general');
                 }
-            } elseif (function_exists('ov_log_error')) {
-                ov_log_error("⚠️ Greška pri ažuriranju stranice {$key}: " . $update_result->get_error_message(), 'general');
+            } elseif (function_exists('ovb_log_error')) {
+                ovb_log_error("⚠️ Greška pri ažuriranju stranice {$key}: " . $update_result->get_error_message(), 'general');
             }
         }
     }
@@ -168,3 +168,39 @@ function disable_woocommerce_shipping_on_activation() {
     update_option('woocommerce_ship_to_destination','billing_only');
     update_option('woocommerce_api_enable_shipping_zones','no');
 }
+
+// Prikaz minimalne cene iz kalendara na single product (plug and play)
+add_action('woocommerce_single_product_summary', function() {
+    global $post;
+    // Povuci calendarData iz post_meta
+    $calendar_data = get_post_meta($post->ID, '_ovb_calendar_data', true);
+    if (!$calendar_data || !is_array($calendar_data)) {
+        // Ako nema custom cena, fallback na WC cenu
+        global $product;
+        if ($product) {
+            echo '<div class="ovb-single-product-price" style="font-size:1.7em;font-weight:700;color:#363;margin-bottom:10px">';
+            echo $product->get_price_html();
+            echo '</div>';
+        }
+        return;
+    }
+
+    // Nađi najnižu dostupnu cenu za available dane
+    $min_price = false;
+    foreach ($calendar_data as $d) {
+        if (
+            isset($d['price'])
+            && is_numeric($d['price'])
+            && (!isset($d['status']) || $d['status'] === 'available')
+        ) {
+            if ($min_price === false || $d['price'] < $min_price) {
+                $min_price = $d['price'];
+            }
+        }
+    }
+    if ($min_price !== false) {
+        echo '<div class="ovb-single-product-price" style="font-size:1.7em;font-weight:700;color:#363;margin-bottom:10px">';
+        echo 'Od <b>' . esc_html($min_price) . '€</b> po noći';
+        echo '</div>';
+    }
+}, 8); // Pre naslova proizvoda

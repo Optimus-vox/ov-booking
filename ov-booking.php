@@ -16,8 +16,8 @@
 defined('ABSPATH') || exit;
 
 // Define plugin paths
-define('OV_BOOKING_PATH', plugin_dir_path(__FILE__));
-define('OV_BOOKING_URL', plugin_dir_url(__FILE__));
+define('OVB_BOOKING_PATH', plugin_dir_path(__FILE__));
+define('OVB_BOOKING_URL', plugin_dir_url(__FILE__));
 
 
 // Blokiraj WP.org update-check zahteve na frontend-u 
@@ -95,4 +95,4 @@ function ovb_plugin_deactivate() {
 //test
 
 // Load plugin logic
-require_once OV_BOOKING_PATH . 'includes/init.php';
+require_once OVB_BOOKING_PATH . 'includes/init.php';

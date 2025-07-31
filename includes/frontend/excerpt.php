@@ -33,7 +33,7 @@ require_once dirname(__DIR__) . '/helpers/logger.php';
 
   
 // Skrati sadržaj na 300 karaktera i dodaj dugme "Show more"
-function ov_trimmed_content_with_show_more($content) {
+function ovb_trimmed_content_with_show_more($content) {
     if (is_singular('product')) {
         $text = wp_strip_all_tags($content);
         $limit = 300;
@@ -74,7 +74,7 @@ $output .= '</div>';
 
     return $content;
 }
-add_filter('the_content', 'ov_trimmed_content_with_show_more');
+add_filter('the_content', 'ovb_trimmed_content_with_show_more');
 
 // JS koji otvara ceo tekst
 add_action('wp_footer', function() {

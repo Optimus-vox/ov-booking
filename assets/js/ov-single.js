@@ -23,12 +23,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Kloniraj calendarData i izbriši flag “booked” za trenutnu rezervaciju
-  const rawCalendarData = window.ov_calendar_vars?.calendarData || {};
+  const rawCalendarData = window.ovbAdminCalendar?.calendarData || {};
   const calendarData = JSON.parse(JSON.stringify(rawCalendarData));
 
-  const ovStartDate = getQueryParam("ov_start_date");
-  const ovEndDate = getQueryParam("ov_end_date");
-  const ovGuests = getQueryParam("ov_guests");
+  const ovStartDate = getQueryParam("ovb_start_date");
+  const ovEndDate = getQueryParam("ovb_end_date");
+  const ovGuests = getQueryParam("ovb_guests");
 
   if (ovGuests) {
     const sel = document.querySelector("#ov-guests");
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // --------------------------------------------------
-  // Popuni inpute i summary (#ov_total_container)
+  // Popuni inpute i summary (#ovb_total_container)
   // --------------------------------------------------
   // function populateFieldsFromStrings(startStr, endStr) {
   //   if (!window.moment) return;
@@ -82,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
   //     totalPrice += parseFloat(calendarData[dates[i]]?.price || 0);
   //   }
 
-  //   // Ažuriraj i renderuj cene za ukupan broj noci #ov_total_container
-  //   const container = document.querySelector("#ov_total_container");
+  //   // Ažuriraj i renderuj cene za ukupan broj noci #ovb_total_container
+  //   const container = document.querySelector("#ovb_total_container");
   //   if (container) {
   //     container.innerHTML = `
   //       <div class="ov-price-summary-wrapper">
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 4) Ažuriraj summary
-    const container = document.querySelector("#ov_total_container");
+    const container = document.querySelector("#ovb_total_container");
     if (container) {
       container.innerHTML = `
       <div class="ov-price-summary-wrapper">

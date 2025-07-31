@@ -8,7 +8,7 @@ defined('ABSPATH') || exit;
  * @param string $context 'admin-calendar' ili 'general'
  * @param int|null $depth Koliko nivoa unazad da ide za trace (default 1)
  */
-function ov_log_error($message, $context = 'general', $depth = 1) {
+function ovb_log_error($message, $context = 'general', $depth = 1) {
     $base_dir = plugin_dir_path(__FILE__) . '../../logs/';
 
     if (!file_exists($base_dir)) {

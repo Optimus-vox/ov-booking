@@ -93,7 +93,7 @@ class OVB_iCal_Service {
         $items      = $order->get_items();
         $first_item = reset( $items );
         $guests     = $first_item
-                      ? ( $first_item->get_meta( 'ov_guest_count' ) ?: '1' )
+                      ? ( $first_item->get_meta( 'ovb_guest_count' ) ?: '1' )
                       : '1';
 
         $address = self::build_location_string( $order );
@@ -292,7 +292,7 @@ class OVB_iCal_Service {
 
         $items      = $order->get_items();
         $first_item = reset( $items );
-        $guests     = $first_item ? ( $first_item->get_meta( 'ov_guest_count' ) ?: '1' ) : '1';
+        $guests     = $first_item ? ( $first_item->get_meta( 'ovb_guest_count' ) ?: '1' ) : '1';
 
         $address = self::build_location_string( $order );
 

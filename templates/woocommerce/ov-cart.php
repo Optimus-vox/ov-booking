@@ -64,12 +64,12 @@ $guests        = ! empty( $cart_item['guests']     ) ? intval( $cart_item['guest
 
 $start_label   = $start_date ? date_i18n( get_option('date_format'), strtotime( $start_date ) ) : '';
 $end_label     = $end_date   ? date_i18n( get_option('date_format'), strtotime( $end_date   ) ) : '';
-$calendar_data = get_post_meta( $product->get_id(), '_ov_calendar_data', true );
+$calendar_data = get_post_meta( $product->get_id(), '_ovb_calendar_data', true );
 
 $product_url = add_query_arg( [
-    'ov_start_date' => rawurlencode( $start_date ),
-    'ov_end_date'   => rawurlencode( $end_date ),
-    'ov_guests'     => intval( $guests ),
+    'ovb_start_date' => rawurlencode( $start_date ),
+    'ovb_end_date'   => rawurlencode( $end_date ),
+    'ovb_guests'     => intval( $guests ),
 ], get_permalink( $product->get_id() ) );
 
 // Tačan broj noćenja (razlika end_date – start_date u danima)
@@ -270,7 +270,7 @@ get_header();
     <?php endif; ?>
 
     <!-- Login Form -->
-    <form name="loginform" id="ov_login-cart-form"
+    <form name="loginform" id="ovb_login-cart-form"
       action="<?php echo esc_url( wp_login_url( wc_get_cart_url() ) ); ?>" method="post">
       <input type="text" name="log" placeholder="E-Mail" required />
       <div class="ov-login-password">

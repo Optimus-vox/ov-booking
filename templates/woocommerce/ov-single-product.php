@@ -4,13 +4,13 @@ global $post, $product;
 setup_postdata($post);
 $product = wc_get_product($post->ID);
 $product_id = $post->ID;
-$booked = get_post_meta($product_id, '_ovb_booked_dates', true);
+$booked = get_post_meta($product_id, '_ovb_calendar_data', true);
 
 
 // --------------------------------------------------
-// 1) Ako URL ima ov_start_date i ov_end_date → obriši iz korpe
+// 1) Ako URL ima ovb_start_date i ovb_end_date → obriši iz korpe
 // --------------------------------------------------
-if (isset($_GET['ov_start_date'], $_GET['ov_end_date'])) {
+if (isset($_GET['ovb_start_date'], $_GET['ovb_end_date'])) {
     if (class_exists('WC_Cart') && WC()->cart) {
         foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
             if ($cart_item['product_id'] === get_the_ID()) {
@@ -23,21 +23,21 @@ if (isset($_GET['ov_start_date'], $_GET['ov_end_date'])) {
 // --------------------------------------------------
 // 2) Preuzmi GET parametre u PHP varijable za formu
 // --------------------------------------------------
-$ov_start_date = isset($_GET['ov_start_date'])
-    ? sanitize_text_field(wp_unslash($_GET['ov_start_date']))
+$ovb_start_date = isset($_GET['ovb_start_date'])
+    ? sanitize_text_field(wp_unslash($_GET['ovb_start_date']))
     : '';
-$ov_end_date = isset($_GET['ov_end_date'])
-    ? sanitize_text_field(wp_unslash($_GET['ov_end_date']))
+$ovb_end_date = isset($_GET['ovb_end_date'])
+    ? sanitize_text_field(wp_unslash($_GET['ovb_end_date']))
     : '';
-$ov_guests = isset($_GET['ov_guests'])
-    ? intval($_GET['ov_guests'])
+$ovb_guests = isset($_GET['ovb_guests'])
+    ? intval($_GET['ovb_guests'])
     : 1;
 
     // build a comma-separated list of all dates between start and end
 $all_dates = '';
-if ( $ov_start_date && $ov_end_date ) {
-    $current = strtotime( $ov_start_date );
-    $end_ts  = strtotime( $ov_end_date );
+if ( $ovb_start_date && $ovb_end_date ) {
+    $current = strtotime( $ovb_start_date );
+    $end_ts  = strtotime( $ovb_end_date );
     $dates   = [];
     while ( $current <= $end_ts ) {
         $dates[]  = date( 'Y-m-d', $current );
@@ -289,11 +289,11 @@ get_header();
 
                             <div class="ov-booking-calendar-section">
                                 <?php
-                                if ($ov_start_date && $ov_end_date) {
-                                    $start_label = date_i18n(get_option('date_format'), strtotime($ov_start_date));
-                                    $end_label = date_i18n(get_option('date_format'), strtotime($ov_end_date));
-                                    $ts_start = strtotime($ov_start_date);
-                                    $ts_end = strtotime($ov_end_date);
+                                if ($ovb_start_date && $ovb_end_date) {
+                                    $start_label = date_i18n(get_option('date_format'), strtotime($ovb_start_date));
+                                    $end_label = date_i18n(get_option('date_format'), strtotime($ovb_end_date));
+                                    $ts_start = strtotime($ovb_start_date);
+                                    $ts_end = strtotime($ovb_end_date);
                                     $nights = max(0, ($ts_end - $ts_start) / DAY_IN_SECONDS);
                                     ?>
                                     <h3>
@@ -335,7 +335,7 @@ get_header();
                             <section class="custom-product-summary">
 
                                 <div class="custom-dates">
-                                    <div class="custom-price" id="ov_total_container"></div>
+                                    <div class="custom-price" id="ovb_total_container"></div>
                                     <?php
                                     // Ako u korpi već postoji neki proizvod:
                                     if ($cart_not_empty || $in_cart):
@@ -363,9 +363,9 @@ get_header();
                                                     placeholder="<?php esc_attr_e('DD/MM/YYYY – DD/MM/YYYY', 'ov-booking'); ?>" />
                                                 <!-- SKRIVENA polja koja JS popunjava -->
                                                 <input type="hidden" name="start_date" id="start_date"
-                                                    value="<?php echo esc_attr( $ov_start_date ); ?>" />
+                                                    value="<?php echo esc_attr( $ovb_start_date ); ?>" />
                                                 <input type="hidden" name="end_date"   id="end_date"
-                                                    value="<?php echo esc_attr( $ov_end_date ); ?>" />
+                                                    value="<?php echo esc_attr( $ovb_end_date ); ?>" />
 
 
                                             </div>
@@ -377,7 +377,7 @@ get_header();
                                                 <label for="ov-guests"><?php esc_html_e('Guests', 'ov-booking'); ?></label>
                                                 <select name="guests" id="ov-guests">
                                                     <?php for ($i = 1; $i <= $max_guests; $i++): ?>
-                                                        <option value="<?php echo esc_attr($i); ?>" <?php selected($ov_guests, $i); ?>>
+                                                        <option value="<?php echo esc_attr($i); ?>" <?php selected($ovb_guests, $i); ?>>
                                                             <?php echo esc_html($i); ?>
                                                         </option>
                                                     <?php endfor; ?>

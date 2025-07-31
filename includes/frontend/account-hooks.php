@@ -36,7 +36,6 @@ add_filter('woocommerce_rest_prepare_customer', function($response) {
     return $response;
 }, 10, 1);
 // Sakrij shipping opcije u admin panelu
-add_filter('woocommerce_get_sections_shipping', '__return_empty_array');
 add_filter('woocommerce_get_settings_shipping', '__return_empty_array');
 // Ukloni shipping iz admin toolbar-a
 add_action('admin_bar_menu', function($wp_admin_bar) {

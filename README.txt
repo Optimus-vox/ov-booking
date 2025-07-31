@@ -16,7 +16,7 @@ Professional apartment booking solution powered by WooCommerce. Offers a flexibl
 3. Use the Booking Settings page to configure behavior (shortcode or override mode).
 
 == Shortcode ==
-Use `[ov_booking_single]` to insert booking template manually.
+Use `[ovb_booking_single]` to insert booking template manually.
 
 == Changelog ==
 = 1.0 =

@@ -18,7 +18,7 @@ add_action('template_redirect', function () {
         <body <?php body_class('ov-single-product-body'); ?>>
       
             <!-- include __DIR__ . '/../templates/woocommerce/ov-single-product.php'; -->
-            <?php include OV_BOOKING_PATH . 'templates/woocommerce/ov-single-product.php'; ?>
+            <?php include OVB_BOOKING_PATH . 'templates/woocommerce/ov-single-product.php'; ?>
 
             <?php wp_footer(); ?>
         </body>
@@ -43,8 +43,8 @@ add_action('template_redirect', function () {
         <body <?php body_class('ov-cart-page-body'); ?>>
 
         <?php
-        if (file_exists(OV_BOOKING_PATH . 'templates/woocommerce/ov-cart.php')) {
-            include OV_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
+        if (file_exists(OVB_BOOKING_PATH . 'templates/woocommerce/ov-cart.php')) {
+            include OVB_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
         }
         ?>
 

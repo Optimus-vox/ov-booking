@@ -18,11 +18,11 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 $meta_keys = [
     '_apartment_info_icons',
     '_apartment_rules_icons',
-    '_ov_custom_editor',
+    '_ovb_custom_editor',
     '_apartment_additional_info',
     '_product_testimonials',
-    '_ov_calendar_data',
-    '_ov_price_types'
+    '_ovb_calendar_data',
+    '_ovb_price_types'
 ];
 
 // Uklanjanje meta za svaki proizvod
@@ -41,6 +41,6 @@ foreach ($products as $post_id) {
 }
 
 // (Opcionalno) Obriši i plugin opcije ako ih dodaš u future-u
-delete_option('ov_booking_settings');
-delete_option( 'ov_booking_display_mode' );
-// delete_option('ov_booking_version');
+delete_option('ovb_booking_settings');
+delete_option( 'ovb_booking_display_mode' );
+// delete_option('ovb_booking_version');

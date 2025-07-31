@@ -10,8 +10,8 @@ add_action('admin_menu', function() {
         'Booking Settings',
         'manage_options',
         'ov-booking-settings',
-        'ov_booking_render_settings_page',
-        OV_BOOKING_URL . 'assets/ov-icon-dashboard.svg'
+        'ovb_booking_render_settings_page',
+        OVB_BOOKING_URL . 'assets/ov-icon-dashboard.svg'
     );
 });
 
@@ -26,23 +26,23 @@ add_action('admin_init', function () {
 });
 
 // Render forma
-function ov_booking_render_settings_page() {
-    $mode          = get_option('ov_booking_display_mode', 'shortcode');
+function ovb_booking_render_settings_page() {
+    $mode          = get_option('ovb_booking_display_mode', 'shortcode');
     $contact_email = get_option('ovb_contact_email', '');
     ?>
     <div class="wrap">
         <h1>OV Booking Display Settings</h1>
         <!-- <p class="description">Choose how the product page should be rendered by this plugin.</p> -->
         <form method="post" action="options.php">
-            <?php settings_fields('ov_booking_settings_group'); ?>
+            <?php settings_fields('ovb_booking_settings_group'); ?>
             <?php do_settings_sections('ov-booking-settings'); ?>
 
             <table class="form-table">
                 <tr>
                     <th scope="row">Display mode</th>
                     <td>
-                        <label><input type="radio" name="ov_booking_display_mode" value="shortcode" <?php checked($mode, 'shortcode'); ?> /> Shortcode (default)</label><br>
-                        <label><input type="radio" name="ov_booking_display_mode" value="template" <?php checked($mode, 'template'); ?> /> Override single-product template</label>
+                        <label><input type="radio" name="ovb_booking_display_mode" value="shortcode" <?php checked($mode, 'shortcode'); ?> /> Shortcode (default)</label><br>
+                        <label><input type="radio" name="ovb_booking_display_mode" value="template" <?php checked($mode, 'template'); ?> /> Override single-product template</label>
                     </td>
                 </tr>
                 <tr>
@@ -100,11 +100,11 @@ function ov_booking_render_settings_page() {
 
 // Registruj opcije iz plugin settings
 add_action('admin_init', function() {
-    register_setting('ov_booking_settings_group', 'ov_booking_display_mode');
-    register_setting('ov_booking_settings_group', 'ovb_google_client_id');
-    register_setting('ov_booking_settings_group', 'ovb_google_client_secret');
+    register_setting('ovb_booking_settings_group', 'ovb_booking_display_mode');
+    register_setting('ovb_booking_settings_group', 'ovb_google_client_id');
+    register_setting('ovb_booking_settings_group', 'ovb_google_client_secret');
     register_setting(
-        'ov_booking_settings_group',
+        'ovb_booking_settings_group',
         'ovb_contact_email',
         [
             'type'              => 'string',

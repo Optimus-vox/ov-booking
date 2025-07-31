@@ -51,7 +51,7 @@ remove_action( 'woocommerce_product_thumbnails', 'woocommerce_show_product_thumb
 // add_filter('woocommerce_locate_template', 'ovb_override_woocommerce_templates', 10, 3);
 
 // function ovb_override_woocommerce_templates($template, $template_name, $template_path) {
-//     $plugin_path = OV_BOOKING_PATH . 'templates/woocommerce/';
+//     $plugin_path = OVB_BOOKING_PATH . 'templates/woocommerce/';
 
 //     if (file_exists($plugin_path . $template_name)) {
 //         return $plugin_path . $template_name;
@@ -72,19 +72,19 @@ add_action('add_meta_boxes', 'remove_short_description', 999);
 // Unified template override za Single, Cart, Checkout, Thank You
 add_filter('template_include', function($template) {
     if (is_singular('product')) {
-        $tpl = OV_BOOKING_PATH . 'templates/woocommerce/ov-single-product.php';
+        $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-single-product.php';
         if (file_exists($tpl)) return $tpl;
     }
     if (function_exists('is_cart') && is_cart()) {
-        $tpl = OV_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
+        $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
         if (file_exists($tpl)) return $tpl;
     }
     if (function_exists('is_checkout') && is_checkout()) {
-        $tpl = OV_BOOKING_PATH . 'templates/woocommerce/ov-checkout.php';
+        $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-checkout.php';
         if (file_exists($tpl)) return $tpl;
     }
     if (function_exists('is_order_received') && is_order_received()) {
-        $tpl = OV_BOOKING_PATH . 'templates/woocommerce/ov-thank-you.php';
+        $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-thank-you.php';
         if (file_exists($tpl)) return $tpl;
     }
     return $template;

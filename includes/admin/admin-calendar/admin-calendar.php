@@ -3,6 +3,7 @@ defined('ABSPATH') || exit;
 
 require_once dirname(__DIR__) . '../../helpers/logger.php';
 
+
 function render_calendar_meta_box($post)
 {
     wp_nonce_field('sacuvaj_additional_info_nonce', 'additional_info_nonce');
@@ -23,7 +24,7 @@ function render_calendar_meta_box($post)
     ob_start(); ?>
 
     <div class="admin-calendar-container">
-        <input type="hidden" id="ov_product_id" value="<?php echo esc_attr($post->ID); ?>">
+        <input type="hidden" id="ovb_product_id" value="<?php echo esc_attr($post->ID); ?>">
 
         <div class="calendar-nav">
             <i class="prev-month ">
@@ -266,9 +267,9 @@ function render_calendar_meta_box($post)
 
     <hr>
 
-    <input type="hidden" name="ov_bulk_status" id="ov_bulk_status_input" value="">
-    <input type="hidden" name="ov_status_apply_rule" id="ov_status_apply_rule_input" value="">
-    <input type="hidden" name="ov_status_daterange" id="ov_status_daterange_input" value="">
+    <input type="hidden" name="ovb_bulk_status" id="ovb_bulk_status_input" value="">
+    <input type="hidden" name="ovb_status_apply_rule" id="ovb_status_apply_rule_input" value="">
+    <input type="hidden" name="ovb_status_daterange" id="ovb_status_daterange_input" value="">
 
     <!-- add client modal -->
     <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1001;">
@@ -308,7 +309,7 @@ function render_calendar_meta_box($post)
 
                     <label for="client_date_range">Date range</label>
                     <div id="date-range-picker" class="daterange-picker">
-                        <input type="text" id="custom-daterange-input" class="daterange" readonly
+                        <input type="text" id="custom-daterange-input-admin" class="daterange" readonly
                             placeholder="<?php esc_attr_e('DD/MM/YYYY – DD/MM/YYYY', 'ov-booking'); ?>" />
                         <input type="hidden" name="start_date" id="start_date" />
                         <input type="hidden" name="end_date" id="end_date" />

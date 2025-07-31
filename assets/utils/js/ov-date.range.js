@@ -502,9 +502,9 @@ function initOvDateRangePicker(config) {
       }
     }
 
-    const priceEl = document.getElementById("ov_total_price");
-    const nightsEl = document.getElementById("ov_total_nights");
-    const boxEl = document.getElementById("ov_total_price_box");
+    const priceEl = document.getElementById("ovb_total_price");
+    const nightsEl = document.getElementById("ovb_total_nights");
+    const boxEl = document.getElementById("ovb_total_price_box");
 
     if (priceEl) priceEl.textContent = `€${totalPrice.toFixed(2)}`;
     if (nightsEl) {

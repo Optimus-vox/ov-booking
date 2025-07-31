@@ -33,7 +33,7 @@ get_header();
             <ul class="ov-booking-summary">
                 <?php
                 // Preuzimamo datume i goste iz meta polja
-                $dates_meta = $order->get_meta('ov_all_dates');
+                $dates_meta = $order->get_meta('ovb_all_dates');
                 if (!$dates_meta) {
                     $dates_meta = $order->get_meta('all_dates');
                 }
