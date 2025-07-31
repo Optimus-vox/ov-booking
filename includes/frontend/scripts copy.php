@@ -1,0 +1,545 @@
+<?php
+defined('ABSPATH') || exit;
+require_once dirname(__DIR__) . '/helpers/logger.php';
+
+//Register dashicons
+add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_style('dashicons');
+});
+
+/**
+ * Frontend main assets
+ */
+// function ov_enqueue_public_assets()
+// {
+//     wp_enqueue_style('ov-date-range-picker-css', plugin_dir_url(__FILE__) . '../../assets/utils/css/ov-date.range.css');
+//     // wp_enqueue_script('ov-date-range-picker-js', plugin_dir_url(__FILE__) . '../../assets/utils/js/ov-date.range.js', [], null, true);
+//     wp_enqueue_script('ov-date-range-picker-js', plugin_dir_url(__FILE__) . '../../assets/utils/js/ov-date.range.js', ['jquery','moment'], filemtime( plugin_dir_path(__FILE__) . '../../assets/utils/js/ov-date.range.js' ), true);
+//     // Owl Carousel CSS
+//     wp_enqueue_style('owl-carousel-style', plugin_dir_url(__FILE__) . '../../assets/utils/css/owl.carousel.min.css');
+//     wp_enqueue_style('owl-carousel-theme', plugin_dir_url(__FILE__) . '../../assets/utils/css/owl.theme.default.min.css');
+//     wp_enqueue_script('owl-carousel-js', plugin_dir_url(__FILE__) . '../../assets/utils/js/owl.carousel.min.js', array(), '', true);
+
+//     // Tvoj glavni CSS i JS fajlovi
+//     wp_enqueue_style('ov-slider-css', plugin_dir_url(__FILE__) . '../../assets/utils/css/ov.slider.css');
+//     wp_enqueue_script('ov-slider-js', plugin_dir_url(__FILE__) . '../../assets/utils/js/ov.slider.js', array(), '', true);
+
+//     wp_enqueue_style('ov-main-style', plugin_dir_url(__FILE__) . '../../assets/css/main.css');
+
+//     wp_enqueue_script('ov-main-js', plugin_dir_url(__FILE__) . '../../assets/js/main.js', [], null, true);
+//     wp_script_add_data('ov-main-js', 'type', 'module');
+
+//     wp_enqueue_style('lightgallery-css', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css', [], '2.7.1');
+//     wp_enqueue_script('lightgallery-js', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js', ['jquery'], '2.7.1', true);
+//     wp_enqueue_script('lightgallery-thumbnail', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js', ['lightgallery-js'], '2.7.1', true);
+//     wp_enqueue_script('lightgallery-zoom', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js', ['lightgallery-js'], '2.7.1', true);
+// }
+
+function ov_enqueue_public_assets()
+{
+    // Glavni CSS/JS – globalno
+    // wp_enqueue_style('ov-main-style', plugin_dir_url(__FILE__) . '../../assets/css/main.css');
+    // wp_enqueue_script('ov-main-js', plugin_dir_url(__FILE__) . '../../assets/js/main.js', [], null, true);
+    wp_enqueue_style('ov-main-style', plugin_dir_url(__FILE__) . '../../assets/css/main.css', [], filemtime(plugin_dir_path(__FILE__) . '../../assets/css/main.css'));
+    wp_enqueue_script('ov-main-js', plugin_dir_url(__FILE__) . '../../assets/js/main.js', [], filemtime(plugin_dir_path(__FILE__) . '../../assets/js/main.js'), true);
+
+    wp_script_add_data('ov-main-js', 'type', 'module');
+
+    // Precizna provera za single product stranicu
+    $is_single_product = is_singular('product') && get_post_type() === 'product';
+
+    if ($is_single_product) {
+        // Date range picker samo ovde
+        wp_enqueue_style('ov-date-range-picker-css', plugin_dir_url(__FILE__) . '../../assets/utils/css/ov-date.range.css');
+        wp_enqueue_script('ov-date-range-picker-js', plugin_dir_url(__FILE__) . '../../assets/utils/js/ov-date.range.js', ['jquery','moment'], filemtime( plugin_dir_path(__FILE__) . '../../assets/utils/js/ov-date.range.js' ), true);
+
+        // Lightgallery
+        wp_enqueue_style('lightgallery-css', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css', [], '2.7.1');
+        wp_enqueue_script('lightgallery-js', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js', ['jquery'], '2.7.1', true);
+        wp_enqueue_script('lightgallery-thumbnail', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js', ['lightgallery-js'], '2.7.1', true);
+        wp_enqueue_script('lightgallery-zoom', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js', ['lightgallery-js'], '2.7.1', true);
+
+        // Owl i slider
+        wp_enqueue_style('owl-carousel-style', plugin_dir_url(__FILE__) . '../../assets/utils/css/owl.carousel.min.css');
+        wp_enqueue_style('owl-carousel-theme', plugin_dir_url(__FILE__) . '../../assets/utils/css/owl.theme.default.min.css');
+        wp_enqueue_script('owl-carousel-js', plugin_dir_url(__FILE__) . '../../assets/utils/js/owl.carousel.min.js', [], '', true);
+
+        wp_enqueue_style('ov-slider-css', plugin_dir_url(__FILE__) . '../../assets/utils/css/ov.slider.css');
+        wp_enqueue_script('ov-slider-js', plugin_dir_url(__FILE__) . '../../assets/utils/js/ov.slider.js', [], '', true);
+    }
+}
+
+add_action('wp_enqueue_scripts', 'ov_enqueue_public_assets', 20);
+
+// Disable elementor assets 
+add_action('elementor/frontend/after_register_styles', 'ovb_dequeue_elementor_styles_on_checkout', 100);
+function ovb_dequeue_elementor_styles_on_checkout()
+{
+    if (is_cart() || is_checkout() || is_wc_endpoint_url() || is_account_page()) {
+        wp_dequeue_style('elementor-icons');
+        wp_dequeue_style('elementor-frontend');
+        wp_dequeue_style('elementor-post');
+        wp_dequeue_style('elementor-global');
+        wp_dequeue_style('e-animations');
+        wp_dequeue_script('elementor-frontend');
+        wp_dequeue_script('elementor-webpack-runtime');
+        wp_dequeue_script('elementor-waypoints');
+    }
+}
+
+add_action('wp_enqueue_scripts', 'ovb_dequeue_astra_on_checkout', 100);
+function ovb_dequeue_astra_on_checkout()
+{
+    if (is_cart() || is_checkout() || is_wc_endpoint_url() || is_account_page()) {
+        wp_dequeue_style('astra-addon-css');
+        wp_dequeue_script('astra-addon-js');
+        wp_dequeue_script('astra-addon');
+    }
+}
+
+
+/**
+ * Shared calendar CSS + core JS libraries (moment + daterangepicker)
+ */
+function ov_enqueue_calendar_core_libraries()
+{
+    wp_enqueue_style('daterangepicker-css', 'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css', [], null);
+    wp_enqueue_script('moment-js', 'https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js', [], null, true);
+    wp_enqueue_script('daterangepicker-js', 'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js', ['jquery', 'moment-js'], null, true);
+}
+
+
+// Admin calendar enqueue
+function enqueue_calendar_admin_assets($hook)
+{
+    global $post;
+    if (($hook === 'post.php' || $hook === 'post-new.php') && isset($post) && $post->post_type === 'product') {
+        ov_enqueue_calendar_core_libraries();
+        
+        wp_enqueue_style('sweetalert2-css', 'https://cdn.jsdelivr.net/npm/sweetalert2@11.22.1/dist/sweetalert2.min.css', [], '2.7.1');
+        wp_enqueue_script('sweetalert2-js', 'https://cdn.jsdelivr.net/npm/sweetalert2@11.22.1/dist/sweetalert2.all.min.js', [], '11.22.1', true);
+
+        // Admin calendar style & script
+        wp_enqueue_style('admin-calendar-style', OV_BOOKING_URL . 'includes/admin/admin-calendar/admin-calendar.css');
+        wp_enqueue_script('admin-calendar-script', OV_BOOKING_URL . 'includes/admin/admin-calendar/admin-calendar.js', ['jquery', 'daterangepicker-js'], null, true);
+
+        $calendar_data = get_post_meta($post->ID, '_ov_calendar_data', true) ?: [];
+        $price_defaults = get_post_meta($post->ID, '_ov_price_types', true) ?: [
+            'regular' => '',
+            'weekend' => '',
+            'discount' => '',
+            'custom' => ''
+        ];
+
+        wp_localize_script('admin-calendar-script', 'ov_calendar_vars', [
+            'nonce'        => wp_create_nonce('ovb_nonce'), 
+            'ajax_url'     => admin_url('admin-ajax.php'),
+            'product_id'   => $post->ID,
+            'priceTypes'   => $price_defaults,
+            'calendarData' => $calendar_data,
+        ]);
+    }
+}
+add_action('admin_enqueue_scripts', 'enqueue_calendar_admin_assets');
+
+/**
+ * Frontend calendar + product assets za single product stranicu
+ */
+function ov_enqueue_single_product_assets()
+{
+    if (!is_product()) return;
+
+    global $post;
+    $product_id = $post->ID;
+
+    ov_enqueue_calendar_core_libraries();
+
+    // CSS/JS for single-product calendar
+    wp_enqueue_style('ov-custom-single-style', OV_BOOKING_URL . 'assets/css/ov-single.css');
+    wp_enqueue_script('ov-custom-single-script', OV_BOOKING_URL . 'assets/js/ov-single.js', ['jquery', 'daterangepicker-js'], null, true);
+     wp_localize_script( 'ov-single', 'ovBookingI18n', [
+        // ovo će ići kroz __() i biti dostupno u JS
+        'selectEndDate' => __( 'Select end date', 'ov-booking' ),
+    ] );
+
+    // WooCommerce skripte za add-to-cart i fragmentaciju
+    wp_enqueue_script('wc-add-to-cart');
+    wp_enqueue_script('woocommerce');
+    wp_enqueue_script('wc-single-product');
+    wp_enqueue_script('wc-cart-fragments');
+
+    $calendar_data_raw = get_post_meta($product_id, '_ov_calendar_data', true);
+    $calendar_data = [];
+
+    if (!empty($calendar_data_raw)) {
+        if (is_string($calendar_data_raw)) {
+            $calendar_data = json_decode($calendar_data_raw, true);
+        } elseif (is_array($calendar_data_raw)) {
+            $calendar_data = $calendar_data_raw;
+        }
+    }
+
+    $price_defaults = get_post_meta($product_id, '_ov_price_types', true) ?: [
+        'regular' => '',
+        'weekend' => '',
+        'discount' => '',
+        'custom' => ''
+    ];
+
+    wp_localize_script('ov-custom-single-script', 'ov_calendar_vars', [
+        'ajax_url'       => admin_url('admin-ajax.php'),
+        'nonce'          => wp_create_nonce('ovb_nonce'),
+        'product_id'     => $product_id,
+        'calendarData'   => $calendar_data,
+        'priceTypes'     => $price_defaults,
+        'checkoutUrl'    => ovb_get_checkout_url(),
+        'cartUrl'        => wc_get_cart_url(),
+        'isUserLoggedIn' => is_user_logged_in(),
+        'startDate'      => isset($_GET['ov_start_date']) ? sanitize_text_field($_GET['ov_start_date']) : '',
+        'endDate'        => isset($_GET['ov_end_date']) ? sanitize_text_field($_GET['ov_end_date']) : '',
+    ]);
+}
+add_action('wp_enqueue_scripts', 'ov_enqueue_single_product_assets');
+
+
+//  ——————————————————————————————————————————————
+// 1. Enqueue CSS/JS za cart i localize AJAX
+add_action('wp_enqueue_scripts', 'ovb_enqueue_cart_assets');
+function ovb_enqueue_cart_assets()
+{
+    if (function_exists('is_cart') && is_cart()) {
+        // CSS za cart
+        wp_enqueue_style(
+            'ovb-cart-style',
+            plugin_dir_url(__FILE__) . '../../assets/css/ov-cart.css',
+            []
+        );
+        // JS za cart
+        wp_enqueue_script(
+            'ovb-cart-script',
+            plugin_dir_url(__FILE__) . '../../assets/js/ov-cart.js',
+            ['jquery'],
+            true
+        );
+        // Checkout URL fallback
+        // $checkout_page_id = wc_get_page_id('checkout');
+        // $checkout_url = ($checkout_page_id && get_post_status($checkout_page_id) === 'publish')
+        //     ? get_permalink($checkout_page_id)
+        //     : home_url('/checkout/');
+
+        // if (! filter_var($checkout_url, FILTER_VALIDATE_URL)) {
+        //     $checkout_url = home_url('/checkout/');
+        // }
+        // Lokalizuj varijable
+        wp_localize_script('ovb-cart-script', 'ovCartVars', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'emptyCartConfirmMsg' => __('Are you sure you want to empty your cart?', 'ov-booking'),
+            'checkoutUrl' => ovb_get_checkout_url(),
+            'isUserLoggedIn' => is_user_logged_in(),
+        ]);
+    }
+}
+
+// 2. AJAX handler za praznjenje korpe
+add_action('wp_ajax_ovb_empty_cart', 'ovb_empty_cart_callback');
+add_action('wp_ajax_nopriv_ovb_empty_cart', 'ovb_empty_cart_callback');
+function ovb_empty_cart_callback()
+{
+    if (class_exists('WC_Cart') && WC()->cart) {
+        WC()->cart->empty_cart();
+        wp_send_json_success();
+    }
+    wp_send_json_error();
+}
+//  ——————————————————————————————————————————————
+// === Enqueue CSS i JS za Checkout stranicu ===
+add_action('wp_enqueue_scripts', 'ovb_enqueue_checkout_assets');
+function ovb_enqueue_checkout_assets()
+{
+    if (function_exists('is_checkout') && is_checkout()) {
+        // Ako ti treba kalendar na Checkoutu (npr. da prikažeš iste podatke), pozovi:
+        ov_enqueue_calendar_core_libraries();
+
+        // CSS za Checkout
+        wp_enqueue_style(
+            'ovb-checkout-style',
+            OV_BOOKING_URL . 'assets/css/ov-checkout.css',
+            []
+        );
+
+        // JS za Checkout
+        wp_enqueue_script(
+            'ovb-checkout-script',
+            OV_BOOKING_URL . 'assets/js/ov-checkout.js',
+            ['jquery'],
+            null,
+            true
+        );
+
+        // Lokalizuj AJAX url (+ šta god ti još treba u JS-u)
+        wp_localize_script(
+            'ovb-checkout-script',
+            'ovCheckoutVars',
+            [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                // po potrebi dodaš još varijabli ovde
+            ]
+        );
+        wp_add_inline_script(
+            'ovb-checkout-script',
+            "
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.classList.add('hidden');
+                let fill = document.querySelector('.ovb-progress-fill');
+                if (fill) {
+                    let width = 0;
+                    let interval = setInterval(() => {
+                        if (width >= 100) {
+                            clearInterval(interval);
+                        } else {
+                            width += 10;
+                            fill.style.width = width + '%';
+                        }
+                    }, 60);
+                }
+            });
+
+            window.addEventListener('load', function () {
+                document.body.classList.remove('hidden');
+
+                // Ukloni border sa Google Pay / Woo pay dugmeta
+                let btn = document.querySelector('.p-ThirdPartyButtonContainer');
+                if (btn) {
+                    btn.style.border = 'none';
+                }
+
+                // Ukloni loader
+                let loader = document.getElementById('ovb-loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 300);
+                }
+            });
+            "
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'ovb_optimize_checkout_assets', 1000);
+function ovb_optimize_checkout_assets()
+{
+    if (!is_checkout() || is_wc_endpoint_url('order-received')) return;
+
+    // WooCommerce skripte koje nisu potrebne
+    wp_dequeue_script('wc-cart-fragments');
+    wp_dequeue_script('wc-add-to-cart');
+    wp_dequeue_script('wc-single-product');
+    // wp_dequeue_script('wc-country-select');  // ako ne koristiš shipping
+    wp_dequeue_script('wc-address-i18n');
+
+    // Gutenberg i Woo Blocks
+    wp_dequeue_style('wc-blocks-style');
+    wp_dequeue_style('wc-blocks-checkout-style');
+    wp_dequeue_script('wc-checkout-block');
+    wp_dequeue_script('wc-blocks-checkout');
+
+    // WP Block editor generalno
+    wp_dequeue_script('wp-block-library');
+    wp_dequeue_style('wp-block-library');
+
+    // Admin bar
+    wp_dequeue_script('admin-bar');
+    wp_dequeue_style('admin-bar');
+
+    // Elementor frontend ako nije potreban na checkoutu
+    wp_dequeue_style('elementor-icons');
+    wp_dequeue_style('common');
+    wp_dequeue_style('frontend');
+    wp_dequeue_script('frontend');
+}
+
+
+add_action('wp_enqueue_scripts', 'ovb_enqueue_thank_you_assets');
+function ovb_enqueue_thank_you_assets()
+{
+    // 1) Pretty permalink endpoint check
+    $is_thankyou = function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received');
+    // 2) Fallback: neki plugin ili querystring stil (?order-received=ID)
+    $is_thankyou = $is_thankyou || isset($_GET['order-received']);
+
+    if ($is_thankyou) {
+        // Obavezno prilagodi OV_BOOKING_URL ili plugin_dir_url( __FILE__ ) putanju
+        wp_enqueue_style(
+            'ovb-thank-you-style',
+            OV_BOOKING_URL . 'assets/css/ov-thank-you.css',
+            []
+        );
+        wp_enqueue_script(
+            'ovb-thank-you-script',
+            OV_BOOKING_URL . 'assets/js/ov-thank-you.js',
+            ['jquery'],
+            '1.0',
+            true
+        );
+    }
+}
+
+/**
+ * Override WooCommerce checkout templates from our plugin folder
+ */
+add_filter('woocommerce_locate_template', 'ovb_override_wc_checkout_templates', 20, 3);
+function ovb_override_wc_checkout_templates($template, $template_name, $template_path)
+{
+    // Ako je u pitanju template iz checkout foldera
+    if (0 === strpos($template_name, 'checkout/')) {
+        // tražimo u pluginu
+        $plugin_template = OV_BOOKING_PATH . 'templates/woocommerce/' . $template_name;
+        if (file_exists($plugin_template)) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+
+add_filter( 'woocommerce_locate_template', 'ovb_locate_template', 99, 3 );
+function ovb_locate_template( $template, $template_name, $template_path ) {
+    $plugin  = OV_BOOKING_PATH . 'templates/woocommerce/';
+    // custom cart
+    if ( 'checkout/cart.php' === $template_name && is_cart() ) {
+        $custom = $plugin . 'ov-cart.php';
+        if ( file_exists( $custom ) ) {
+            return $custom;
+        }
+    }
+    // custom checkout
+    if ( 'checkout/form-checkout.php' === $template_name && is_checkout() ) {
+        $custom = $plugin . 'ov-checkout.php';
+        if ( file_exists( $custom ) ) {
+            return $custom;
+        }
+    }
+    // custom thankyou
+    if ( 'checkout/thankyou.php' === $template_name && is_wc_endpoint_url( 'order-received' ) ) {
+        $custom = $plugin . 'ov-thank-you.php';
+        if ( file_exists( $custom ) ) {
+            return $custom;
+        }
+    }
+    return $template;
+}
+
+// Enqueue custom CSS samo na My Account i podstranicama
+add_action('wp_enqueue_scripts', 'ovb_enqueue_myaccount_styles');
+function ovb_enqueue_myaccount_styles()
+{
+    if (function_exists('is_account_page') && is_account_page()) {
+        wp_enqueue_style(
+            'ovb-myaccount-style',
+            plugin_dir_url(__FILE__) . '../../assets/css/ov-my-account.css',
+            []
+        );
+    }
+}
+
+
+// Ako je Astra tema ukljucena ubaci fajl 
+
+add_action('wp_enqueue_scripts', 'ovb_enqueue_astra_overrides', 99);
+function ovb_enqueue_astra_overrides()
+{
+    $theme = wp_get_theme();
+
+    if (strpos($theme->get('Name'), 'Astra') !== false || strpos($theme->get('Template'), 'astra') !== false) {
+
+     $css_file = plugin_dir_path(__FILE__) . '../../assets/css/ov-astra-overrides.css';
+
+        if ( file_exists( $css_file ) ) {
+            wp_enqueue_style(
+                'ovb-astra-overrides',
+                plugin_dir_url(__FILE__) . '../../assets/css/ov-astra-overrides.css',
+                [],
+                filemtime( $css_file )
+            );
+            if ( function_exists('ov_log_error') ) {
+                ov_log_error('✅ Astra detected, OVB override stylesheet enqueued.', 'general');
+            }
+        }
+    }
+}
+
+
+
+
+
+// 
+
+// Dodajte u vaš plugin ili u footer
+add_action('wp_footer', 'ovb_fix_stripe_remounting');
+function ovb_fix_stripe_remounting() {
+    if (is_checkout() && !is_order_received_page()) {
+        ?>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            let stripeElementsMounted = false;
+            let klarnaInitialized = false;
+            
+            // Override za Stripe da spreči duplo mount-ovanje
+            $(document.body).on('checkout_error updated_checkout', function() {
+                // Unmount postojeće Stripe elemente pre novog mount-ovanja
+                if (typeof window.wc_stripe_form !== 'undefined' && window.wc_stripe_form) {
+                    try {
+                        if (window.wc_stripe_form.stripe_card) {
+                            window.wc_stripe_form.stripe_card.unmount();
+                        }
+                        if (window.wc_stripe_form.stripe_iban) {
+                            window.wc_stripe_form.stripe_iban.unmount();
+                        }
+                    } catch (e) {
+                        console.log('Stripe unmount error:', e);
+                    }
+                }
+                
+                stripeElementsMounted = false;
+                klarnaInitialized = false;
+            });
+
+            // Inicijalizuj payment gateway-evi tek kada se checkout učita
+        jQuery(document.body).on('updated_checkout', function () {
+            const finishLoader = () => {
+                document.body.classList.remove('hidden');
+                let fill = document.querySelector('.ovb-progress-fill');
+                if (fill) fill.style.width = '100%';
+
+                let loader = document.getElementById('ovb-loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 300);
+                }
+
+                let btn = document.querySelector('.p-ThirdPartyButtonContainer');
+                if (btn) btn.style.border = 'none';
+
+                window.ovbCheckoutReady = true;
+            };
+
+            // Čekaj da se renderuju .payment_box elementi
+            const waitForPayments = setInterval(() => {
+                const visible = document.querySelector('.payment_box:not(.hidden):not([style*="display: none"])');
+                if (visible || document.querySelector('#payment .wc_payment_methods')) {
+                    clearInterval(waitForPayments);
+                    finishLoader();
+                }
+            }, 100);
+            // Timeout safety
+            setTimeout(() => clearInterval(waitForPayments), 9000);
+        });
+
+
+            // Početna inicijalizacija
+            setTimeout(function() {
+                $(document.body).trigger('updated_checkout');
+            }, 500);
+        });
+        </script>
+        <?php
+    }
+}

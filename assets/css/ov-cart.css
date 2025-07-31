@@ -1,617 +1,268 @@
-.ast-container{
-/* all: revert !important; */
-}
-.ov-cart{
-    background-color: red;
-    .ov-cart-container{
-        width: 100%;
-        max-width: 1680px;
-        margin-inline: auto;
-    }
-}/* Global wrapper */
-.ov-cart.page-cart {
-    background-color: #1B203A;
-    color: #FFFFFF;
-    padding: 100px 0 100px;
-    min-height: calc(100vh - 100px);
-    box-sizing: border-box;
-    .ov-cart-container{
-        width: 100%;
-        max-width: 1200px;
-        margin-inline: auto;
-        @media(max-width:1200px){
-          max-width: calc(100% - 64px);
-        }
-        @media(max-width:550px){
-          max-width: calc(100% - 32px);
-        }
+/* ==============================================
+   CART SPECIFIC STYLES
+============================================== */
 
-        &.empty{
-          max-width: 400px;
-          text-align: center;
-          padding: 0;
-          .ov-cart-empty{
-            font-size: 44px;
-          }
-          button{
-            background-color: #7C4DFF;
-            color: #fff;
-            border-radius: 6px;
-            padding: 16px 45px;
-            display: block;
-            text-decoration: none;
-            transition: all 0.28s ease;
-            margin: 0 auto;
-            outline: none;
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
-            &:hover {
-              background-color: #8B5DFF;
-              border-color: #8B5DFF;
-            }
-          }
-          @media(max-width:1100px){
-            max-width: calc(100% - 32px);
-            .ov-cart-empty{
-              font-size: 32px;
-            }
-          }
+/* Cart Page Layout */
+.ov-cart.page-cart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+
+  .ov-cart-container {
+    background-color: #1B203A;
+    width: 100%;
+    height: 70vh;
+
+    &.empty {
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      .ov-cart-empty {
+        font-size: 44px;
+
+      }
+
+      @media(max-width:1100px) {
+        max-width: calc(100% - 32px);
+
+        .ov-cart-empty {
+          font-size: 32px;
         }
+      }
     }
   }
-  
-  /* Header: back + title */
-  .ov-cart-header {
+}
+
+.ov-step-button {
+  white-space: nowrap;
+
+  &.ov-empty-cart-button {
+    width: fit-content;
+    margin-right: auto;
+  }
+}
+
+.ov-summary-title {
+  margin: 0 0 12px;
+}
+
+.ov-summary-policy {
+  font-size: 16px;
+  margin-bottom: 16px;
+  line-height: 1.4;
+
+  a {
+    font-weight: bold;
+    margin-left: 5px;
+  }
+}
+
+/* Summary rows use common styling */
+.ov-summary-row {
+  &:first-of-type {
+    @media(max-width:500px) {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+}
+
+.ov-price-details-accordion {
+  summary {
+    list-style: none;
+    /* Uklanja marker */
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+    /* Uklanja marker u WebKit browserima */
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.ov-price-breakdown-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ov-summary-total-label {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ov-summary-total-value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ==============================================
+   CART LOGIN/REGISTER MODAL
+============================================== */
+
+.ov-login-register-cart-modal {
+  .ov-social-logins {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .ov-social-button {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      outline: none;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 20px;
+
+      .ov-social-button-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        box-sizing: border-box;
+      }
+
+      span {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        color: #000;
+        text-transform: uppercase;
+        font-size: 16px;
+      }
+
+      .ov-spacing-helper {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .ov-divider {
+    text-align: center;
+    position: relative;
+    margin: 24px auto;
+
+    &:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: #fff;
+      z-index: -1;
+    }
+
+    span {
+      background: #1B203A;
+      color: #FFFFFF99;
+      padding: 0 24px;
+      font-size: 16px;
+    }
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+
+  input {
+    margin-bottom: 12px;
+    height: auto;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .ov-login-password {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
-    position: relative;
-    @media(max-width:1100px){
-       max-width: 650px;
-       margin-inline: auto;
+
+
+    input {
+      padding: 0;
+      margin: 0;
+      border: 0;
+
     }
-    .ov-cart-back {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 100%;
+  }
+
+  .ov-forgot-password {
+    a {
+      font-weight: bold;
+    }
+  }
+
+  .ov-login-actions {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    .ov-button {
+      margin-top: 24px;
+      width: 100%;
+      max-width: 50%;
+      border-radius: 6px;
+      padding: 15px 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFFFFF;
-      text-decoration: none;
-      font-size: 24px;
-      margin-right: 20px;
-      width: 56px;
-      height: 56px;
-      position: absolute;
-      left: -76px;
-      @media(max-width:1400px){
-        position: static;
-      }
-    }
-    .ov-cart-title {
-      font-size: 32px;
-      font-weight: 600;
-      margin: 0;
+      text-transform: uppercase;
       color: #fff;
-    }
-  }
-  
-  /* Layout: dve kolone */
-  .ov-cart-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-  }
-  
-  /* LEVA KOLONA: koraci */
-  .ov-cart-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .ov-step {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 4px;
-    padding: 16px 20px;
-  }
-  .ov-step-active {
-    border-color: #7C4DFF;
-    background-color: rgba(124,77,255,0.1);
-  }
-  .ov-step-number {
-    font-weight: 600;
-    margin-right: 12px;
-  }
-  .ov-step-label {
-    flex: 1;
-    font-size: 16px;
-  }
-  .ov-step-button {
-    background-color: #7C4DFF;
-    color: #FFFFFF;
-    text-decoration: none;
-    padding: 15px 30px;
-    border-radius: 4px;
-    font-weight: 600;
-    white-space: nowrap;
-    outline: none;
-    border: none;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    &:hover{
-      background-color: #8B5DFF;
-    }
-    &.ov-empty-cart-button{
-      width: fit-content;
-      margin-right: auto;
-      background-color: transparent;
-      border: 1px solid #7C4DFF;
-      &:hover{
-        background-color: #8B5DFF;
-      }
-    }
-  }
-  
-  /* DESNA KOLONA: summary kartica */
-  .ov-cart-summary .ov-summary-card {
-    background-color: #2A2E4A;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
-  .ov-summary-image img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-  .ov-summary-details {
-    padding: 24px;
-  }
-  .ov-summary-title {
-    font-size: 24px;
-    margin: 0 0 12px;
-    font-weight: 600;
-    color: #fff;
-  }
-  .ov-summary-policy {
-    font-size: 16px;
-    margin-bottom: 16px;
-    line-height: 1.4;
-  }
-  .ov-summary-policy a {
-    color: #fff;
-    font-weight: bold;  
-    margin-left: 5px;  
-  }
-  .ov-summary-policy a:hover {
-    text-decoration: underline;
-  }
-
-  hr {
-    border: 0;
-    width: 100%;
-    height: 1px;
-    background-color: #D9D9D9;
-    margin: 24px 0;
-  }  
-  /* Rows: trip details, price details, total */
-  .ov-summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-   
-    .ov-summary-left{
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      .ov-summary-label {
-        font-size: 22px;
-        font-weight: 400;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-  
-      }
-      .ov-summary-row-details {
-        display: flex;
-        gap: 12px;
-        @media(max-width:550px){
-          flex-direction: column;
-          align-items: flex-start;
-        }
-      }
-    }
-    .ov-summary-right{
-      .ov-summary-change {
-        font-size: 16px;
-        background-color: transparent;
-        border: 1px solid #fff;
-        color: #fff;
-        border-radius: 6px;
-        padding: 16px 24px;
-        display: block;
-        text-decoration: none;
-        transition: all 0.28s ease;
-        &:hover {
-          background-color: #7C4DFF;
-          border-color: #7C4DFF;
-        }
-      }
-        /* Price breakdown link */
-      .ov-summary-breakdown {
-        display: block;
-        text-align: center;
-        margin-top: 20px;
-        font-size: 16px;
-        color: #7C4DFF;
-        text-decoration: none;
-      }
-      .ov-summary-breakdown:hover {
-        text-decoration: underline;
-      }
-
-      .ov-price-details-accordion{
-        summary{
-          display: flex;
-          cursor: pointer;
-          font-size: 18px;
-          text-decoration: underline;
-        }
-        .ov-price-breakdown-list{
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            li{
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              margin-bottom: 5px;
-              &:first-of-type{
-                margin-top: 8px;
-              }
-              &.ov-breakdown-total{
-                margin-bottom: 0;
-                padding-top: 5px;
-                border-top: 1px solid #fff;
-                font-size: 18px;
-              }
-            }
-        }
-      }
-    }
-    &:first-of-type{
-      @media(max-width:500px){
-        flex-direction: column;
-        gap: 12px;
-      }
-    }
-  }
-  .ov-summary-value {
-    font-size: 16px;
-  }
-  
-  
-  /* Total */
-  .ov-summary-total-row {
-    /* border-top: 1px solid rgba(255,255,255,0.2);
-    padding-top: 16px;
-    margin-top: 16px; */
-  }
-  .ov-summary-total-label {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .ov-summary-total-value {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  
-  /* Responsive: na manjim ekranima jednokolumna */
-  @media (max-width: 1100px) {
-    .ov-cart-content {
-      display: flex;
-      flex-direction: column-reverse;
-      max-width: 650px;
-      margin-inline: auto;
-    }
-  
-    .ov-cart-steps, .ov-cart-summary {
-      width: 100%;
-    }
-  }
-  
-
-  /* ---------------------------------------------------
-   Login/Register Modal Styles for Cart Page
-   File: assets/css/ov-cart.css
---------------------------------------------------- */
-
-.ov-login-register-cart-modal {
-	display: none;
-	.ov-modal-backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		z-index: 9998;
-	}
-	.ov-modal-inner {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		width: 100%;
-		max-width: 700px;
-		background: #1B203A;
-		border-radius: 12px;
-		border: 1px solid #ffffff42;
-		box-shadow: 0px 4px 14px 0px #FFFFFF26;
-		transform: translate(-50%, -50%);
-		z-index: 9999;
-		padding: 1.5rem;
-		box-sizing: border-box;
-		color: #FFFFFF;
-    @media(max-width:750px){
-      max-width: calc(100% - 32px);
-    }
-    .ov-modal-inner-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding-left: 26px;
-      .ov-modal-title {
-        font-size: 24px;
-        font-weight: 400;
-        margin: 0 0 10px 0;
-        color: #fff;
-        display: block;
-        width: 100%;
-        text-align: center;
-      }
-      .ov-modal-close {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        line-height: 1;
-        cursor: pointer;
-        color: #666;
-        transition: color 0.2s ease;
-        &:hover {
-          color: #fff;
-        }
-      }
-    }
-    .ov-modal-subtitle{
-      display: block;
-      width: 100%;
-      text-align: center;
-      color: #E0E0E0;
-      font-size: 18px;
-      margin: 0 0 24px 0;
-    }
-    .ov-social-logins{
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      .ov-social-button{
-        background: #fff;
-        display: flex;
-        align-items: center;
-        outline: none;
-        border: none;
-        border-radius: 6px;
-        padding: 6px 20px;
-        
-        .ov-social-button-icon{
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 20px;
-          height: 20px;
-          box-sizing: border-box; 
-        }
-        span{
-          display: block;
-          width: 100%;
-          text-align: center;
-          padding: 10px 0;
-          color: #000;
-          text-transform: uppercase;
-          font-size: 16px;
-          /* font-weight: 700; */
-        }
-        .ov-spacing-helper{
-          width: 20px;
-          height: 20px;
-          flex-shrink: 0;
-        }
-      }
-    }
-    .ov-divider{
-      text-align: center;
-      position: relative;
-      margin: 24px auto;
-      &:before{
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: #fff;
-        z-index: -1;
-      }
-      span{
-        background: #1B203A;
-        color: #FFFFFF99;
-        padding: 0 24px;
-        font-size: 16px;
-      }
-    }
-	}
-	form {
-		display: flex;
-		flex-direction: column;
-    background-color: transparent;
-    input{
-      width: 100%;
-      border: 1px solid #fff;
-      border-radius: 0;
-      padding: 15px 16px;
-      background-color: transparent;
-      color: #fff;
-      font-size: 16px;
+      transition: all 0.28s ease;
       outline: none;
-      margin-bottom: 12px;
-      height: auto;
-      &:last-of-type{
-        margin-bottom: 0;
-      }
-      &:placeholder{
-        color: #FFFFFF66;
-        font-size: 18px;
-      }
-      &:focus{
-        border-color: #8B5DFF !important;
+      box-sizing: border-box;
+      font-size: 16px;
+      font-family: inherit;
+
+      &.login {
+        padding: 21px 30px;
       }
 
-      &:-webkit-autofill,
-      &:-webkit-autofill:hover,
-      &:-webkit-autofill:focus,
-      &:-webkit-autofill:active {
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: #ffffff;
-          transition: background-color 5000s ease-in-out 0s;
-          -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
-      }
-    }
-    .ov-login-password {
-      position: relative;
-      margin-bottom: 12px;
-      input{
-        height: auto;
-      }
-    }
-    .ov-forgot-password{
-      a{
-        color: #FFFFFFCC;
-        font-size: 16px;
-        font-weight: bold;
+      &.register {
         text-decoration: none;
-        transition: all 0.28s ease;
-        &:hover{
-          color: #8B5DFF;
-        }
       }
     }
+  }
 
-    .ov-login-actions{
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      .ov-button{
-        margin-top: 24px;
-        width: 100%;
-        max-width: 50%;
-        border-radius: 6px;
-        padding: 15px 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-transform: uppercase;
-        color: #fff;
-        transition: all 0.28s ease;
-        outline: none;
-        box-sizing: border-box;
-        font-size: 16px;
-        font-family: inherit;
-        &.login{
-          background-color: #8B5DFF;
-          border: none;
-          padding: 21px 30px;
-          &:hover{
-            background-color: #7C4DFF;
-          }
-        }
-        &.register{
-          text-decoration: none;
-          background-color: transparent;
-          border: 1px solid #FFFFFF4D;
-          &:hover{
-            background-color: #7C4DFF;
-            border-color: #7C4DFF;
-          }
-        }
-      }
+  .ov-toggle-password {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #fff;
     }
-	}
-	
-	.ov-toggle-password {
-		position: absolute;
-		top: 50%;
-		right: 1rem;
-		transform: translateY(-80%);
-		background: none;
-		border: none;
-		font-size: 1.25rem;
-		cursor: pointer;
-		color: #666;
-		transition: color 0.2s ease;
-		&:hover {
-			color: #fff;
-		}
-	}
-	.ov-login-submit {
-		.ov-button {
-			width: 100%;
-			padding: 0.75rem;
-			background-color: #007cba;
-			color: #fff;
-			border: none;
-			border-radius: 4px;
-			font-size: 1rem;
-			font-weight: 600;
-			cursor: pointer;
-			transition: background-color 0.2s ease;
-			&:hover {
-				background-color: #005a94;
-			}
-		}
-	}
-	.ov-modal-register-link {
-		text-align: center;
-		margin-top: 1rem;
-		a {
-			color: #007cba;
-			text-decoration: none;
-			font-size: 0.95rem;
-			transition: color 0.2s ease;
-			&:hover {
-				color: #005a94;
-			}
-		}
-	}
-	&.open {
-		display: block;
-	}
+  }
 }
 
 
-/* TEST helper za google dugme  */
+/* Google Login Button Helper */
 .google-login-button {
   display: flex;
   justify-content: space-between;
@@ -624,11 +275,13 @@
   font-weight: bold;
   border: 1px solid #ddd;
   text-decoration: none;
-  .helper{
+
+  .helper {
     width: 20px;
     height: 20px;
   }
-}
-.google-login-button:hover {
-  background: #f5f5f5;
+
+  &:hover {
+    background: #f5f5f5;
+  }
 }

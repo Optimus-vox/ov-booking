@@ -53,41 +53,31 @@ function initOvDateRangePicker(config) {
   let startDate = defaultStart ? new Date(defaultStart) : null;
   let endDate = defaultEnd ? new Date(defaultEnd) : null;
   let isPickerOpen = alwaysOpen || readonly;
-  let hoverEndDate = null; // Dodato za pravilno čišćenje hover efekata
 
   let currentMonth = today.getMonth();
   let currentYear = today.getFullYear();
 
-  // ISPRAVKA: Dodana provera da li je date valjan
   function formatDate(date) {
-    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-      return "";
-    }
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
     const d = String(date.getDate()).padStart(2, "0");
     return `${y}-${m}-${d}`;
   }
 
-  // ISPRAVKA: Dodana provera da li je date valjan
   function formatForInput(date) {
-    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-      return "";
-    }
     return date.toLocaleDateString(locale);
   }
 
   function isBlocked(date) {
-    if (!date || !(date instanceof Date)) return true;
-
     const key = formatDate(date);
-    if (!key) return true;
-
     const info = calendarData[key];
     if (startDate) {
       const dayAfterStart = new Date(startDate);
       dayAfterStart.setDate(dayAfterStart.getDate() + 1);
-      if (date.getTime() === dayAfterStart.getTime() && (info?.status === "booked" || info?.status === "unavailable")) {
+      if (
+        date.getTime() === dayAfterStart.getTime() &&
+        (info?.status === "booked" || info?.status === "unavailable")
+      ) {
         return false;
       }
     }
@@ -95,10 +85,6 @@ function initOvDateRangePicker(config) {
   }
 
   function isRangeAvailable(start, end) {
-    if (!start || !end || !(start instanceof Date) || !(end instanceof Date)) {
-      return false;
-    }
-
     let d = new Date(start);
     while (d <= end) {
       if (isBlocked(d)) return false;
@@ -119,7 +105,6 @@ function initOvDateRangePicker(config) {
     });
     return wrapper;
   }
-
   function createDayElement(date) {
     const day = document.createElement("div");
     day.classList.add("ov-day");
@@ -164,17 +149,19 @@ function initOvDateRangePicker(config) {
     }
 
     if (
-      startDate &&
-      endDate &&
-      date > startDate &&
-      date < endDate &&
-      !day.classList.contains("disabled") &&
-      !day.classList.contains("booked-day")
+      startDate && endDate && date > startDate && date < endDate &&
+      !day.classList.contains("disabled") && !day.classList.contains("booked-day")
     ) {
       day.classList.add("in-range");
     }
 
-    if (!readonly && !day.classList.contains("disabled") && !day.classList.contains("booked-day") && dateOnly >= todayOnly && info?.price) {
+    if (
+      !readonly &&
+      !day.classList.contains("disabled") &&
+      !day.classList.contains("booked-day") &&
+      dateOnly >= todayOnly &&
+      info?.price
+    ) {
       day.style.cursor = "pointer";
 
       day.addEventListener("click", () => handleDateClick(date));
@@ -197,12 +184,11 @@ function initOvDateRangePicker(config) {
     return day;
   }
 
-  function highlightHoverRange(start, end) {
-    if (!start || !end) return; // ISPRAVKA: Dodana provera
 
+  function highlightHoverRange(start, end) {
     const allDays = containerEl.querySelectorAll(".ov-day");
 
-    allDays.forEach((d) => {
+    allDays.forEach(d => {
       d.classList.remove("hover-range", "end-date");
     });
 
@@ -215,13 +201,18 @@ function initOvDateRangePicker(config) {
 
     const endDateStr = formatDate(rangeEnd);
 
-    allDays.forEach((d) => {
+
+    allDays.forEach(d => {
       const dateStr = d.dataset.date;
       if (!dateStr) return;
 
       const elementDate = new Date(dateStr);
 
-      if (elementDate > rangeStart && elementDate < rangeEnd && !d.classList.contains("start-date")) {
+      if (
+        elementDate > rangeStart &&
+        elementDate < rangeEnd &&
+        !d.classList.contains("start-date")
+      ) {
         d.classList.add("hover-range");
       }
 
@@ -233,20 +224,16 @@ function initOvDateRangePicker(config) {
     hoverEndDate = rangeEnd;
   }
 
+
+
+
   function clearHoverRange() {
     const days = containerEl.querySelectorAll(".ov-day.hover-range");
-    days.forEach((day) => {
+    days.forEach(day => {
       day.classList.remove("hover-range");
     });
-
-    // ISPRAVKA: Uklanjanje end-date klase kada se uklanja hover
-    const endDays = containerEl.querySelectorAll(".ov-day.end-date");
-    endDays.forEach((day) => {
-      if (!endDate || day.dataset.date !== formatDate(endDate)) {
-        day.classList.remove("end-date");
-      }
-    });
   }
+
 
   function renderSingleCalendar(year, month) {
     const cal = document.createElement("div");
@@ -308,6 +295,7 @@ function initOvDateRangePicker(config) {
     }
   }
 
+
   function renderPickers() {
     picker.innerHTML = "";
 
@@ -363,18 +351,7 @@ function initOvDateRangePicker(config) {
 
     applyResponsiveClass();
   }
-  function updatePickerPosition() {
-    if (!inputEl || !picker) return;
 
-    const rect = inputEl.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-
-    if (spaceBelow < 500) {
-      picker.classList.add("open-above");
-    } else {
-      picker.classList.remove("open-above");
-    }
-  }
   function closePicker() {
     if (!alwaysOpen) {
       picker.classList.add("hidden");
@@ -389,12 +366,6 @@ function initOvDateRangePicker(config) {
   }
 
   function handleDateClick(date) {
-    // ISPRAVKA: Dodana provera da li je date valjan
-    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-      console.error("Invalid date passed to handleDateClick:", date);
-      return;
-    }
-
     if (!startDate || (startDate && endDate)) {
       startDate = date;
       endDate = null;
@@ -422,21 +393,11 @@ function initOvDateRangePicker(config) {
       }
     }
 
-    // ISPRAVKA: Dodana provera pre ažuriranja input-a
     if (inputEl) {
       if (startDate && endDate) {
-        const startFormatted = formatForInput(startDate);
-        const endFormatted = formatForInput(endDate);
-        if (startFormatted && endFormatted) {
-          inputEl.value = `${startFormatted} – ${endFormatted}`;
-        }
-      } else if (startDate) {
-        const startFormatted = formatForInput(startDate);
-        if (startFormatted) {
-          inputEl.value = startFormatted;
-        }
+        inputEl.value = `${formatForInput(startDate)} – ${formatForInput(endDate)}`;
       } else {
-        inputEl.value = "";
+        inputEl.value = startDate ? formatForInput(startDate) : "";
       }
     }
 
@@ -444,54 +405,40 @@ function initOvDateRangePicker(config) {
     if (startDate && endDate) {
       let d = new Date(startDate);
       while (d <= endDate) {
-        const dateStr = formatDate(d);
-        if (dateStr) {
-          allDates.push(dateStr);
-        }
+        allDates.push(formatDate(d));
         d.setDate(d.getDate() + 1);
       }
     }
 
-    // ISPRAVKA: Dodana provera da elementi postoje pre ažuriranja
-    const startDateEl = containerEl.querySelector("#start_date");
-    const endDateEl = containerEl.querySelector("#end_date");
-    const allDatesEl = containerEl.querySelector("#all_dates");
+    containerEl.querySelector('#start_date').value = startDate ? formatDate(startDate) : '';
+    containerEl.querySelector('#end_date').value = endDate ? formatDate(endDate) : '';
+    containerEl.querySelector('#all_dates').value = allDates.join(",");
 
-    if (startDateEl) startDateEl.value = formatDate(startDate);
-    if (endDateEl) endDateEl.value = formatDate(endDate);
-    if (allDatesEl) allDatesEl.value = allDates.join(",");
-
-    // Ažuriranje readonly sekcije
     const calendarSectionReadOnly = document.querySelector(".ov-booking-calendar-section");
     if (calendarSectionReadOnly) {
-      const h3 = calendarSectionReadOnly.querySelector('h3');
-      const span = calendarSectionReadOnly.querySelector('span');
+    const h3 = calendarSectionReadOnly.querySelector('h3');
+    const span = calendarSectionReadOnly.querySelector('span');
 
-      const startLabel = formatDate(startDate);
-      const endLabel = formatDate(endDate);
-      const nights = Math.max(0, Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
-      const title = window.ovb_product_title || '';
+    const startLabel = formatDate(startDate);
+    const endLabel = formatDate(endDate);
+    const nights = Math.max(0, Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
+    const title = window.ovb_product_title || '';
 
-      if (h3 && span) {
-        h3.textContent = nights > 0
-          ? `${nights} ${nights === 1 ? 'night' : 'nights'} in ${title}`
-          : 'Make a reservation';
+    if (h3 && span) {
+      h3.textContent = nights > 0
+        ? `${nights} ${nights === 1 ? 'night' : 'nights'} in ${title}`
+        : 'Make a reservation';
 
-        span.textContent = `${startLabel} – ${endLabel}`;
-      }
+      span.textContent = `${startLabel} – ${endLabel}`;
     }
+  }
 
     let totalNights = Math.max(0, allDates.length - 1);
     let totalPrice = 0;
 
-    // ISPRAVKA: Dodana provera da moment funkcija postoji
-    if (typeof onChange === "function" && startDate && endDate) {
-      if (typeof moment !== "undefined") {
-        onChange(moment(startDate), moment(endDate));
-      } else {
-        // Ako moment.js nije dostupan, šaljemo običan Date objekat
-        onChange(startDate, endDate);
-      }
+    if (typeof onChange === 'function') {
+      // šaljemo moment instance, da se poklopi sa tvojim populateFieldsFromStrings
+      onChange(moment(startDate), moment(endDate));
     }
 
     for (let i = 0; i < allDates.length - 1; i++) {
@@ -508,7 +455,9 @@ function initOvDateRangePicker(config) {
 
     if (priceEl) priceEl.textContent = `€${totalPrice.toFixed(2)}`;
     if (nightsEl) {
-      nightsEl.textContent = totalNights === 1 ? `for ${totalNights} night` : `for ${totalNights} nights`;
+      nightsEl.textContent = totalNights === 1
+        ? `for ${totalNights} night`
+        : `for ${totalNights} nights`;
     }
     if (boxEl && totalNights > 0) {
       boxEl.style.display = "block";
@@ -523,56 +472,39 @@ function initOvDateRangePicker(config) {
     }
   }
 
-  // ISPRAVKA: Dodavanje event listener-a za escape dugme van click event-a
-  const handleEscapeKey = (e) => {
-    if (e.key === "Escape" || e.key === "Esc") {
-      if (isPickerOpen) {
-        closePicker();
-      }
-    }
-  };
-
   if (!readonly && !alwaysOpen && inputEl) {
     inputEl.addEventListener("click", (e) => {
       e.stopPropagation();
       if (!isPickerOpen) {
         isPickerOpen = true;
         renderPickers();
-        updatePickerPosition();
       }
     });
-
     picker.addEventListener("click", (e) => e.stopPropagation());
 
     document.addEventListener("click", (e) => {
       if (!alwaysOpen && isPickerOpen && !picker.contains(e.target) && e.target !== inputEl) {
         closePickerWithDelay();
       }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" || e.key === "Esc") {
+          if (isPickerOpen) {
+            closePicker();
+          }
+        }
+      });
     });
-
-    // ISPRAVKA: Dodavanje escape listener-a samo jednom
-    document.addEventListener("keydown", handleEscapeKey);
   }
 
-  window.addEventListener("resize", () => {
-    applyResponsiveClass();
-    updatePickerPosition();
-  });
+  window.addEventListener("resize", applyResponsiveClass);
 
-  // Brisanje hover efekata kada se izađe iz pickera
+  // Brisanje hover efekata kada se izđe iz pickera
   picker.addEventListener("mouseleave", () => {
-    clearHoverRange();
+    const allDays = containerEl.querySelectorAll(".ov-day");
+    allDays.forEach(d => d.classList.remove("hover-range"));
   });
 
   if (alwaysOpen || readonly) {
     renderPickers();
   }
-
-  // ISPRAVKA: Dodavanje cleanup funkcije (opciono)
-  return {
-    destroy: () => {
-      document.removeEventListener("keydown", handleEscapeKey);
-      window.removeEventListener("resize", applyResponsiveClass);
-    },
-  };
 }

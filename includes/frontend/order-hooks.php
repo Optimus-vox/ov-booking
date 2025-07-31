@@ -198,6 +198,8 @@ add_action('woocommerce_order_status_completed', function($order_id) {
             'rangeEnd'    => end($dates) ?: '',
         ];
 
+        $last_date = end($dates);
+
         foreach ($dates as $i => $date) {
             if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
                 $calendar_data[$date] = [];
@@ -209,12 +211,10 @@ add_action('woocommerce_order_status_completed', function($order_id) {
                 'bookingId'   => $booking_id,
                 'isCheckin'   => ($i === 0),
                 'isCheckout'  => ($i === count($dates)-1),
-                'order_id'    => $order_id,
             ]);
             $calendar_data[$date] = array_merge($calendar_data[$date], [
                 'status' => ($i === count($dates)-1) ? ($calendar_data[$date]['status'] ?? 'available') : 'booked',
                 'clients' => array_values($existing_clients),
-                'isPast' => (strtotime($date) < strtotime(date('Y-m-d'))),
             ]);
         }
         update_post_meta($prod_id, '_ovb_calendar_data', $calendar_data);

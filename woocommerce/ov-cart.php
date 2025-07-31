@@ -12,13 +12,13 @@ if (function_exists('wc_print_notices')) {
 if (!class_exists('WC_Cart') || !WC()->cart || WC()->cart->is_empty()) {
     get_header();
     echo '<div class="ov-cart page-cart"><div class="ov-cart-container empty">';
-    echo '<p class="ov-cart-empty ov-heading-large">' . esc_html__('Vaša korpa je prazna.', 'ov-booking') . '</p>';
+    echo '<p class="ov-cart-empty">' . esc_html__('Vaša korpa je prazna.', 'ov-booking') . '</p>';
 
     // Uzmi ID Shop stranice, pa dobij URL preko get_permalink()
     $shop_id = wc_get_page_id('shop');
     $shop_url = $shop_id ? get_permalink($shop_id) : home_url();
 
-    echo '<button type="button" class="ov-btn" onclick="window.location.href=\''
+    echo '<button type="button" onclick="window.location.href=\''
         . esc_url($shop_url)
         . '\';">Go Back</button>';
 
@@ -63,15 +63,15 @@ $start_date = !empty($cart_item['start_date']) ? sanitize_text_field($cart_item[
 $end_date = !empty($cart_item['end_date']) ? sanitize_text_field($cart_item['end_date']) : '';
 $guests = !empty($cart_item['guests']) ? intval($cart_item['guests']) : 1;
 
-$start_label   = $start_date ? date_i18n( get_option('date_format'), strtotime( $start_date ) ) : '';
-$end_label     = $end_date   ? date_i18n( get_option('date_format'), strtotime( $end_date   ) ) : '';
-$calendar_data = get_post_meta( $product->get_id(), '_ovb_calendar_data', true );
+$start_label = $start_date ? date_i18n(get_option('date_format'), strtotime($start_date)) : '';
+$end_label = $end_date ? date_i18n(get_option('date_format'), strtotime($end_date)) : '';
+$calendar_data = get_post_meta($product->get_id(), '_ov_calendar_data', true);
 
-$product_url = add_query_arg( [
-    'ovb_start_date' => rawurlencode( $start_date ),
-    'ovb_end_date'   => rawurlencode( $end_date ),
-    'ovb_guests'     => intval( $guests ),
-], get_permalink( $product->get_id() ) );
+$product_url = add_query_arg([
+    'ov_start_date' => rawurlencode($start_date),
+    'ov_end_date' => rawurlencode($end_date),
+    'ov_guests' => intval($guests),
+], get_permalink($product->get_id()));
 
 // Tačan broj noćenja (razlika end_date – start_date u danima)
 if ($start_date && $end_date) {
@@ -272,24 +272,27 @@ get_header();
             </div>
         <?php endif; ?>
 
-    <!-- Login Form -->
-    <form name="loginform" id="ovb_login-cart-form"
-      action="<?php echo esc_url( wp_login_url( wc_get_cart_url() ) ); ?>" method="post">
-      <input type="text" name="log" placeholder="E-Mail" required />
-      <div class="ov-login-password">
-        <input type="password" name="pwd" placeholder="Password" required />
-        <button type="button" class="ov-toggle-password dashicons dashicons-visibility" aria-label="Show password"></button>
-      </div>
-      <div class="ov-forgot-password">
-        <a href="#">Forgotten password?</a>
-      </div>
-      <div class="ov-login-actions">
-        <button type="submit" class="ov-button login">Login</button>
-        <a href="<?php echo esc_url( wp_registration_url() ); ?>" class="ov-button register">Register</a>
-      </div>
-      <input type="hidden" name="redirect_to" value="<?php echo esc_url( wc_get_cart_url() ); ?>" />
-    </form>
-  </div>
+        <!-- Login Form -->
+        <form name="loginform" id="ov_login-cart-form" action="<?php echo esc_url(wp_login_url(wc_get_cart_url())); ?>"
+            method="post">
+            <input type="text" name="log" placeholder="E-Mail" required class="ov-input" />
+            <div class="ov-login-password ov-input">
+                <input type="password" name="pwd" class="ov-input" placeholder="Password" required />
+                <button type="button" class="ov-toggle-password dashicons dashicons-visibility"
+                    aria-label="Show password"></button>
+            </div>
+            <div class="ov-forgot-password">
+                <a href="#" class="ov-link-white">Forgotten password?</a>
+            </div>
+            <div class="ov-login-actions">
+                <button type="submit" class="ov-button login ov-btn">Login</button>
+                <a href="<?php echo esc_url(wp_registration_url()); ?>"
+                    class="ov-button register ov-btn-white-outline">Register</a>
+            </div>
+            <input type="hidden" name="redirect_to" class="ov-input"
+                value="<?php echo esc_url(wc_get_cart_url()); ?>" />
+        </form>
+    </div>
 </div>
 
 <?php

@@ -1,859 +1,463 @@
-:root{
+/* ==============================================
+   CHECKOUT SPECIFIC STYLES
+============================================== */
+
+:root {
   --wc-form-color-background: #1B203A;
-  --wc-form-border-color: #fff;
   --wc-form-border-color: #fff !important;
-
-  .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected]{
-    background-color: #7C4DFF !important;
-    color: white !important;
-    outline: none !important;
-  }
-  .select2-container--default .select2-results__option[data-selected=true] {
-    background-color: #7C4DFF !important;
-    color: white !important;
-    outline: none !important;
-  }
-  .select2-dropdown{
-    color: #fff !important;
-  }
-  .select2-search__field{
-    padding: 12px 15px !important;
-    background-color: #1B203A !important;
-    color: white !important;
-    outline: none !important;
-    border: 1px solid #fff !important;
-    border-radius: 5px !important;
-  }
-  span.select2-dropdown.select2-dropdown--below{
-    border-bottom: none;
-  }
-  /* test */
-  /* --- SELECT2 STYLING --- */
-.select2-container--default .select2-selection--single {
-  background-color: #1B203A !important;
-  border: 1px solid #ffffff;
-  color: #ffffff;
-  height: 48px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  transition: border 0.2s ease;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: #ffffff;
-  line-height: 46px;
-  font-size: 16px;
-}
+/* Checkout Page Layout */
+.ov-checkout.page-checkout {
+  .ov-checkout-container {
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 100%;
-  right: 10px;
-  color: #fff !important;
-  b{
-      filter: invert(1);
-  }
-}
+    /* Checkout Form */
+    .checkout-form {
+      .ovb-customer-details-container {
+        .woocommerce-billing-fields {
+          h3 {
+            color: #fff;
+          }
 
-.select2-container--default.select2-container--focus .select2-selection--single {
-  border-color: #8B5DFF;
-}
+          p {
+            label {
+              color: #fff;
+            }
+          }
 
-.select2-dropdown {
-  background-color: #2A2E4A;
-  border: 1px solid #7C4DFF;
-  color: #fff;
-}
+          .woocommerce-billing-fields__field-wrapper {
+            p {
+              label {
+                color: #fff;
+              }
+            }
+          }
+        }
 
-.select2-container--default .select2-results__option {
-  padding: 10px 15px;
-  font-size: 16px;
-}
 
-.select2-container--default .select2-results__option--highlighted[aria-selected],
-.select2-container--default .select2-results__option--highlighted[data-selected] {
-  background-color: #7C4DFF !important;
-  color: #fff;
-}
 
-.select2-container--default .select2-results__option[aria-selected="true"] {
-  background-color: #8B5DFF;
-  color: white;
-}
+        /* Order Notes Field */
+        #order_comments_field {
+          margin-top: 30px;
 
-.select2-search__field {
-  background-color: #1B203A;
-  border: 1px solid #fff;
-  color: white;
-  padding: 10px 12px;
-  font-size: 16px;
-}
+          label {
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: block;
+          }
+        }
+      }
 
-/* --- SCROLLBAR CUSTOM --- */
-.select2-results__options::-webkit-scrollbar {
-  width: 8px;
-}
+      .woocommerce-additional-fields {
+        h3 {
+          color: #fff;
+        }
+      }
 
-.select2-results__options::-webkit-scrollbar-track {
-  background: #1B203A;
-}
+      /* Payment Section */
+      .woocommerce-checkout-payment {
+        background: #23254a;
+        border-radius: 7px;
+        padding: 30px 24px 24px 24px;
+        margin-bottom: 28px;
+        border: 1px solid #ffffff22;
+        box-shadow: 0 2px 8px 0 rgba(17, 21, 39, 0.11);
+        color: #fff;
 
-.select2-results__options::-webkit-scrollbar-thumb {
-  background-color: #7C4DFF;
-  border-radius: 4px;
-  border: 2px solid #1B203A;
-}
-.p-ThirdPartyButtonContainer{
-  border: none !important;
-}
-  input#Field-numberInput {
-        border-radius: 0;
-    background: transparent;
-    color: #fff !important;
-    &:placeholder{
-      color: #fff !important;
+        .wc_payment_methods {
+          margin-bottom: 0;
+          border-bottom: none;
+
+          .wc_payment_method {
+            margin-bottom: 20px;
+            background: transparent;
+            padding: 0;
+            border-radius: 5px;
+            border: none;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            position: relative;
+
+            label {
+              color: #fff !important;
+              font-size: 16px;
+            }
+          }
+        }
+
+        .form-row.place-order {
+          .woocommerce-terms-and-conditions-wrapper {
+            font-size: 16px;
+            letter-spacing: 1;
+            font-family: inherit;
+          }
+        }
+      }
+    }
+
+    /* Right Side - Summary */
+    .ov-checkout-summary {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: fit-content;
+      border: 1px solid #fff;
+      border-radius: 1px;
+      padding: 24px;
+      color: #ffffff;
+      max-width: 100%;
+      box-sizing: border-box;
+      background-color: transparent;
+
+      @media(max-width:450px) {
+        padding: 16px;
+      }
+
+      .ov-summary-card {
+        .ovb-trip-details-summary {
+          margin-bottom: 20px;
+          border-bottom: 1px solid #fff;
+
+          .ovb-trip-details-title {
+            font-size: 22px;
+            margin: 24px 0 12px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #ffffff;
+          }
+
+          .ovb-trip-details {
+            .ovb-trip-detail-item {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 10px;
+
+              @media(max-width:450px) {
+                flex-direction: column;
+                align-items: flex-start;
+              }
+
+              .trip-details-stay {
+                display: flex;
+                align-items: center;
+                gap: 3px;
+
+                .ovb-trip-detail-text {
+                  margin-top: 5px;
+                }
+              }
+
+              .trip-details-accommodation-details {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+
+                .ovb-trip-detail-nights,
+                .ovb-trip-detail-guests {
+                  display: flex;
+                  align-items: center;
+                  gap: 3px;
+
+                  .ovb-trip-detail-text {
+                    margin-top: 5px;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .ovb-order-review-container {
+          width: 100% !important;
+          padding: 0 !important;
+          border: none !important;
+
+          .shop_table {
+            @extend .ov-table;
+
+            thead {
+              th.product-subtotal {
+                text-align: right;
+              }
+            }
+
+            tbody {
+              tr.cart_item {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+
+                td {
+                  border-bottom: none !important;
+                }
+              }
+
+              td.product-name {
+                border: none;
+              }
+
+              td.product-subtotal {
+                text-align: right;
+              }
+            }
+
+            .ovb-details-label {
+              td {
+                background: rgba(255, 255, 255, 0.05);
+                font-style: italic;
+                color: #ddd;
+                font-size: 14px !important;
+                padding-top: 16px !important;
+                padding-bottom: 16px !important;
+                text-align: left !important;
+              }
+            }
+
+            .ovb-detail-line {
+              td {
+                padding: 12px 16px !important;
+                font-size: 0.85rem;
+                color: #ccc;
+              }
+
+              td.ovb-detail-price {
+                text-align: right;
+              }
+            }
+
+            tfoot {
+              .order-total {
+                @extend .ov-table-total;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
 
-/* loader */
 
-/* coupon */
-/* Style coupon notice */
-.woocommerce-form-coupon-toggle {
-    margin-bottom: 20px;
-    transition: border 0.2s;
+/* Form Elements */
+abbr[title] {
+  text-decoration: none !important;
+  border: none !important;
 }
 
-.woocommerce-form-coupon-toggle .woocommerce-info {
+.woocommerce-checkout #payment div.payment_box {
+  background-color: unset !important;
+  color: #fff !important;
+  padding: 0 !important;
+
+  &:before {
+    content: none !important;
+  }
+
+  fieldset {
+    border-color: #7C4DFF !important;
+  }
+}
+
+.ovb-review-order-table {
+  color: #fff;
+}
+
+.ovb-subtotal-row {
+  td {
+    border-top: 2px solid #fff !important;
+  }
+}
+
+.ovb-date-value {
+  text-align: right;
+}
+
+.ovb-checkout {
+  color: #7C4DFF;
+}
+
+/* Date Picker */
+.ovb-date-picker-wrap {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  .ovb-date-input {
+    padding-right: 12px;
+  }
+
+  .ovb-date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+
+/* ==============================================
+   COUPON STYLES
+============================================== */
+
+.woocommerce-form-coupon-toggle {
+  margin: auto;
+  margin-bottom: 20px;
+  transition: border 0.2s;
+  max-width: 1200px;
+
+  .woocommerce-info {
     background-color: #7C4DFF;
     color: #fff;
     border-top: 3px solid #fff;
-}
-.woocommerce-form-coupon-toggle .woocommerce-info::before,
-.woocommerce-form-coupon-toggle .woocommerce-info::after {
-    color: #fff;
-}
 
-.woocommerce-form-coupon-toggle input[type="checkbox"] {
+    &::before,
+    &::after {
+      color: #fff;
+    }
+  }
+
+  input[type="checkbox"] {
     accent-color: #FFF;
     width: 20px;
     height: 20px;
     margin-right: 14px;
     vertical-align: middle;
-}
+  }
 
-.woocommerce-form-coupon-toggle a {
-    color: #fff;
-    text-decoration: underline;
+  a {
+    @extend .ov-link-white;
     font-weight: 600;
     margin-left: 6px;
-    transition: color 0.2s;
-}
-.woocommerce-form-coupon-toggle a:hover {
-    color: #2A2E4A;
-}
 
-@media (max-width: 600px) {
-    .woocommerce-form-coupon-toggle {
-        padding: 12px;
-        font-size: 0.98em;
+    &:hover {
+      color: #2A2E4A;
     }
+  }
+
+  @media (max-width: 600px) {
+    padding: 12px;
+    font-size: 0.98em;
+  }
 }
 
-/* Kupon input (forma gde se unosi kod) */
 form.checkout_coupon.woocommerce-form-coupon {
-    margin-top: 16px;
-    background: transparent;
-    padding: 0;
-    border: none;
-    display: flex;
-    gap: 14px;
-    align-items: center;
-    flex-wrap: wrap;
-}
+  margin-top: 16px;
+  background: transparent;
+  padding: 0;
+  border: none;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
 
-/* Stilizacija input polja za kupon kod */
-form.checkout_coupon.woocommerce-form-coupon input.input-text, 
-form.checkout_coupon.woocommerce-form-coupon input[type="text"] {
-    border: 1px solid #fff;
-    background: #1B203A;
-    color: #fff;
-    padding: 10px 16px;
-    border-radius: 0;
-    outline: none;
-    box-shadow: none;
+  input.input-text,
+  input[type="text"] {
+    @extend .ov-input;
     width: 260px;
     max-width: 100%;
-    height: 45px;
-    font-size: 16px;
-    font-family: inherit;
     letter-spacing: 0.04em;
-    transition: border 0.18s;
-}
 
-/* Placeholder stil */
-form.checkout_coupon.woocommerce-form-coupon input.input-text::placeholder,
-form.checkout_coupon.woocommerce-form-coupon input[type="text"]::placeholder {
-    color: #ffffff99;
-    opacity: 1;
-}
-
-/* Fokus efekat fix - NEMA VIŠE TACKASTOG! */
-form.checkout_coupon.woocommerce-form-coupon input.input-text:focus,
-form.checkout_coupon.woocommerce-form-coupon input[type="text"]:focus {
-    border-color: #8B5DFF !important;
-    border-style: solid !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-form.checkout_coupon.woocommerce-form-coupon button.button:hover,
-form.checkout_coupon.woocommerce-form-coupon button.button:focus {
-    background: #8B5DFF;
-    color: #fff;
-}
-
-@media (max-width:600px) {
-    form.checkout_coupon.woocommerce-form-coupon {
-        flex-direction: column;
-        gap: 12px;
-        align-items: stretch;
+    &::placeholder {
+      opacity: 1;
     }
-    form.checkout_coupon.woocommerce-form-coupon input.input-text {
-        width: 100%;
-        min-width: 0;
+
+    &:focus {
+      border-style: solid !important;
     }
-    form.checkout_coupon.woocommerce-form-coupon button.button {
-        width: 100%;
+  }
+
+  button.button {
+    @extend .ov-btn;
+
+    &:hover,
+    &:focus {
+      background: #8B5DFF;
+      color: #fff;
     }
+  }
+
+  @media (max-width:600px) {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+
+    input.input-text {
+      width: 100%;
+      min-width: 0;
+    }
+
+    button.button {
+      width: 100%;
+    }
+  }
 }
 
-/* coupon */
+/* ==============================================
+   LOADER FOR PAYMENT METHODS
+============================================== */
 
-/* Modern mini loader for payment methods */
 .ovb-mini-loader {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 48px;
-    padding: 12px 0 10px 0;
-    background: #eaecf3;
-    box-shadow: 0 2px 8px 0 rgba(17,21,39,0.09);
-    font-size: 1.08em;
-    font-weight: 500;
-    color: #fff;
-    margin-bottom: 20px;
-    gap: 10px;
-    letter-spacing: 0.01em;
-    border: 0;
+  @extend .ov-loader;
+
+  .loader {
+    @extend .ov-loader-bars;
+  }
 }
 
-.ovb-mini-loader .loader {
-  width: 34px;
-  aspect-ratio: .75;
-  --c: no-repeat linear-gradient(#fff 0 0); /* promeni boju po potrebi */
-  background: 
-    var(--c) 0%   50%,
-    var(--c) 50%  50%,
-    var(--c) 100% 50%;
-  animation: l7 1s infinite linear alternate;
+/* Payment Button Placeholders */
+.payment-request-button {
+  min-height: 44px;
 }
 
-@keyframes l7 {
-  0%  {background-size: 20% 50% ,20% 50% ,20% 50% }
-  20% {background-size: 20% 20% ,20% 50% ,20% 50% }
-  40% {background-size: 20% 100%,20% 20% ,20% 50% }
-  60% {background-size: 20% 50% ,20% 100%,20% 20% }
-  80% {background-size: 20% 50% ,20% 50% ,20% 100%}
-  100%{background-size: 20% 50% ,20% 50% ,20% 50% }
+.paypal-buttons {
+  min-height: 44px;
 }
 
-/* loader */
-/* Placeholder stilovi za payment buttons */
-.payment-request-button { min-height: 44px; }
-.paypal-buttons { min-height: 44px; }
-.klarna-payments-container { min-height: 60px; }
+.klarna-payments-container {
+  min-height: 60px;
+}
 
-.required_field{
-  .required{
+.required_field {
+  .required {
     color: red;
   }
 }
-.ast-container{
-  /* all: revert !important; */
-  }
-.ov-checkout.page-checkout{
-    background-color: #1b203a;
-    color: #ffffff;
-    min-height: calc(100vh - 100px);
-    box-sizing: border-box;
-    padding: 100px 0 100px;
-    .ov-checkout-container {
-      width: 100%;
-        max-width: 1200px;
-        margin-inline: auto;
-        @media(max-width:1200px){
-          max-width: calc(100% - 64px);
-        }
-        @media(max-width:550px){
-          max-width: calc(100% - 32px);
-        }
 
-      .ov-checkout-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 30px;
-        position: relative;
-        @media(max-width:1100px){
-           /* max-width: 650px; */
-           margin-inline: auto;
-        }
-        .ov-checkout-back {
-          background-color: rgba(255, 255, 255, 0.2);
-          border-radius: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #FFFFFF;
-          text-decoration: none;
-          font-size: 24px;
-          margin-right: 20px;
-          width: 56px;
-          height: 56px;
-          position: absolute;
-          left: -76px;
-          @media(max-width:1400px){
-            position: static;
-          }
-        }
-        .ov-checkout-title {
-          font-size: 32px;
-          font-weight: 600;
-          margin: 0;
-          color: #fff;
-        }
-      }
-
-      .ov-checkout-content{
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        margin-inline: auto;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-        @media(max-width:1100px){
-          display: flex;
-          flex-direction: column-reverse;
-        }
-
-        /* leva strana */
-        .ov-checkout-steps {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-
-          .ov-step {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 4px;
-            padding: 16px 20px;
-            .ov-step-number {
-              font-weight: 600;
-              margin-right: 12px;
-            }
-            .ov-step-label {
-              flex: 1;
-              font-size: 16px;
-            }
-          }
-          .ov-step-active {
-            border-color: #7C4DFF;
-            background-color: rgba(124,77,255,0.1);
-          }
-        } 
-        .checkout-form{
-         
-            .ovb-customer-details-container{
-              .woocommerce-billing-fields{
-                h3{
-                  color: #fff;
-                }
-                p{
-                  label{
-                    color: #fff;
-                  }
-                    span{
-                      input {
-                        border: 1px solid #fff;
-                        background: transparent;
-                        color: white;
-                        padding: 10px;
-                        border-radius: 0;
-                        outline: none;
-                        box-shadow: none;
-                        width: 100%;
-                        height: 45px;
-                      }
-                      input::placeholder{
-                        color: #ffffff66;
-                      }
-                      input:focus{
-                        border-color: #8B5DFF;
-                        outline: none;
-                        box-shadow: none;
-                      }
-                    }
-                  }
-                .woocommerce-billing-fields__field-wrapper{
-                  p{
-                    label{
-                      color: #fff;
-                    }
-                    span{
-                      input {
-                        border: 1px solid #fff;
-                        background: transparent;
-                        color: white;
-                        padding: 10px;
-                        border-radius: 0;
-                        outline: none;
-                        box-shadow: none;
-                        width: 100%;
-                        height: 45px;
-                      }
-                      input::placeholder{
-                        color: #ffffff66;
-                      }
-                      input:focus{
-                        border-color: #8B5DFF;
-                        outline: none;
-                        box-shadow: none;
-                      }
-                    }
-                  }
-                }
-              }
-              .ovb-guests-section{
-                h4{
-                  color: #fff;
-                }
-                p{
-                  label{
-                    color: #fff;
-                  }
-                }
-                .ovb-guests-wrapper{
-                  margin-top: 35px;
-                  .ov-guest-row{
-                    h3{
-                      color: #fff;
-                    }
-                  }
-                }
-              }
-              /* Stilizacija Order Notes polja */
-                #order_comments_field {
-                  margin-top: 30px;
-
-                  label {
-                    color: #fff;
-                    font-weight: 600;
-                    font-size: 16px;
-                    margin-bottom: 8px;
-                    display: block;
-                  }
-
-                  textarea#order_comments {
-                    width: 100%;
-                    background-color: #1B203A;
-                    border: 1px solid #ffffff;
-                    color: #ffffff;
-                    border-radius: 4px;
-                    padding: 12px 16px;
-                    font-size: 16px;
-                    resize: vertical;
-                    min-height: 100px;
-                    box-sizing: border-box;
-
-                    &::placeholder {
-                      color: #FFFFFF99;
-                      font-size: 14px;
-                    }
-
-                    &:focus {
-                      border-color: #8B5DFF;
-                      outline: none;
-                    }
-
-                    &::-webkit-scrollbar {
-                      width: 8px;
-                    }
-                    &::-webkit-scrollbar-thumb {
-                      background-color: #7C4DFF;
-                      border-radius: 4px;
-                    }
-                    &::-webkit-scrollbar-track {
-                      background: #1B203A;
-                    }
-                  }
-                }
-            }
-            .woocommerce-additional-fields{
-              h3{
-                color:#fff;
-              }
-            }
-          
-            
-            .woocommerce-checkout-payment{
-                background: #23254a;
-              border-radius: 7px;
-              padding: 30px 24px 24px 24px;
-              margin-bottom: 28px;
-              border: 1px solid #ffffff22;
-              box-shadow: 0 2px 8px 0 rgba(17,21,39,0.11);
-              color: #fff;
-              .wc_payment_methods{
-                margin-bottom: 0;
-                border-bottom: none;
-                .wc_payment_method{
-                  margin-bottom: 20px;
-                  background: transparent;
-                  padding: 0;
-                  border-radius: 5px;
-                  border: none;
-                  display: flex;
-                  align-items: flex-start;
-                  gap: 14px;
-                  position: relative;
-                  label{
-                    color: #fff !important;
-                    font-size: 16px;
-                  }
-                }
-              }
-             .form-row.place-order{
-                .woocommerce-terms-and-conditions-wrapper{
-                  font-size: 16px;
-                  letter-spacing: 1;
-                  font-family: inherit;
-                  .woocommerce-privacy-policy-text{
-                    p{
-                      a{
-                        color: #7C4DFF;
-                        text-decoration: none;
-                        transition: all 0.28s ease;
-                        &:hover{
-                          text-decoration: underline;
-                          color: #8B5DFF;
-                        }
-                      }
-                    }
-                  }
-                }
-                button#place_order{
-                  background-color: #7C4DFF;
-                  color: #fff;
-                  padding: 15px 30px;
-                  border: none;
-                  outline: none;
-                  cursor: pointer;
-                  border-radius: 6px;
-                  transition: all 0.28s ease;
-                  font-size: 16px;
-                  &:hover{
-                    background-color: #8B5DFF;
-                  }
-                }
-             } 
-            }
-        }
-        
-        /* desna strana */
-        .ov-checkout-summary {
-          display: flex;
-          flex-direction: column;
-          width: 100%;
-          height: fit-content;
-          border: 1px solid #fff;   
-          border-radius: 1px;
-          padding: 24px;
-          color: #ffffff;
-          max-width: 100%;
-          box-sizing: border-box;
-          background-color: transparent;
-          @media(max-width:450px){
-            padding: 16px;
-          }
-
-          .ov-summary-card{
-            #order_review_heading{
-
-            }
-            .ovb-product-image {
-              width: 100%;
-              overflow: hidden;
-              img {
-                display: block;
-                width: 100%;
-                height: auto;
-                object-fit: cover;
-              }
-            }
-            .ovb-trip-details-summary {
-              margin-bottom: 20px;
-              border-bottom: 1px solid #fff;
-              .ovb-trip-details-title {
-                font-size: 22px;
-                margin: 24px 0 12px;
-                text-transform: uppercase;
-                letter-spacing: .05em;
-                color: #ffffff;
-              }
-              .ovb-trip-details {
-                .ovb-trip-detail-item {
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  margin-bottom: 10px;
-                  @media(max-width:450px){
-                    flex-direction: column;
-                    align-items: flex-start;
-                  }
-                  .trip-details-stay{
-                    display: flex;
-                    align-items: center;
-                    gap: 3px;
-
-                    .ovb-trip-detail-text{
-                      margin-top: 5px;
-                    }
-                  }
-                  .trip-details-accommodation-details{
-                    display: flex;
-                    align-items: center;
-                    gap: 15px;
-                    .ovb-trip-detail-nights,
-                    .ovb-trip-detail-guests{
-                      display: flex;
-                      align-items: center;
-                      gap: 3px;
-                      .ovb-trip-detail-text{
-                        margin-top: 5px;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            .ovb-order-review-container{
-              width: 100% !important;
-              padding: 0 !important;
-              border: none !important;
-              .shop_table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 1.5rem;
-                background: transparent;
-                color: #fff;
-                font-family: sans-serif;
-              
-                thead {
-                  th {
-                    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
-                    text-align: left;
-                    padding: 12px 16px !important;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    font-size: 14px;
-                    background: rgba(255, 255, 255, 0.05);
-                  }
-                  th.product-subtotal{
-                    text-align: right;
-                  }
-                }
-              
-                tbody {
-                  tr.cart_item{
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-                    td{
-                      border-bottom: none !important;
-                    }
-                  }
-                  td {
-                    padding: 12px 16px !important;
-                    font-size: 14px;
-                  }
-                  td.product-name{
-                    border: none;
-                  }
-                  td.product-subtotal{
-                    text-align: right;
-                  }
-                }
-              
-                .ovb-details-label {
-                  td {
-                    background: rgba(255, 255, 255, 0.05);
-                    font-style: italic;
-                    color: #ddd;
-                    font-size: 14px !important;
-                    padding-top: 16px !important;
-                    padding-bottom: 16px !important;
-                    text-align: left !important;
-                  }
-                }
-              
-                .ovb-detail-line {
-                  td {
-                    padding: 12px 16px !important;
-                    font-size: 0.85rem;
-                    color: #ccc;
-                  }
-                  td.ovb-detail-price{
-                    text-align: right;
-                  }
-                }
-              
-                tfoot {
-                  th,
-                  td {
-                    border-top: 2px solid rgba(255, 255, 255, 0.6);
-                    padding: 12px 16px !important;
-                    font-weight: 700;
-                    font-size: 16px;
-                  }
-                  th{
-                    text-align: left;
-                    text-transform: uppercase;
-                  }
-                  td.product-total {
-                    text-align: right;
-                  }
-              
-                  .order-total {
-                    font-weight: 900;
-                    background-color: rgba(255, 255, 255, 0.2) !important;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-abbr[title] {
-    text-decoration: none !important;
-    border: none !important;
+/* Third Party Button Container */
+.p-ThirdPartyButtonContainer {
+  border: none !important;
 }
-  .woocommerce-checkout #payment div.payment_box{
-    background-color: unset !important;
+
+input#Field-numberInput {
+  border-radius: 0;
+  background: transparent;
+  color: #fff !important;
+
+  &:placeholder {
     color: #fff !important;
-    padding: 0 !important;
-    &:before{
-      content: none !important;
-    }
-    fieldset{
-      border-color: #7C4DFF !important;
-    }
   }
-  .ovb-review-order-table{
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  color: #fff !important;
+}
+
+.ov-guests-section {
+  h4 {
     color: #fff;
   }
-  .ovb-subtotal-row{
-    td{
-          border-top: 2px solid #fff !important;
+
+  p {
+    label {
+      color: #fff;
     }
   }
-  .ovb-date-value{
-    text-align: right;
+
+  .ovb-guests-wrapper {
+    margin-top: 35px;
+
+    .ov-guest-row {
+      h3 {
+        color: #fff;
+      }
+    }
   }
-  .ovb-checkout{
-    color: #7C4DFF;
-  }
-  .ov-form-group{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 16px;
-
-     &:last-of-type{
-      margin-bottom: 0;
-    }
-
-    .ov-input-regular{
-      border: 1px solid #fff;
-      background: transparent;
-      color: white;
-      padding: 10px;
-      border-radius: 0;
-      outline: none;
-      box-shadow: none;
-      width: 100%;
-      height: 45px;
-      
-      &:placeholder{
-        color: #ffffff66;
-      }
-      &:focus{
-        border-color: #8B5DFF;
-        outline: none;
-        box-shadow: none;
-      }
-    }
-
-    label{
-      .required{
-        color: red;
-      }
-    }
-
-    .ov-select-regular{
-      border: 1px solid #fff;
-      background: transparent;
-      color: white;
-      padding: 10px;
-      border-radius: 0;
-      outline: none;
-      box-shadow: none;
-      width: 100%;
-      height: 45px;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      
-      &:placeholder{
-        color: #ffffff66;
-      }
-      &:focus{
-        border-color: #8B5DFF;
-        outline: none;
-        box-shadow: none;
-      }
-    }
-
-    .ovb-date-picker-wrap {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-
-      .ovb-date-input {
-        padding-right: 12 px;
-      }
-
-      .ovb-date-input::-webkit-calendar-picker-indicator {
-         filter: invert(1);
-      }
-
-    }
-
-  }
+}

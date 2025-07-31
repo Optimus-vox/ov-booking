@@ -15,10 +15,7 @@
   width: 900px;
   background-color: #1b203a;
   z-index: 999;
-}
-.ov-picker-container.open-above {
-  top: auto !important;
-  bottom: 80px;
+
 }
 
 .ov-picker-container.always-open {

@@ -272,40 +272,38 @@ function render_calendar_meta_box($post)
     <input type="hidden" name="ovb_status_daterange" id="ovb_status_daterange_input" value="">
 
     <!-- add client modal -->
-    <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1001;">
+    <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
         <div id="client_modal">
-            <form id="client_form">
-                <i class="close_modal" onclick="closeClientModal()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                        <path fill="currentColor"
-                            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-                    </svg>
-                </i>
+            <i class="close_modal" onclick="closeClientModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                    <path fill="currentColor"
+                        d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                </svg>
 
-                <h3>Add Client</h3>
+            </i>
+            <h3>Dodaj korisnika</h3>
+            <div class="add-information">
+                <label for="client_first_name">First name</label>
+                <input type="text" id="client_first_name" name="client_first_name">
 
-                <div class="add-information">
-                    <label for="client_first_name">First name</label>
-                    <input type="text" id="client_first_name" name="client_first_name">
+                <label for="client_first_name">Last name</label>
+                <input type="text" id="client_last_name" name="client_last_name">
 
-                    <label for="client_last_name">Last name</label>
-                    <input type="text" id="client_last_name" name="client_last_name">
+                <label for="client_first_name">Email</label>
+                <input type="email" id="client_email" name="client_email">
 
-                    <label for="client_email">Email</label>
-                    <input type="email" id="client_email" name="client_email" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$">
+                <label for="client_first_name">Phone</label>
+                <input type="text" id="client_phone" name="client_phone">
 
-                    <label for="client_phone">Phone</label>
-                    <input type="text" id="client_phone" name="client_phone">
-
-                    <label for="client_guests">Number of guests</label>
-                    <select id="client_guests" name="client_guests">
-                        <?php
-                        $max_guests = !empty($values['max_guests']) ? absint($values['max_guests']) : 1;
-                        for ($i = 1; $i <= $max_guests; $i++) {
-                            echo '<option value="' . $i . '">' . $i . '</option>';
-                        }
-                        ?>
-                    </select>
+                <label for="client_first_name">Number of guests</label>
+                <select id="client_guests" name="client_guests">
+                    <?php
+                    $max_guests = !empty($values['max_guests']) ? absint($values['max_guests']) : 1;
+                    for ($i = 1; $i <= $max_guests; $i++) {
+                        echo '<option value="' . $i . '">' . $i . '</option>';
+                    }
+                    ?>
+                </select>
 
                     <label for="client_date_range">Date range</label>
                     <div id="date-range-picker" class="daterange-picker">
@@ -360,7 +358,7 @@ function render_calendar_meta_box($post)
     <!-- edit single price day modal -->
     <div id="price_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
         <div id="price_modal">
-            <i class="close_modal" onclick="closeClientModal()">
+            <i class="close_modal" onclick="jQuery('#price_modal_wrapper').hide()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                     <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
@@ -372,7 +370,7 @@ function render_calendar_meta_box($post)
             <br><br>
             <div class="buttons">
                 <button id="price_modal_save">Save</button>
-                <button onclick="closeClientModal()">Cancel</button>
+                <button onclick="jQuery('#price_modal_wrapper').hide()">Cancel</button>
             </div>
         </div>
     </div>
@@ -381,7 +379,7 @@ function render_calendar_meta_box($post)
     <div id="client_action_modal_wrapper"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
         <div id="client_action_modal">
-            <i class="close_modal" onclick="closeClientModal()">
+            <i class="close_modal" onclick="jQuery('#client_action_modal_wrapper').hide()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                     <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
@@ -402,23 +400,15 @@ function render_calendar_meta_box($post)
             <div class="buttons">
                 <button id="delete_client_single">Delete reservation for this day</button>
                 <button id="delete_client_all">Delete reservation</button>
-                <button onclick="closeClientModal()">Cancel</button>
+                <button onclick="jQuery('#client_action_modal_wrapper').hide()">Cancel</button>
             </div>
-
+            
         </div>
     </div>
     <script>
         function closeClientModal() {
             jQuery('#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input').val('');
             jQuery("#client_modal_wrapper").hide();
-            jQuery('#client_action_modal_wrapper').hide()
-            jQuery('#price_modal_wrapper').hide()
-            jQuery("body").css("overflow", "auto"); // Re-enable body scroll
-        }
-        function toggleOtherPayer() {
-            const checkbox = document.getElementById('other_payer_checkbox');
-            const otherFields = document.getElementById('other_payer_fields');
-            otherFields.style.display = checkbox.checked ? 'block' : 'none';
         }
     </script>
     <!-- remove client modal -->
@@ -463,7 +453,7 @@ function save_additional_apartment_info($post_id)
         ? sanitize_key($data['accommodation_type'])
         : 'apartment';
 
-    // Check-in & Check-out times
+    // 🕓 Check-in & Check-out times
     $sanitized['checkin_time'] = preg_match('/^\d{2}:\d{2}$/', $data['checkin_time'] ?? '') ? sanitize_text_field($data['checkin_time']) : '';
     $sanitized['checkout_time'] = preg_match('/^\d{2}:\d{2}$/', $data['checkout_time'] ?? '') ? sanitize_text_field($data['checkout_time']) : '';
 

@@ -61,13 +61,21 @@ add_action('template_redirect', function() {
 add_filter('woocommerce_account_downloads_columns', '__return_empty_array');
 add_filter('woocommerce_customer_get_downloadable_products', '__return_empty_array');
 
+// Custom Dashboard
+// add_action('after_setup_theme', function () {
+//     if (class_exists('WooCommerce')) {
+//         remove_action('woocommerce_account_dashboard', 'woocommerce_account_content', 10);
+//         add_filter('woocommerce_account_content', 'ovb_account_content', 10);
+//     }
+// }, 20);
+
+
 add_filter('woocommerce_account_content', function ($content) {
     if (is_account_page() && !is_wc_endpoint_url()) {
         if (!is_user_logged_in()) return $content;
         $user = wp_get_current_user();
         ob_start(); ?>
-        <h1>TU SMOOOOO</h1>  
-        <!-- proveri -->
+        <h1>TU SMOOOOO</h1>
         <div class="ovb-dashboard-welcome">
             <p><?php printf(
                 esc_html__('Hello %1$s (not you? %2$s)', 'ov-booking'),

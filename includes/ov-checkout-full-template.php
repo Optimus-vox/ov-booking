@@ -1,14 +1,14 @@
 <?php defined('ABSPATH') || exit; ?>
 
-<div class="ov-checkout page-checkout">
-    <div class="ov-checkout-container">
+<div class="ov-checkout page-checkout ov-page-bg">
+    <div class="ov-container">
 
         <!-- HEADER -->
-        <div class="ov-checkout-header">
-            <a id="ov-back-btn" onclick="history.back()" class="ov-checkout-back">
+        <div class="ov-header">
+            <a id="ov-checkout-back" onclick="history.back()" class="ov-checkout-back ov-back-btn">
                 <img src="<?php echo esc_url(plugins_url('../assets/images/arrow-left-white.png', __FILE__)); ?>" alt="arrow left white">
             </a>
-            <h1 class="ov-checkout-title"><?php esc_html_e('Request to book', 'ov-booking'); ?></h1>
+            <h1 class="ov-title"><?php esc_html_e('Request to book', 'ov-booking'); ?></h1>
         </div>
 
         <?php
@@ -22,10 +22,10 @@
             <!-- DODAJ NONCE FIELDS -->
             <?php wp_nonce_field('woocommerce-process_checkout', 'woocommerce-process-checkout-nonce'); ?>
             
-            <div class="ov-checkout-content">
+            <div class="ov-two-column">
 
                 <!-- LEVA STRANA -->
-                <div class="ov-checkout-steps">
+                <div class="ov-steps">
                     <div class="ov-step ov-step-active">
                         <span class="ov-step-number">2.</span>
                         <span class="ov-step-label"><?php esc_html_e('Add a payment method', 'ov-booking'); ?></span>
@@ -52,7 +52,7 @@
                             </div>
 
                             <?php if ($guests > 0): ?>
-                                <div id="ovb-guests-section" class="ovb-guests-section">
+                                <div id="ov-guests-section" class="ov-guests-section">
                                     <h4>Podaci o gostima</h4>
                                     <label class="ovb-checkbox-label" style="margin-bottom:10px;">
                                         <input type="checkbox" id="ovb-different-payer-checkbox" name="ovb_different_payer" value="1">
@@ -169,7 +169,7 @@
                         if (isset($product) && $product) {
                             $image_id = $product->get_image_id();
                             if ($image_id) {
-                                echo '<div class="ovb-product-image">';
+                                echo '<div class="ov-card-image">';
                                 echo wp_get_attachment_image($image_id, 'medium');
                                 echo '</div>';
                             }
@@ -178,7 +178,7 @@
                         
                         <?php if (isset($start_label, $end_label, $nights, $guests)): ?>
                         <div class="ovb-trip-details-summary">
-                            <h4 class="ovb-trip-details-title"><?php esc_html_e('Trip details', 'ov-booking'); ?></h4>
+                            <h4 class="ovb-trip-details-title ov-title"><?php esc_html_e('Trip details', 'ov-booking'); ?></h4>
                             <div class="ovb-trip-details">
                                 <div class="ovb-trip-detail-item">
                                     <div class="trip-details-stay">
@@ -214,42 +214,7 @@
                         
                         <div id="order_review" class="woocommerce-checkout-review-order">
                             <!-- ORDER SUMMARY TABELA -->
-                               <!-- Tvoj custom summary -->
-    <div class="ovb-summary-custom">
-        <table class="ovb-review-order-table">
-            <tr>
-                <td colspan="2" class="ovb-table-section-title"><?php esc_html_e('Trip Details', 'ov-booking'); ?></td>
-            </tr>
-            <tr>
-                <td class="ovb-label"><?php echo esc_html($start_label . ' – ' . $end_label); ?></td>
-                <td class="ovb-value" style="text-align:right;">
-                    <?php echo esc_html($nights . ' ' . _n('night', 'nights', $nights, 'ov-booking')); ?>
-                </td>
-            </tr>
-            <?php echo $dates_output; ?>
-     
-            <tr class="ovb-subtotal-row">
-                <td class="ovb-label"><?php esc_html_e('Subtotal', 'ov-booking'); ?></td>
-                <td class="ovb-value" style="text-align:right;"><?php echo wc_price($subtotal); ?></td>
-            </tr>
-            <tr>
-                <td class="ovb-label"><?php esc_html_e('VAT', 'ov-booking'); ?></td>
-                <td class="ovb-value" style="text-align:right;"><?php echo wc_price(WC()->cart->get_taxes_total()); ?></td>
-            </tr>
-            <tr>
-                <td class="ovb-label"><?php esc_html_e('Total', 'ov-booking'); ?></td>
-                <td class="ovb-value" style="text-align:right; font-weight:700;"><?php echo wc_price(WC()->cart->get_total('edit')); ?></td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Dummy WC tabela za gateway compatibility -->
-    <!-- <div class="woocommerce-checkout-review-order-table" style="display:none"></div> -->
-
-    <!-- Ovde IDE tvoj stari wc_get_template('checkout/review-order.php'), ali on sada ne prikazuje ništa korisniku! -->
-    <?php  //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
-</div>
-                            <?php //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
+                            <?php wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
 
                             <!-- PAYMENT METHODS - KLARNA TREBA OVO -->
                             <?php if (WC()->cart->needs_payment()) : ?>

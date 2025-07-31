@@ -1,24 +1,918 @@
-html,body{
+/* ==============================================
+   RESET & GLOBAL STYLES
+============================================== */
+html,
+body {
     padding: 0 !important;
     margin: 0 !important;
     box-sizing: border-box !important;
 }
-.ob-booking-active{
-    .ast-container{
+
+html {
+    scroll-behavior: smooth;
+}
+
+body.hidden {
+    overflow: hidden !important;
+}
+
+/* ==============================================
+   GLOBAL OVERRIDES
+============================================== */
+.ob-booking-active {
+    .ast-container {
         all: revert !important;
     }
 }
 
-.ob-booking-active.ovb-cart-page{
-    .ov-cart-notices{
+.ob-booking-active.ovb-cart-page {
+    .ov-cart-notices {
         display: none !important;
     }
 }
 
-#order_data  h3 {
+#order_data h3 {
     display: none !important;
 }
 
-body.hidden {
-  overflow: hidden !important;
+/* =============================ov-=================
+   COMMON LAYOUT COMPONENTS
+============================================== */
+
+/* Container */
+.ov-container {
+    width: 100%;
+    max-width: 1680px;
+    margin-inline: auto;
+
+    @media(max-width:1200px) {
+        max-width: calc(100% - 64px);
+    }
+
+    @media(max-width:550px) {
+        max-width: calc(100% - 32px);
+    }
+}
+
+.ov-container-wide {
+    width: 100%;
+    max-width: 1680px;
+    margin-inline: auto;
+}
+
+/* Page Background */
+.ov-page-bg {
+    background-color: #1B203A;
+    color: #FFFFFF;
+    min-height: calc(100vh - 100px);
+    box-sizing: border-box;
+    padding: 100px 0;
+}
+
+/* Header with Back Button */
+.ov-header {
+    display: flex;
+    align-items: center;
+    margin: auto;
+
+    margin-bottom: 30px;
+    position: relative;
+    max-width: 1200px;
+
+    @media(max-width:1200px) {
+        margin-inline: auto;
+    }
+
+    .ov-back-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFFFFF;
+        text-decoration: none;
+        font-size: 24px;
+        margin-right: 20px;
+        width: 56px;
+        height: 56px;
+        position: absolute;
+        left: -76px;
+
+        @media(max-width:1400px) {
+            position: static;
+        }
+    }
+
+    .ov-title {
+        font-size: 32px;
+        font-weight: 600;
+        margin: 0;
+        color: #fff;
+    }
+}
+
+/* Two Column Layout */
+.ov-two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+
+    @media (max-width: 1100px) {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
+
+/* Steps Layout */
+.ov-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ov-step {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    padding: 16px 20px;
+
+    .ov-step-number {
+        font-weight: 600;
+        margin-right: 12px;
+    }
+
+    .ov-step-label {
+        flex: 1;
+        font-size: 16px;
+    }
+}
+
+.ov-step-active {
+    border-color: #7C4DFF;
+    background-color: rgba(124, 77, 255, 0.1);
+}
+
+/* ==============================================
+   COMMON FORM ELEMENTS
+============================================== */
+
+/* Input Fields */
+.ov-input,
+.input-text {
+    background-color: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+    outline: none;
+    padding: 13px 25px;
+    font-size: 19px;
+    line-height: 22.5px;
+    margin: 5px 0 15px 0;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+
+    &::placeholder {
+        color: #ffffff66;
+    }
+
+    &:focus {
+        border-color: #8B5DFF;
+        outline: none;
+        box-shadow: none;
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: #ffffff;
+        transition: background-color 5000s ease-in-out 0s;
+        -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
+    }
+}
+
+.ov-textarea {
+    @extend .ov-input;
+    height: auto;
+    min-height: 100px;
+    resize: vertical;
+    padding: 12px 16px;
+}
+
+/* Select Fields */
+.ov-select {
+    border: 1px solid #fff;
+    background: transparent;
+    color: white;
+    padding: 10px;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    width: 100%;
+    height: 45px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    &:focus {
+        border-color: #8B5DFF;
+    }
+}
+
+/* Form Groups */
+.ov-form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 16px;
+
+    &:last-of-type {
+        margin-bottom: 0;
+    }
+
+    label {
+        color: #fff;
+        font-size: 16px;
+        margin-bottom: 8px;
+
+        .required {
+            color: red;
+        }
+    }
+}
+
+/* ==============================================
+   COMMON BUTTONS
+============================================== */
+
+.ov-btn {
+    background-color: #7C4DFF;
+    color: #fff;
+    border-radius: 6px;
+    padding: 15px 30px;
+    display: inline-block;
+    text-decoration: none;
+    transition: all 0.28s ease;
+    margin: 0;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: inherit;
+    text-align: center;
+
+    &:hover {
+        background-color: #8B5DFF;
+    }
+}
+
+.ov-btn-outline {
+    @extend .ov-btn;
+    background-color: transparent;
+    border: 1px solid #7C4DFF;
+
+    &:hover {
+        background-color: #7C4DFF;
+        border-color: #7C4DFF;
+    }
+}
+
+.ov-btn-white-outline {
+    @extend .ov-btn;
+    background-color: transparent;
+    border: 1px solid #fff;
+
+    &:hover {
+        background-color: #7C4DFF;
+        border-color: #7C4DFF;
+    }
+}
+
+.ov-btn-large {
+    padding: 18px 45px;
+    font-size: 18px;
+}
+
+.ov-btn-small {
+    padding: 12px 24px;
+    font-size: 14px;
+}
+
+.ov-btn-full-width {
+    width: 100%;
+    display: block;
+}
+
+/* ==============================================
+   COMMON CARDS & SUMMARIES
+============================================== */
+
+.ov-card {
+    background-color: #2A2E4A;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ov-card-header {
+    padding: 24px 24px 0;
+}
+
+.ov-card-body {
+    padding: 24px;
+}
+
+.ov-card-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.ov-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .ov-summary-left {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .ov-summary-label {
+            font-size: 22px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .ov-summary-details {
+            display: flex;
+            gap: 12px;
+
+            @media(max-width:550px) {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    }
+
+    .ov-summary-right {
+        .ov-summary-change {
+            font-size: 16px;
+            background-color: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            border-radius: 6px;
+            padding: 16px 24px;
+            display: block;
+            text-decoration: none;
+            transition: all 0.28s ease;
+
+            &:hover {
+                background-color: #7C4DFF;
+                border-color: #7C4DFF;
+            }
+        }
+    }
+}
+
+.ov-summary-price-row {
+    align-items: flex-start;
+}
+
+.ov-summary-value {
+    font-size: 16px;
+}
+
+.ov-divider {
+    border: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #D9D9D9;
+    margin: 24px 0;
+}
+
+/* ==============================================
+   COMMON PRICING ELEMENTS
+============================================== */
+
+.ov-price-display {
+    font-size: 50px;
+    line-height: 100%;
+    color: #fff;
+    margin: 0;
+}
+
+.ov-price-breakdown {
+    .ov-price-accordion {
+        summary {
+            display: flex;
+            cursor: pointer;
+            font-size: 18px;
+            text-decoration: underline;
+            color: #fff;
+        }
+
+        .ov-price-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 5px;
+
+                &:first-of-type {
+                    margin-top: 8px;
+                }
+
+                &.ov-breakdown-total {
+                    margin-bottom: 0;
+                    padding-top: 5px;
+                    border-top: 1px solid #fff;
+                    font-size: 18px;
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+}
+
+/* ==============================================
+   COMMON TABLES
+============================================== */
+
+.shop_table {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    background: transparent;
+    color: #fff;
+
+    thead {
+        width: 100%;
+
+        th {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    tbody {
+        width: 100%;
+
+        tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border: none;
+        }
+    }
+
+    tfoot {
+        width: 100%;
+
+        th,
+        td {
+            border-top: 2px solid rgba(255, 255, 255, 0.6);
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .order-total {
+            font-weight: 900;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}
+
+/* ==============================================
+   COMMON MODALS
+============================================== */
+
+.ov-modal {
+    display: none;
+
+    &.open {
+        display: block;
+    }
+
+    .ov-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+    }
+
+    .ov-modal-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        max-width: 700px;
+        background: #1B203A;
+        border-radius: 12px;
+        border: 1px solid #ffffff42;
+        box-shadow: 0px 4px 14px 0px #FFFFFF26;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        padding: 1.5rem;
+        box-sizing: border-box;
+        color: #FFFFFF;
+
+        @media(max-width:750px) {
+            max-width: calc(100% - 32px);
+        }
+    }
+
+    .ov-modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding-left: 26px;
+
+        .ov-modal-title {
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0 0 10px 0;
+            color: #fff;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .ov-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: #fff;
+            }
+        }
+    }
+
+    .ov-modal-subtitle {
+        display: block;
+        width: 100%;
+        text-align: center;
+        color: #E0E0E0;
+        font-size: 18px;
+        margin: 0 0 24px 0;
+    }
+}
+
+/* ==============================================
+   COMMON LOADERS
+============================================== */
+
+.ov-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 0 10px 0;
+    background: #eaecf3;
+    box-shadow: 0 2px 8px 0 rgba(17, 21, 39, 0.09);
+    font-size: 1.08em;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 20px;
+    gap: 10px;
+    letter-spacing: 0.01em;
+    border: 0;
+
+    .ov-loader-bars {
+        width: 34px;
+        aspect-ratio: .75;
+        --c: no-repeat linear-gradient(#fff 0 0);
+        background:
+            var(--c) 0% 50%,
+            var(--c) 50% 50%,
+            var(--c) 100% 50%;
+        animation: ov-loader-animation 1s infinite linear alternate;
+    }
+}
+
+@keyframes ov-loader-animation {
+    0% {
+        background-size: 20% 50%, 20% 50%, 20% 50%
+    }
+
+    20% {
+        background-size: 20% 20%, 20% 50%, 20% 50%
+    }
+
+    40% {
+        background-size: 20% 100%, 20% 20%, 20% 50%
+    }
+
+    60% {
+        background-size: 20% 50%, 20% 100%, 20% 20%
+    }
+
+    80% {
+        background-size: 20% 50%, 20% 50%, 20% 100%
+    }
+
+    100% {
+        background-size: 20% 50%, 20% 50%, 20% 50%
+    }
+}
+
+/* ==============================================
+   COMMON SELECT2 STYLING
+============================================== */
+
+.select2-container--default .select2-selection--single {
+    background-color: #1B203A !important;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    height: 48px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    transition: border 0.2s ease;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #ffffff;
+    line-height: 46px;
+    font-size: 16px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+    right: 10px;
+    color: #fff !important;
+
+    b {
+        filter: invert(1);
+    }
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #8B5DFF;
+}
+
+.select2-dropdown {
+    background-color: #2A2E4A;
+    border: 1px solid #7C4DFF;
+    color: #fff;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted[data-selected] {
+    background-color: #7C4DFF !important;
+    color: #fff;
+}
+
+.select2-container--default .select2-results__option[aria-selected="true"] {
+    background-color: #8B5DFF;
+    color: white;
+}
+
+.select2-search__field {
+    background-color: #1B203A;
+    border: 1px solid #fff;
+    color: white;
+    padding: 10px 12px;
+    font-size: 16px;
+}
+
+/* ==============================================
+   COMMON UTILITIES
+============================================== */
+
+.ov-text-center {
+    text-align: center;
+}
+
+.ov-text-right {
+    text-align: right;
+}
+
+.ov-text-left {
+    text-align: left;
+}
+
+.ov-mb-0 {
+    margin-bottom: 0;
+}
+
+.ov-mb-1 {
+    margin-bottom: 8px;
+}
+
+.ov-mb-2 {
+    margin-bottom: 16px;
+}
+
+.ov-mb-3 {
+    margin-bottom: 24px;
+}
+
+.ov-mb-4 {
+    margin-bottom: 32px;
+}
+
+.ov-mt-0 {
+    margin-top: 0;
+}
+
+.ov-mt-1 {
+    margin-top: 8px;
+}
+
+.ov-mt-2 {
+    margin-top: 16px;
+}
+
+.ov-mt-3 {
+    margin-top: 24px;
+}
+
+.ov-mt-4 {
+    margin-top: 32px;
+}
+
+.ov-hidden {
+    display: none;
+}
+
+.ov-visible {
+    display: block;
+}
+
+/* ==============================================
+   COMMON RESPONSIVE GRID
+============================================== */
+
+.ov-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.ov-grid-2 {
+    grid-template-columns: 1fr 1fr;
+
+    @media(max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ov-grid-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+
+    @media(max-width: 1024px) {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    @media(max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==============================================
+   COMMON LINKS & TYPOGRAPHY
+============================================== */
+
+.ov-link {
+    color: #7C4DFF;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: #8B5DFF;
+        text-decoration: underline;
+    }
+}
+
+.ov-link-white,
+.woocommerce-privacy-policy-link {
+    color: #fff;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+
+}
+
+.ov-heading-large {
+    font-size: 45px;
+    line-height: 100%;
+    color: #fff;
+    margin: 0 0 24px 0;
+}
+
+.ov-heading-medium {
+    font-size: 32px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 20px 0;
+}
+
+.ov-heading-small {
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 16px 0;
+    text-align: left;
+}
+
+/* ==============================================
+   COMMON ICON GRIDS
+============================================== */
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ov-icon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 140px;
+    row-gap: 16px;
+
+    @media(max-width: 768px) {
+        column-gap: 20px;
+    }
+}
+
+.ov-icon-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .ov-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+
+        img {
+            display: block;
+            height: 100%;
+            width: auto;
+        }
+    }
+
+    .ov-icon-text {
+        font-size: 19px;
+        color: #fff;
+    }
+}
+
+/* ==============================================
+   COMMON SCROLLBAR STYLING
+============================================== */
+
+.ov-scrollbar {
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #1B203A;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #7C4DFF;
+        border-radius: 4px;
+        border: 2px solid #1B203A;
+    }
 }
