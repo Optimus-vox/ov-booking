@@ -120,34 +120,29 @@ document.addEventListener("DOMContentLoaded", function () {
         isPast: isPast,
       };
 
-      let dayHTML = `
-    <div class="day-wrapper">
+   let dayHTML = `
+      <div class="day-wrapper">
         <div class="day-header">
-            <div class="day-number ${i === currentDate ? "today-number" : ""}">${i}</div>
-            <div class="price-row">
-                ${isPast ? `<span class="past-badge">Past</span>` : ""}
-                <div class="day-price editable-price" data-date="${formattedDate}">
-                    ${
-                      !isPast
-                        ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    ${
-                      !isPast
-                        ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
-                            </svg>`
-                        : ""
-                    }
-                        : ""
-                    }
-                    ${typeof price === "number" ? price + "€" : "Add price"}
-                    <span class="tooltip-text">
-                        Price: ${typeof price === "number" ? price + "€" : "Price not set"}<br>
-                        Status: ${status}
-                    </span>
-                </div>
+          <div class="day-number ${i === currentDate ? "today-number" : ""}">${i}</div>
+          <div class="price-row">
+            ${isPast ? `<span class="past-badge">Past</span>` : ""}
+            <div class="day-price editable-price" data-date="${formattedDate}">
+              ${
+                !isPast
+                  ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
+                </svg>`
+                  : ""
+              }
+              ${typeof price === "number" ? price + "€" : "Add price"}
+              <span class="tooltip-text">
+                Price: ${typeof price === "number" ? price + "€" : "Price not set"}<br>
+                Status: ${status}
+              </span>
             </div>
+          </div>
         </div>
-`;
+    `;
 
       // Always show clients without filtering end dates
       if (hasClients) {
