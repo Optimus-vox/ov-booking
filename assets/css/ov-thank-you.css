@@ -28,16 +28,14 @@
     width: 100%;
     margin: 2rem auto;
     padding: 2rem;
-    @extend .ov-card;
     color: #fff;
     box-sizing: border-box;
 
     h2 {
-      @extend .ov-heading-large;
       font-size: 42px;
       font-weight: 700;
       margin-bottom: 1.5rem;
-      @extend .ov-text-center;
+      color: white;
     }
 
     .ov-order-info {
@@ -49,7 +47,7 @@
         display: flex;
         justify-content: space-between;
         padding: 15px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         font-size: 1rem;
 
         strong {
@@ -60,14 +58,15 @@
     }
 
     h3 {
-      @extend .ov-heading-medium;
       font-size: 26px;
       font-weight: 600;
       margin-bottom: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
       padding-bottom: 15px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      color: white;
+
     }
 
     .ov-booking-summary {
@@ -88,22 +87,6 @@
         }
       }
     }
-
-    .ov-contact-info {
-      @extend .ov-text-center;
-      font-size: 0.9rem;
-      color: #ccc;
-
-      a {
-        @extend .ov-link-white;
-        margin-left: 0.25rem;
-
-        &:hover {
-          color: #a0a0ff;
-        }
-      }
-    }
-
     @media(max-width: 840px) {
       width: 100%;
       max-width: calc(100% - 40px);
@@ -123,7 +106,6 @@
     margin: 30px auto;
 
     .button {
-      @extend .ov-btn;
       font-size: 16px;
       text-decoration: none;
       display: inline-block;

@@ -178,7 +178,7 @@
                         
                         <?php if (isset($start_label, $end_label, $nights, $guests)): ?>
                         <div class="ovb-trip-details-summary">
-                            <h4 class="ovb-trip-details-title"><?php esc_html_e('Trip details', 'ov-booking'); ?></h4>
+                            <h4 class="ovb-trip-details-title ov-title"><?php esc_html_e('Trip details', 'ov-booking'); ?></h4>
                             <div class="ovb-trip-details">
                                 <div class="ovb-trip-detail-item">
                                     <div class="trip-details-stay">

@@ -19,8 +19,8 @@ get_header();
         <p><?php esc_html_e( 'Order not found.', 'ov-booking' ); ?></p>
     <?php else : ?>
 
-        <div class="ov-thankyou">
-            <h2><?php esc_html_e( 'Thank you for your booking!', 'ov-booking' ); ?></h2>
+        <div class="ov-thankyou ov-card">
+            <h2 class="ov-heading-large ov-text-center"><?php esc_html_e( 'Thank you for your booking!', 'ov-booking' ); ?></h2>
 
             <ul class="ov-order-info">
                 <li><strong><?php esc_html_e( 'Order number:', 'ov-booking' ); ?></strong> <?php echo esc_html( $order->get_order_number() ); ?></li>
@@ -29,7 +29,7 @@ get_header();
                 <li><strong><?php esc_html_e( 'Payment method:', 'ov-booking' ); ?></strong> <?php echo esc_html( $order->get_payment_method_title() ); ?></li>
             </ul>
 
-            <h3><?php esc_html_e( 'Booking details', 'ov-booking' ); ?></h3>
+            <h3 class="ov-heading-medium"><?php esc_html_e( 'Booking details', 'ov-booking' ); ?></h3>
             <ul class="ov-booking-summary">
                 <?php
                 // Preuzimamo datume i goste iz meta polja

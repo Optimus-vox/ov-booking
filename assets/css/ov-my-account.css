@@ -1,48 +1,80 @@
-/* ==============================================
-   MY ACCOUNT SPECIFIC STYLES
-============================================== */
-
 :root {
   --wc-form-color-background: #1B203A;
+  --wc-form-border-color: #fff;
   --wc-form-border-color: #fff !important;
+
+  .select2-container--default .select2-results__option--highlighted[aria-selected],
+  .select2-container--default .select2-results__option--highlighted[data-selected] {
+    background-color: #7C4DFF !important;
+    color: white !important;
+    outline: none !important;
+  }
+
+  .select2-container--default .select2-results__option[data-selected=true] {
+    background-color: #7C4DFF !important;
+    color: white !important;
+    outline: none !important;
+  }
+
+  .select2-dropdown {
+    color: #fff !important;
+  }
+
+  .select2-search__field {
+    padding: 12px 15px !important;
+    background-color: #1B203A !important;
+    color: white !important;
+    outline: none !important;
+    border: 1px solid #fff !important;
+    border-radius: 5px !important;
+  }
+
+  span.select2-dropdown.select2-dropdown--below {
+    border-bottom: none;
+  }
+
+  .woocommerce-password-strength {
+    &.bad {
+
+      background-color: rgba(239, 83, 80, 0.1);
+      border-color: #EF5350 !important;
+      color: #EF5350 !important;
+    }
+
+    &.short {
+
+      background-color: rgba(255, 167, 38, 0.1);
+      border-color: #FFA726 !important;
+      color: #FFA726 !important;
+    }
+
+    &.strong {
+
+      background-color: rgba(124, 77, 255, 0.1);
+      border-color: #7C4DFF !important;
+      color: #7C4DFF !important;
+    }
+  }
+
+  .woocommerce-info {
+    border-top-color: #7C4DFF;
+
+    &::before {
+      color: #7C4DFF;
+    }
+  }
+
+  .woocommerce-page .woocommerce-info .button {
+    &:hover {
+      color: #8B5DFF;
+    }
+  }
 }
 
-/* Password Strength Indicators */
-.woocommerce-password-strength {
-  &.bad {
-    background-color: rgba(239, 83, 80, 0.1);
-    border-color: #EF5350 !important;
-    color: #EF5350 !important;
-  }
-
-  &.short {
-    background-color: rgba(255, 167, 38, 0.1);
-    border-color: #FFA726 !important;
-    color: #FFA726 !important;
-  }
-
-  &.strong {
-    background-color: rgba(124, 77, 255, 0.1);
-    border-color: #7C4DFF !important;
-    color: #7C4DFF !important;
-  }
+.ast-container {
+  /* all: revert !important; */
 }
 
-.woocommerce-info {
-  border-top-color: #7C4DFF;
-
-  &::before {
-    color: #7C4DFF;
-  }
-}
-
-.woocommerce-page .woocommerce-info .button {
-  &:hover {
-    color: #8B5DFF;
-  }
-}
-
-/* Page Layout */
 #page {
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -62,11 +94,13 @@
   color: #fff;
   padding: 4rem 0;
   overflow: hidden;
+  min-height: 70vh;
 }
 
 .ovb-myaccount-inner {
   display: grid;
   grid-template-columns: minmax(200px, auto) 1fr;
+  /* grid-template-columns:200px 1fr; */
   gap: 2rem;
   width: 100%;
   max-width: 1680px;
@@ -83,12 +117,12 @@
     }
 
     table.shop_table_responsive tr {
+      /* border-bottom: 1px solid red !important; */
       margin-bottom: 20px;
     }
   }
 }
 
-/* Navigation Menu */
 .ov-myaccount-menu {
   .woocommerce-MyAccount-navigation {
     float: none !important;
@@ -125,7 +159,6 @@
   }
 }
 
-/* Content Area */
 .ovb-myaccount-content {
   overflow-x: auto;
   display: flex;
@@ -138,13 +171,29 @@
     }
   }
 
-  /* Orders Table */
   table.woocommerce-orders-table {
-    @extend .ov-table;
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    margin-bottom: 2rem;
     table-layout: fixed;
 
     thead {
       display: table-header-group;
+      /* forsiraj prikaz zaglavlja */
+    }
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      color: #fff;
+      border: 1px solid #fff;
+      word-wrap: break-word;
+    }
+
+    thead th {
+      background: rgba(255, 255, 255, 0.1);
+      text-align: left;
     }
 
     tbody tr:nth-child(even) td,
@@ -174,7 +223,6 @@
     }
   }
 
-  /* Pagination */
   .woocommerce-pagination {
     display: flex;
     justify-content: space-between;
@@ -183,42 +231,54 @@
     .woocommerce-button--prev,
     a.woocommerce-button--previous {
       order: 1;
-      @extend .ov-btn;
       background: #fff;
       color: #1B203A;
       padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
 
-      &:hover {
-        background: #7C4DFF;
-        color: #fff;
-      }
+    .woocommerce-button--prev:hover,
+    a.woocommerce-button--previous:hover {
+      background: #7C4DFF;
+      color: #fff;
     }
 
     .woocommerce-button--next,
     a.woocommerce-button--next {
       margin-left: auto;
-      @extend .ov-btn;
       background: #fff;
       color: #1B203A;
       padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
 
-      &:hover {
-        background: #7C4DFF;
-        color: #fff;
-      }
+    .woocommerce-button--next:hover,
+    a.woocommerce-button--next:hover {
+      background: #7C4DFF;
+      color: #fff;
     }
   }
 
   a {
-    @extend .ov-link;
+    color: #7C4DFF;
+    text-decoration: underline;
+    transition: color 0.2s;
 
     &:hover {
       color: #fff;
     }
   }
 
-  /* Order Details Page */
-  > p {
+  /* -------------------------------------------- */
+  /* Order Details page styling                  */
+  /* -------------------------------------------- */
+
+  /* Intro paragraph with order #, date, status */
+  >p {
     font-size: 1rem;
     line-height: 1.6;
     color: #fff;
@@ -239,6 +299,7 @@
     }
   }
 
+  /* Section titles */
   h2.woocommerce-order-details__title,
   h2.woocommerce-order-details__billing-address-title,
   h2.woocommerce-order-details__shipping-address-title {
@@ -247,12 +308,25 @@
     margin-bottom: 1.5rem;
   }
 
-  /* Order Items Table */
+  /* Order items table */
   table.woocommerce-table--order-details {
-    @extend .ov-table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
 
-    tbody tr:nth-child(even) td {
-      background: rgba(255, 255, 255, 0.05);
+    thead th {
+      border: 1px solid #fff;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-align: left;
+    }
+
+    tbody td {
+      border: 1px solid #fff;
+      padding: 0.75rem 1rem;
+      background: transparent;
+      color: #fff;
     }
 
     tfoot tr th,
@@ -261,9 +335,13 @@
       padding: 0.5rem 1rem;
       color: #fff;
     }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(255, 255, 255, 0.05);
+    }
   }
 
-  /* Order Overview and Address Sections */
+  /* Order overview (payment) and address sections */
   .woocommerce-order-overview,
   .woocommerce-order-details__billing-address,
   .woocommerce-order-details__shipping-address {
@@ -287,20 +365,26 @@
     }
   }
 
-  /* Customer Details Card */
+  /* -------------------------------------------------- */
+  /*  Billing Address Card Styling (Order Details)     */
+  /* -------------------------------------------------- */
+
   section.woocommerce-customer-details {
-    @extend .ov-card;
+
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
     padding: 1.5rem;
     margin-bottom: 2rem;
 
-    > h2.woocommerce-column__title {
+
+    >h2.woocommerce-column__title {
       position: relative;
       color: #fff;
       font-size: 1.5rem;
       margin-bottom: 1rem;
       padding-bottom: 0.25rem;
+
 
       &::after {
         content: '';
@@ -312,11 +396,13 @@
       }
     }
 
-    > address {
+
+    >address {
       font-style: normal;
       line-height: 1.6;
       color: #fff;
       margin: 0 0 1rem 0;
+      /* padding-left: 0.5rem; */
 
       br {
         display: block;
@@ -324,7 +410,8 @@
         content: '';
       }
 
-      > p {
+
+      >p {
         margin: 0.5rem 0;
         color: #fff;
         line-height: 1.5;
@@ -337,7 +424,9 @@
       }
 
       a {
-        @extend .ov-link;
+        color: #7C4DFF;
+        text-decoration: underline;
+        transition: color 0.2s;
 
         &:hover {
           color: #fff;
@@ -346,21 +435,25 @@
     }
   }
 
-  /* Addresses Page */
+  /* --------------------------------------------- */
+  /*  Addresses page – Billing cards               */
+  /* --------------------------------------------- */
+
   .u-columns.woocommerce-Addresses {
-    @extend .ov-grid-2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
 
     .u-column1,
     .u-column2 {
       width: 100%;
-      @extend .ov-card;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
       padding: 1.5rem;
 
-      > header.woocommerce-Address-title {
+      >header.woocommerce-Address-title {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -383,8 +476,10 @@
         }
 
         a.edit {
-          @extend .ov-link;
+          color: #7C4DFF;
+          text-decoration: underline;
           font-size: 0.9rem;
+          transition: color 0.2s;
 
           &:hover {
             color: #fff;
@@ -397,7 +492,7 @@
         }
       }
 
-      > address {
+      >address {
         font-style: normal;
         line-height: 1.6;
         color: #fff;
@@ -410,12 +505,15 @@
       }
     }
 
+    /* before  */
     &::before {
       content: none;
     }
   }
 
-  /* Edit Address Form */
+  /* --------------------------------------------- */
+  /*  Addresses page – Edit Billing Address        */
+  /* --------------------------------------------- */
   .woocommerce-address-fields {
     .woocommerce-address-fields__field-wrapper {
       .form-row {
@@ -429,14 +527,27 @@
         }
 
         .woocommerce-input-wrapper {
+
           input,
           textarea {
-            @extend .ov-input;
+            background: transparent;
+            border: 1px solid;
+            border-color: #fff;
             padding: 15px 12px;
-          }
+            color: #fff;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
 
-          textarea {
-            @extend .ov-textarea;
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.5);
+            }
+
+            &:focus {
+              outline: none;
+              border-color: #8B5DFF;
+            }
           }
 
           .select2 {
@@ -464,13 +575,24 @@
         }
       }
     }
+
+    .button {
+      background-color: #7C4DFF;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #8B5DFF;
+      }
+    }
   }
 
-  .button {
-    @extend .ov-btn;
-  }
-
-  /* Account Details Form */
+  /* --------------------------------------------- */
+  /*  Account details                              */
+  /* --------------------------------------------- */
   .woocommerce-EditAccountForm {
     .woocommerce-form-row {
       label {
@@ -483,13 +605,38 @@
       }
 
       .woocommerce-Input {
-        @extend .ov-input;
+        background: transparent;
+        border: 1px solid;
+        border-color: #fff;
         padding: 15px 12px;
+        color: #fff;
+        font-size: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        &:focus {
+          outline: none;
+          border-color: #8B5DFF;
+        }
       }
     }
 
     .woocommerce-Button {
-      @extend .ov-btn;
+      padding: 15px 30px;
+      background-color: #7C4DFF;
+      color: #fff;
+      outline: none;
+      border: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #8B5DFF;
+      }
 
       &.disabled {
         opacity: 0.5;
@@ -499,3 +646,7 @@
     }
   }
 }
+
+/* .woocommerce-account .ovb-myaccount-content > p:first-of-type {
+  display: none;
+} */

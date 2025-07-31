@@ -7,15 +7,23 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
+  width: 100%;
+  padding: 0;
 
   .ov-cart-container {
-    &.empty {
-      max-width: 400px;
-      padding: 0;
+    background-color: #1B203A;
+    width: 100%;
+    height: 70vh;
 
+    &.empty {
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
       .ov-cart-empty {
         font-size: 44px;
+
       }
 
       @media(max-width:1100px) {

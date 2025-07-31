@@ -83,7 +83,7 @@ body.hidden {
         margin-inline: auto;
     }
 
-    .ov-back-btn{
+    .ov-back-btn {
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 100%;
         display: flex;
@@ -454,14 +454,16 @@ body.hidden {
    COMMON TABLES
 ============================================== */
 
-.ov-table {
-    width: 100%;
+.shop_table {
+    width: 100% !important;
     border-collapse: collapse;
     margin-bottom: 1.5rem;
     background: transparent;
     color: #fff;
 
     thead {
+        width: 100%;
+
         th {
             border-bottom: 2px solid rgba(255, 255, 255, 0.6);
             text-align: left;
@@ -474,6 +476,8 @@ body.hidden {
     }
 
     tbody {
+        width: 100%;
+
         tr {
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -486,6 +490,7 @@ body.hidden {
     }
 
     tfoot {
+        width: 100%;
 
         th,
         td {
@@ -495,7 +500,7 @@ body.hidden {
             font-size: 16px;
         }
 
-        .ov-table-total {
+        .order-total {
             font-weight: 900;
             background-color: rgba(255, 255, 255, 0.2);
         }

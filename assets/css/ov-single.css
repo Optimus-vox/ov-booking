@@ -95,7 +95,6 @@
           .the-content {
             padding-bottom: 48px;
             border-bottom: 1px solid #fff;
-
             .ov-show-more-button,
             .ov-collapse-button {
               font-size: 19px;
@@ -121,6 +120,7 @@
               padding: 0;
               margin: 0;
               font-size: 16px;
+              text-align: left;
             }
           }
         }
