@@ -335,7 +335,7 @@ get_header();
                                         // 1) Ako je baš ovaj proizvod u korpi:
                                         if ($in_cart): ?>
                                             <a href="<?php echo esc_url(wc_get_cart_url()); ?>"
-                                                class="button go-to-cart-button ov-btn ov-btn-full-width">
+                                                class="button go-to-cart-button ov-btn">
                                                 <?php esc_html_e('Go to cart', 'ov-booking'); ?>
                                             </a>
                                         <?php else: ?>
