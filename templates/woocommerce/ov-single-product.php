@@ -461,7 +461,7 @@ get_header();
                                 <h4>Safety & property</h4>
                                 <span class="safety-info">Carbon monoxide alarm - active</span>
                                 <span class="safety-info">Smoke alarm - active</span>
-                                <a class="safety-info-more" href="">Show more</a>
+                                <a class="safety-info-more ov-link-white" href="">Show more</a>
                             </div>
                             <div class="cancelation-policy">
                                 <h4>Cancellation policy</h4>
