@@ -199,7 +199,7 @@ jQuery(document).ready(function () {
           } else if (client.isCheckout) {
             hasIcon = true;
             iconHtml = `<div class="ovb-booking-dates check-out" style="display:flex; align-items:center; gap:5px; width:32px">
-                <svg xmlns="http://www.w3.org/2000/svg" title="Check-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 <div class="tooltip-text">Check-out</div>
                 </div>`;
           }
@@ -730,11 +730,16 @@ jQuery("#client_modal_save")
 
     // 1. VALIDACIJA INPUTA
     const data = {};
+    // for (let key of ["firstName", "lastName", "email", "phone", "guests"]) {
+    //   data[key] = $inputs[key].val().trim();
+    // }
     for (let key of ["firstName", "lastName", "email", "phone", "guests"]) {
-      data[key] = $inputs[key].val().trim();
+      const value = $inputs[key].val();
+      data[key] = value ? value.trim() : "";
     }
 
     $modal.find(".input-error").removeClass("input-error");
+
     const rules = {
       firstName: (v) => v.length >= 2,
       lastName: (v) => v.length >= 2,
@@ -742,13 +747,18 @@ jQuery("#client_modal_save")
       phone: (v) => /^\+?\d{6,}$/.test(v),
       guests: (v) => Number(v) > 0,
     };
-    for (let [k, fn] of Object.entries(rules)) {
-      if (!fn(data[k])) {
-        $inputs[k].addClass("input-error");
-        showToast("Please fill all fields correctly.");
-        lock_client_save = false;
-        return;
-      }
+
+    // sakupi sva neprolazna polja
+    const invalid = [];
+    for (let [key, fn] of Object.entries(rules)) {
+      if (!fn(data[key])) invalid.push(key);
+    }
+
+    if (invalid.length > 0) {
+      invalid.forEach((key) => $inputs[key].addClass("input-error"));
+      showToast("Please fill in all fields correctly.");
+      lock_client_save = false;
+      return;
     }
 
     // VALIDACIJA DATUMA IZ TVOG PICKERA (koristi hidden inpute koje tvoj picker puni)
@@ -827,7 +837,6 @@ jQuery("#client_modal_save")
 
 
   function myCalendar() {
-    console.log("Rendering calendar with data:", calendarData);
     var month = d.getUTCMonth();
     var year = d.getUTCFullYear();
     var date = d.getUTCDate();
@@ -883,20 +892,6 @@ jQuery("#client_modal_save")
   // Poziv odmah i kada se menja custom cena
   updateCustomPriceOption();
   jQuery("#custom_price").on("input", updateCustomPriceOption);
-
-  // Funkcija za prikaz datuma kada se izabere "Izbor datuma"
-  // function toggleDateRangeVisibility() {
-  //   const rule = jQuery("#apply_rule").val();
-  //   if (rule === "custom") {
-  //     jQuery("#daterange_row").show();
-  //   } else {
-  //     jQuery("#daterange_row").hide();
-  //   }
-  // }
-
-  // // Pozovi odmah i kada se menja "Primeni na"
-  // toggleDateRangeVisibility();
-  // jQuery("#apply_rule").on("change", toggleDateRangeVisibility);
 
   function toggleDateRange() {
     if (jQuery("#apply_rule").val() === "custom") {
@@ -987,41 +982,35 @@ jQuery("#client_modal_save")
 
     const selectedDate = jQuery(this).data("date");
     const formattedDate = moment(selectedDate, "YYYY-MM-DD").format("DD/MM/YYYY");
-
-    jQuery("#client_modal_date").text(formattedDate);
     jQuery("#client_modal_date_input").val(selectedDate);
+    jQuery("#client_modal_date").text(formattedDate);
+    // automatski setujemo checkout na +1 dan
+    const nextDay = moment(selectedDate).add(1, "days").format("DD/MM/YYYY");
+    jQuery("#custom-daterange-input").val(`${formattedDate} – ${nextDay}`);
+  
+
     jQuery("#client_modal_wrapper").show();
     jQuery("body").css("overflow", "hidden");
 
-setTimeout(() => {
-  // clean up previous picker
-  document.querySelector("#date-range-picker .ov-picker-container")?.remove();
-  window._ovb_client_picker = null;
+    setTimeout(() => {
+      // clean up previous picker
+      document.querySelector("#date-range-picker .ov-picker-container")?.remove();
+      window._ovb_client_picker = null;
 
-  // 🔥 Init custom client-picker
-  window._ovb_client_picker = initOvDateRangePicker({
-    input: "#custom-daterange-input-admin",
-    container: "#date-range-picker",
-    calendarData,
-    defaultStart: selectedDate,
-    defaultEnd: moment(selectedDate).add(1, "days").format("YYYY-MM-DD"),
-    onChange: (start, end) => {
-      jQuery("#start_date").val(start?.format("YYYY-MM-DD") || "");
-      jQuery("#end_date").val(end?.format("YYYY-MM-DD") || "");
-    },
+      // 🔥 Init custom client-picker
+      window._ovb_client_picker = initOvDateRangePicker({
+        input: "#custom-daterange-input-admin",
+        container: "#date-range-picker",
+        calendarData,
+        defaultStart: selectedDate,
+        defaultEnd: moment(selectedDate).add(1, "days").format("YYYY-MM-DD"),
+        onChange: (start, end) => {
+          jQuery("#start_date").val(start?.format("YYYY-MM-DD") || "");
+          jQuery("#end_date").val(end?.format("YYYY-MM-DD") || "");
+        },
+      });
+    }, 100);
   });
-}, 100);
-  });
-
-  function closeClientModal() {
-    // Uništi daterange picker pre zatvaranja
-  document.querySelector("#date-range-picker .ov-picker-container")?.remove();
-  window._ovb_client_picker = null;
-
-    jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
-    jQuery("#client_modal_wrapper").hide();
-    jQuery("body").css("overflow", "auto");
-  }
 
   // Edit client
   jQuery(document).on("click", ".clickable-client", function () {
@@ -1045,10 +1034,13 @@ setTimeout(() => {
     jQuery("#client_action_bookingid_input").val(bookingId);
 
     if (rangeStart && rangeEnd) {
-      jQuery("#client_action_date_range").text(`${rangeStart} - ${rangeEnd}`);
+      const startFmt = moment(rangeStart, "YYYY-MM-DD").format("DD/MM/YYYY");
+      const endFmt = moment(rangeEnd, "YYYY-MM-DD").format("DD/MM/YYYY");
+      jQuery("#client_action_date_range").text(`${startFmt} – ${endFmt}`);
     } else {
       jQuery("#client_action_date_range").text("N/A");
     }
+
 
     jQuery("#client_action_date").text(moment(date).format("DD/MM/YYYY"));
     jQuery("#client_action_date_input").val(date);
@@ -1093,8 +1085,6 @@ jQuery("#delete_client_all")
   .on("click", function () {
     if (lock_delete_all) return;
     lock_delete_all = true;
-
-    const date = jQuery("#client_action_date_input").val();
     const bookingId = jQuery("#client_action_bookingid_input").val();
 
     if (!bookingId) {

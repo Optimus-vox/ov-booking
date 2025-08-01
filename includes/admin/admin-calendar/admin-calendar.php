@@ -272,7 +272,7 @@ function render_calendar_meta_box($post)
     <input type="hidden" name="ovb_status_daterange" id="ovb_status_daterange_input" value="">
 
     <!-- add client modal -->
-    <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
+    <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1001;">
         <div id="client_modal">
             <i class="close_modal" onclick="closeClientModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
@@ -406,10 +406,19 @@ function render_calendar_meta_box($post)
         </div>
     </div>
     <script>
-        function closeClientModal() {
-            jQuery('#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input').val('');
-            jQuery("#client_modal_wrapper").hide();
-        }
+        // function closeClientModal() {
+        //     jQuery('#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input').val('');
+        //     jQuery("#client_modal_wrapper").hide();
+        // }
+          function closeClientModal() {
+    // Uništi daterange picker pre zatvaranja
+  document.querySelector("#date-range-picker .ov-picker-container")?.remove();
+  window._ovb_client_picker = null;
+
+    jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
+    jQuery("#client_modal_wrapper").hide();
+    jQuery("body").css("overflow", "auto");
+  }
     </script>
     <!-- remove client modal -->
 

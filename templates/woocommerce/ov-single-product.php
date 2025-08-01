@@ -313,8 +313,8 @@ get_header();
                                     </h3>
                                     <span><?php echo esc_html($start_label . ' – ' . $end_label); ?></span>
                                 <?php } else { ?>
-                                    <h3 class="ov-heading-large"><?php esc_html_e('Reservation details', 'ov-booking'); ?></h3>
-                                    <span><?php esc_html_e('Check dates below.', 'ov-booking'); ?></span>
+                                    <h3 class="ov-heading-large"><?php esc_html_e('Reservation details - Preview only', 'ov-booking'); ?></h3>
+                                    <span><?php// esc_html_e('Check dates in.', 'ov-booking'); ?></span>
                                 <?php } ?>
                                 <script>
                                     window.ovb_product_title = "<?php echo esc_js(get_the_title()); ?>";
