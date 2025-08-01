@@ -46,7 +46,7 @@ function clearCalendar() {
   jQuery(".admin-table tbody").empty();
 }
 
-// Lock flags 
+// Lock flags
 let lock_client_save = false;
 let lock_price_save = false;
 let lock_delete_single = false;
@@ -69,10 +69,10 @@ jQuery(document).ready(function () {
   // Helper funkcija za sigurno čuvanje
   function saveCalendarDataSafely(successMessage = "Data saved successfully") {
     const productId = jQuery("#ovb_product_id").val() || PRODUCT_ID;
-       if (!productId) {
-         showToast("Greška: nepoznat id! Probaj da osvežiš stranicu.");
-         return jQuery.Deferred().reject("No product_id").promise();
-       }
+    if (!productId) {
+      showToast("Greška: nepoznat id! Probaj da osvežiš stranicu.");
+      return jQuery.Deferred().reject("No product_id").promise();
+    }
     // Proveri da svi datumi imaju clients array
     for (const key in calendarData) {
       if (!Array.isArray(calendarData[key].clients)) {
@@ -327,31 +327,32 @@ jQuery(document).ready(function () {
   }
 
   // Show/hide custom range polja
-  // jQuery("#apply_rule").on("change", function () {
-  //   if (jQuery(this).val() === "custom") {
-  //     jQuery("#daterange_container").show();
-  //   } else {
-  //     jQuery("#daterange_container").hide();
-  //   }
-  // });
+  jQuery("#apply_rule").on("change", function () {
+    if (jQuery(this).val() === "custom") {
+      jQuery("#daterange_container").show();
+    } else {
+      jQuery("#daterange_container").hide();
+    }
+  });
 
   // Init daterangepicker
-initOvDateRangePicker({
-  input: "#daterange",
-  container: "#daterange_container",
-  calendarData,
-  onChange: (start, end) => {
-    jQuery("#daterange").val(`${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`);
-  },
-});
-
-  initOvDateRangePicker({
-    input: "#status_daterange",
-    container: "#status_daterange_container",
-    calendarData,
-    onChange: (start, end) => {
-      jQuery("#status_daterange").val(`${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`);
+  jQuery("#daterange").daterangepicker({
+    locale: {
+      format: "DD/MM/YYYY",
     },
+  });
+
+  // Init status daterange
+  jQuery("#status_daterange").daterangepicker({
+    locale: { format: "DD/MM/YYYY" },
+  });
+
+  jQuery("#status_apply_rule").on("change", function () {
+    if (jQuery(this).val() === "custom") {
+      jQuery("#status_daterange_container").show();
+    } else {
+      jQuery("#status_daterange_container").hide();
+    }
   });
 
   // SAVE PRICE TYPES
@@ -417,35 +418,37 @@ initOvDateRangePicker({
           }
 
           if (statusRule === "custom") {
-            const parts = jQuery("#status_daterange").val().split(" – ");
-            if (parts.length !== 2) {
-              return Swal.fire("Error", "Date range picker is not initialized.", "error");
-            }
-            // parse u moment objekte
-            const start = moment(parts[0], "DD/MM/YYYY");
-            const end = moment(parts[1], "DD/MM/YYYY");
-            // iteriraj po danima
-            let current = start.clone();
-            while (current.isSameOrBefore(end, "day")) {
-              const dateStr = current.format("YYYY-MM-DD");
-              // inicijalizuj ako ne postoji
-              if (!calendarData[dateStr]) {
-                calendarData[dateStr] = { status: "available", isPast: false, clients: [] };
+            const picker = jQuery("#status_daterange").data("daterangepicker");
+            if (picker) {
+              const start = picker.startDate;
+              const end = picker.endDate;
+              let current = moment(start);
+
+              while (current.isSameOrBefore(end)) {
+                const dateStr = current.format("YYYY-MM-DD");
+
+                if (!calendarData[dateStr]) {
+                  calendarData[dateStr] = {
+                    status: "available",
+                    isPast: false,
+                    clients: [],
+                  };
+                }
+
+                calendarData[dateStr].status = selectedStatus;
+
+                if (typeof calendarData[dateStr].price !== "number") {
+                  calendarData[dateStr].price = undefined;
+                }
+                if (!calendarData[dateStr].priceType) {
+                  calendarData[dateStr].priceType = undefined;
+                }
+                if (!Array.isArray(calendarData[dateStr].clients)) {
+                  calendarData[dateStr].clients = [];
+                }
+
+                current.add(1, "days");
               }
-              // postavi novi status
-              calendarData[dateStr].status = selectedStatus;
-              // očisti price/priceType/clients ako nedostaju
-              if (typeof calendarData[dateStr].price !== "number") {
-                calendarData[dateStr].price = undefined;
-              }
-              if (!calendarData[dateStr].priceType) {
-                calendarData[dateStr].priceType = undefined;
-              }
-              if (!Array.isArray(calendarData[dateStr].clients)) {
-                calendarData[dateStr].clients = [];
-              }
-              // sledeći dan
-              current.add(1, "days");
             }
           }
         }
@@ -477,11 +480,11 @@ initOvDateRangePicker({
       else if (rule === "weekends") ruleLabel = "weekends (Saturday–Sunday)";
       else if (rule === "full_month") ruleLabel = "all days in the selected month";
       else if (rule === "custom") {
-       const parts = jQuery("#daterange").val().split(" – ");
-       if (parts.length !== 2) return Swal.fire("Error", "Date range picker is not initialized.", "error");
-       const start = moment(parts[0], "DD/MM/YYYY");
-       const end = moment(parts[1], "DD/MM/YYYY");
-       ruleLabel = `dates in range: ${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`;
+        const picker = jQuery("#daterange").data("daterangepicker");
+        if (!picker) return Swal.fire("Error", "Date range picker is not initialized.", "error");
+        const start = picker.startDate.format("DD/MM/YYYY");
+        const end = picker.endDate.format("DD/MM/YYYY");
+        ruleLabel = `dates in range: ${start} – ${end}`;
       }
 
       Swal.fire({
@@ -543,6 +546,41 @@ initOvDateRangePicker({
             }
           }
         }
+
+        if (rule === "custom") {
+          const picker = jQuery("#daterange").data("daterangepicker");
+          const start = picker.startDate.startOf("day");
+          const end = picker.endDate.startOf("day");
+          let current = moment(start);
+
+          while (current.isSameOrBefore(end)) {
+            const dateStr = current.format("YYYY-MM-DD");
+
+            if (!calendarData[dateStr]) {
+              calendarData[dateStr] = {
+                status: "available",
+                isPast: false,
+                clients: [],
+              };
+            }
+
+            calendarData[dateStr].price = selectedPrice;
+            calendarData[dateStr].priceType = priceType;
+
+            if (selectedStatus) {
+              calendarData[dateStr].status = selectedStatus;
+            } else if (selectedPrice > 0) {
+              calendarData[dateStr].status = "available";
+            }
+
+            if (!Array.isArray(calendarData[dateStr].clients)) {
+              calendarData[dateStr].clients = [];
+            }
+
+            current.add(1, "days");
+          }
+        }
+
         // Sačuvaj promene i rerenderuj
         saveCalendarDataSafely("Prices were successfully applied.").then(() => {
           myCalendar(); // Rerenderuj kalendar
@@ -568,11 +606,11 @@ initOvDateRangePicker({
       else if (rule === "weekends") ruleLabel = "weekends (Sat–Sun)";
       else if (rule === "full_month") ruleLabel = "all days in the month";
       else if (rule === "custom") {
-       const parts = jQuery("#status_daterange").val().split(" – ");
-       if (parts.length !== 2) return Swal.fire("Error", "Date range picker is not initialized.", "error");
-       const start = moment(parts[0], "DD/MM/YYYY");
-       const end = moment(parts[1], "DD/MM/YYYY");
-       ruleLabel = `custom range: ${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`;
+        const picker = jQuery("#status_daterange").data("daterangepicker");
+        if (!picker) return Swal.fire("Error", "Date range picker is not initialized.", "error");
+        const start = picker.startDate.format("DD/MM/YYYY");
+        const end = picker.endDate.format("DD/MM/YYYY");
+        ruleLabel = `custom range: ${start} – ${end}`;
       }
 
       Swal.fire({
@@ -629,6 +667,7 @@ initOvDateRangePicker({
         }
 
         if (rule === "custom") {
+          const picker = jQuery("#status_daterange").data("daterangepicker");
           const start = picker.startDate.startOf("day");
           const end = picker.endDate.startOf("day");
           let current = moment(start);
@@ -721,110 +760,90 @@ initOvDateRangePicker({
     range: jQuery("#custom-daterange-input-admin"),
     productId: jQuery("#ovb_product_id"),
   };
-  
-jQuery("#client_modal_save")
-  .off("click")
-  .on("click", function () {
-    if (lock_client_save) return;
-    lock_client_save = true;
 
-    // 1. VALIDACIJA INPUTA
-    const data = {};
-    for (let key of ["firstName", "lastName", "email", "phone", "guests"]) {
-      data[key] = $inputs[key].val().trim();
-    }
+  jQuery("#client_modal_save")
+    .off("click")
+    .on("click", function () {
+      if (lock_client_save) return;
+      lock_client_save = true;
 
-    $modal.find(".input-error").removeClass("input-error");
-    const rules = {
-      firstName: (v) => v.length >= 2,
-      lastName: (v) => v.length >= 2,
-      email: (v) => /^\S+@\S+\.\S+$/.test(v),
-      phone: (v) => /^\+?\d{6,}$/.test(v),
-      guests: (v) => Number(v) > 0,
-    };
-    for (let [k, fn] of Object.entries(rules)) {
-      if (!fn(data[k])) {
-        $inputs[k].addClass("input-error");
-        showToast("Please fill all fields correctly.");
+      // 1. VALIDACIJA
+      const data = {};
+      for (let key of ["firstName", "lastName", "email", "phone", "guests", "range"]) {
+        data[key] = $inputs[key].val().trim();
+      }
+      $modal.find(".input-error").removeClass("input-error");
+      const rules = {
+        firstName: (v) => v.length >= 2,
+        lastName: (v) => v.length >= 2,
+        email: (v) => /^\S+@\S+\.\S+$/.test(v),
+        phone: (v) => /^\+?\d{6,}$/.test(v),
+        guests: (v) => Number(v) > 0,
+        range: (v) => v.includes("–") || v.includes("-"),
+      };
+      for (let [k, fn] of Object.entries(rules)) {
+        if (!fn(data[k])) {
+          $inputs[k].addClass("input-error");
+          showToast("Please fill all fields correctly.");
+          lock_client_save = false;
+          return;
+        }
+      }
+      const [rawStart, rawEnd] = data.range.split("–").map((s) => s.trim());
+      const startDate = parseDMY(rawStart),
+        endDate = parseDMY(rawEnd);
+      if (startDate > endDate) {
+        showToast("Start date cannot be after end date.");
         lock_client_save = false;
         return;
       }
-    }
+      const isoStart = startDate.toISOString().split("T")[0],
+        isoEnd = endDate.toISOString().split("T")[0],
+        bookingId = Date.now() + "_" + Math.floor(Math.random() * 10000);
 
-    // VALIDACIJA DATUMA IZ TVOG PICKERA (koristi hidden inpute koje tvoj picker puni)
-    const isoStart = jQuery("#start_date").val();
-    const isoEnd = jQuery("#end_date").val();
-
-    if (!isoStart || !isoEnd) {
-      showToast("Please select a valid date range.");
-      lock_client_save = false;
-      return;
-    }
-    if (isoStart > isoEnd) {
-      showToast("Start date cannot be after end date.");
-      lock_client_save = false;
-      return;
-    }
-
-    const bookingId = Date.now() + "_" + Math.floor(Math.random() * 10000);
-
-    // 2. LOKALNI UPDATE
-    let d = new Date(isoStart);
-    const endDateObj = new Date(isoEnd);
-    while (d <= endDateObj) {
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-      if (!calendarData[key]) calendarData[key] = { clients: [] };
-      if (!Array.isArray(calendarData[key].clients)) calendarData[key].clients = [];
-      calendarData[key].clients.push({
-        bookingId,
-        ...data,
-        rangeStart: isoStart,
-        rangeEnd: isoEnd,
-        isCheckin: key === isoStart,
-        isCheckout: key === isoEnd,
-      });
-      calendarData[key].status = "booked";
-      d.setDate(d.getDate() + 1);
-    }
-
-    // 3. UI UPDATE – MODAL ZATVORI, RESETUJ POLJA, RERENDERUJ KALENDAR
-    $modal.hide();
-    Object.values($inputs).forEach(($el) => $el.val(""));
-    // Reset date range picker input & hidden fields
-    jQuery("#custom-daterange-input-admin").val("");
-    jQuery("#start_date, #end_date").val("");
-    jQuery("body").css("overflow", "auto");
-    myCalendar();
-
-    // 4. AJAX ORDER + CALENDAR – NE BLOKIRA UI!
-    jQuery
-      .post(ovbAdminCalendar.ajax_url, {
-        action: "ovb_admin_create_manual_order",
-        nonce: ovbAdminCalendar.nonce,
-        product_id: $inputs.productId.val(),
-        client_data: JSON.stringify({
+      // 2. LOKALNI UPDATE
+      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        calendarData[key] = calendarData[key] || { clients: [] };
+        calendarData[key].clients.push({
           bookingId,
           ...data,
           rangeStart: isoStart,
           rangeEnd: isoEnd,
-        }),
-      })
-      .done((res) => {
-        if (!res.success) showToast(res.data || "Server error creating booking.");
-      })
-      .fail(() => showToast("AJAX request failed."))
-      .always(() => {
-        lock_client_save = false;
-      });
+          isCheckin: key === isoStart,
+          isCheckout: key === isoEnd,
+        });
+        calendarData[key].status = "booked";
+      }
 
-    // 4b. Save calendar
-    saveCalendarDataSafely("Booking created!")
-      .then(() => {})
-      .catch(() => {
+      // 3. UI UPDATE – MODAL ZATVORI, RESETUJ POLJA, RERENDERUJ KALENDAR
+      $modal.hide();
+      Object.values($inputs).forEach(($el) => $el.val(""));
+      jQuery("body").css("overflow", "auto");
+      myCalendar();
+
+      // 4. AJAX ORDER + CALENDAR – NE BLOKIRA UI!
+      // 4a. Order
+      jQuery
+        .post(ovbAdminCalendar.ajax_url, {
+          action: "ovb_admin_create_manual_order",
+          nonce: ovbAdminCalendar.nonce,
+          product_id: $inputs.productId.val(),
+          client_data: JSON.stringify({ bookingId, ...data, rangeStart: isoStart, rangeEnd: isoEnd }),
+        })
+        .done((res) => {
+          if (!res.success) showToast(res.data || "Server error creating booking.");
+        })
+        .fail(() => showToast("AJAX request failed."))
+        .always(() => {
+          lock_client_save = false;
+        });
+
+      // 4b. Save calendar
+      saveCalendarDataSafely("Booking created!").catch(() => {
         showToast("Failed to save calendar. Try again.");
       });
-  });
-
+    });
 
   function myCalendar() {
     console.log("Rendering calendar with data:", calendarData);
@@ -885,29 +904,22 @@ jQuery("#client_modal_save")
   jQuery("#custom_price").on("input", updateCustomPriceOption);
 
   // Funkcija za prikaz datuma kada se izabere "Izbor datuma"
-  // function toggleDateRangeVisibility() {
-  //   const rule = jQuery("#apply_rule").val();
-  //   if (rule === "custom") {
-  //     jQuery("#daterange_row").show();
-  //   } else {
-  //     jQuery("#daterange_row").hide();
-  //   }
-  // }
-
-  // // Pozovi odmah i kada se menja "Primeni na"
-  // toggleDateRangeVisibility();
-  // jQuery("#apply_rule").on("change", toggleDateRangeVisibility);
-
-  function toggleDateRange() {
-    if (jQuery("#apply_rule").val() === "custom") {
-      jQuery("#daterange_container").show();
-    } else {
-      jQuery("#daterange_container").hide();
-    }
+function toggleDateRangeVisibility() {
+  if (jQuery("#apply_rule").val() === "custom") {
+    jQuery("#daterange_container").show();
+  } else {
+    jQuery("#daterange_container").hide();
   }
-  toggleDateRange();
-  jQuery("#apply_rule").on("change", toggleDateRange);
+}
 
+  // Pozovi odmah i kada se menja "Primeni na"
+  toggleDateRangeVisibility();
+  jQuery("#apply_rule").on("change", toggleDateRangeVisibility);
+
+  // Inicijalizuj date range picker
+  jQuery("#daterange").daterangepicker({
+    locale: { format: "DD/MM/YYYY" },
+  });
   // Navigacija kroz mesece
   jQuery(".prev-month").click(() => navigationHandler(-1));
   jQuery(".next-month").click(() => navigationHandler(1));
@@ -970,7 +982,6 @@ jQuery("#client_modal_save")
         });
     });
 
-
   // Add client modal hide
   jQuery(document).on("click", "#client_modal_wrapper", function (e) {
     if (e.target.id === "client_modal_wrapper") {
@@ -993,30 +1004,35 @@ jQuery("#client_modal_save")
     jQuery("#client_modal_wrapper").show();
     jQuery("body").css("overflow", "hidden");
 
-setTimeout(() => {
-  // clean up previous picker
-  document.querySelector("#date-range-picker .ov-picker-container")?.remove();
-  window._ovb_client_picker = null;
+    setTimeout(function () {
+      const $input = jQuery("#custom-daterange-input-admin");
 
-  // 🔥 Init custom client-picker
-  window._ovb_client_picker = initOvDateRangePicker({
-    input: "#custom-daterange-input-admin",
-    container: "#date-range-picker",
-    calendarData,
-    defaultStart: selectedDate,
-    defaultEnd: moment(selectedDate).add(1, "days").format("YYYY-MM-DD"),
-    onChange: (start, end) => {
-      jQuery("#start_date").val(start?.format("YYYY-MM-DD") || "");
-      jQuery("#end_date").val(end?.format("YYYY-MM-DD") || "");
-    },
-  });
-}, 100);
+      // Ukloni postojeći picker ako postoji
+      if ($input.data("daterangepicker")) {
+        $input.data("daterangepicker").remove();
+      }
+
+      // Inicijalizuj novi picker
+      $input.daterangepicker({
+        locale: {
+          format: "DD/MM/YYYY",
+          separator: " – ",
+        },
+        startDate: moment(selectedDate),
+        endDate: moment(selectedDate).add(1, "days"),
+        minDate: moment(),
+        autoApply: false,
+        opens: "center",
+      });
+    }, 100);
   });
 
   function closeClientModal() {
     // Uništi daterange picker pre zatvaranja
-  document.querySelector("#date-range-picker .ov-picker-container")?.remove();
-  window._ovb_client_picker = null;
+    const $input = jQuery("#custom-daterange-input-admin");
+    if ($input.data("daterangepicker")) {
+      $input.data("daterangepicker").remove();
+    }
 
     jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
     jQuery("#client_modal_wrapper").hide();
@@ -1059,91 +1075,89 @@ setTimeout(() => {
   });
 
   // Delete client single day
-    jQuery("#delete_client_single")
-      .off("click")
-      .on("click", function () {
-        if (lock_delete_single) return;
-        lock_delete_single = true;
+  jQuery("#delete_client_single")
+    .off("click")
+    .on("click", function () {
+      if (lock_delete_single) return;
+      lock_delete_single = true;
 
-        const date = jQuery("#client_action_date_input").val();
-        const bookingIdToDelete = jQuery("#client_action_bookingid_input").val();
+      const date = jQuery("#client_action_date_input").val();
+      const bookingIdToDelete = jQuery("#client_action_bookingid_input").val();
 
-        if (calendarData[date] && Array.isArray(calendarData[date].clients)) {
-          calendarData[date].clients = calendarData[date].clients.filter((client) => client.bookingId !== bookingIdToDelete);
+      if (calendarData[date] && Array.isArray(calendarData[date].clients)) {
+        calendarData[date].clients = calendarData[date].clients.filter((client) => client.bookingId !== bookingIdToDelete);
 
-          if (calendarData[date].clients.length === 0) {
-            calendarData[date].clients = [];
-            if (calendarData[date].price > 0) {
-              calendarData[date].status = "available";
-            } else {
-              calendarData[date].status = "unavailable";
-            }
+        if (calendarData[date].clients.length === 0) {
+          calendarData[date].clients = [];
+          if (calendarData[date].price > 0) {
+            calendarData[date].status = "available";
+          } else {
+            calendarData[date].status = "unavailable";
           }
         }
+      }
 
-        saveCalendarAndRefresh().always(() => {
-          lock_delete_single = false;
-        });
+      saveCalendarAndRefresh().always(() => {
+        lock_delete_single = false;
+      });
     });
 
-
   // Delete client all days
-jQuery("#delete_client_all")
-  .off("click")
-  .on("click", function () {
-    if (lock_delete_all) return;
-    lock_delete_all = true;
+  jQuery("#delete_client_all")
+    .off("click")
+    .on("click", function () {
+      if (lock_delete_all) return;
+      lock_delete_all = true;
 
-    const date = jQuery("#client_action_date_input").val();
-    const bookingId = jQuery("#client_action_bookingid_input").val();
+      const date = jQuery("#client_action_date_input").val();
+      const bookingId = jQuery("#client_action_bookingid_input").val();
 
-    if (!bookingId) {
-      console.error("Booking ID not found for this reservation.");
-      lock_delete_all = false;
-      return;
-    }
+      if (!bookingId) {
+        console.error("Booking ID not found for this reservation.");
+        lock_delete_all = false;
+        return;
+      }
 
-    jQuery.ajax({
-      url: ovbAdminCalendar.ajax_url,
-      method: "POST",
-      data: {
-        action: "ovb_delete_booking_and_order",
-        booking_id: bookingId,
-      },
-      success: function (res) {
-        for (const day in calendarData) {
-          if (calendarData[day]?.clients && Array.isArray(calendarData[day].clients)) {
-            calendarData[day].clients = calendarData[day].clients.filter((client) => client.bookingId !== bookingId);
-            if (calendarData[day].clients.length === 0) {
-              calendarData[day].clients = [];
-              if (calendarData[day].price > 0) {
-                calendarData[day].status = "available";
-              } else {
-                calendarData[day].status = "unavailable";
+      jQuery.ajax({
+        url: ovbAdminCalendar.ajax_url,
+        method: "POST",
+        data: {
+          action: "ovb_delete_booking_and_order",
+          booking_id: bookingId,
+        },
+        success: function (res) {
+          for (const day in calendarData) {
+            if (calendarData[day]?.clients && Array.isArray(calendarData[day].clients)) {
+              calendarData[day].clients = calendarData[day].clients.filter((client) => client.bookingId !== bookingId);
+              if (calendarData[day].clients.length === 0) {
+                calendarData[day].clients = [];
+                if (calendarData[day].price > 0) {
+                  calendarData[day].status = "available";
+                } else {
+                  calendarData[day].status = "unavailable";
+                }
               }
             }
           }
-        }
-        saveCalendarAndRefresh().always(() => {
+          saveCalendarAndRefresh().always(() => {
+            lock_delete_all = false;
+          });
+        },
+        error: function (err) {
+          console.error("Error deleting order: ", err);
           lock_delete_all = false;
-        });
-      },
-      error: function (err) {
-        console.error("Error deleting order: ", err);
-        lock_delete_all = false;
-      },
+        },
+      });
     });
-  });
-
 
   // Helper function to save and refresh
-function saveCalendarAndRefresh() {
-  return saveCalendarDataSafely("Booking deleted successfully.").then(() => {
-    myCalendar();
-    jQuery("#client_action_modal_wrapper").hide();
-    jQuery("body").css("overflow", "auto");
-  });
-}
+  function saveCalendarAndRefresh() {
+    return saveCalendarDataSafely("Booking deleted successfully.").then(() => {
+      myCalendar();
+      jQuery("#client_action_modal_wrapper").hide();
+      jQuery("body").css("overflow", "auto");
+    });
+  }
 
   // ESC key handler
   jQuery(document).on("keydown", function (e) {

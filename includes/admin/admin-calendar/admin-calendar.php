@@ -193,12 +193,12 @@ function render_calendar_meta_box($post)
                                 </select>
                             </td>
                         </tr>
-                        <tr id="daterange_row" style="display: none;">
+                        <!-- <tr id="daterange_row" style="display: none;">
                             <th><label for="daterange">Custom Dates:</label></th>
                             <td>
                                 <input type="text" id="daterange" style="width: 180px;" placeholder="Pick a date range">
                             </td>
-                        </tr>
+                        </tr> -->
                     </table>
                     <button id="apply_price" class="button button-secondary" style="margin-top: 10px;">Apply Price</button>
                 </div>

@@ -190,7 +190,7 @@ class OVB_Admin_Product_Editor {
                 </div>',
                 __('Booking Product:', 'ov-booking'),
                 sprintf(
-                    _n('This property has %d active reservation.', 'This property has %d active reservations.', $booking_count, 'ov-booking'),
+                    _n('This property has %d active reservations.', 'This property has %d  active reservations. OVO TREBA UNAPREDITI', $booking_count, 'ov-booking'),
                     $booking_count
                 ),
                 $booking_count > 0 ? sprintf('<a href="#product_calendar_meta_box">%s</a>', __('View Calendar →', 'ov-booking')) : ''
