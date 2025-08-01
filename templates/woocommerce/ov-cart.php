@@ -145,7 +145,6 @@ get_header();
                 <button type="button" class="ov-step-button ov-btn ov-empty-cart-button ov-btn-outline js-empty-cart">
                     <?php esc_html_e('Empty cart', 'ov-booking'); ?>
                 </button>
-
             </div>
 
             <!-- DESNA KOLONA: rezime -->

@@ -245,30 +245,30 @@ add_action('woocommerce_cart_totals_after_order_total', function() {
     }
 });
 
-/**
- * Enqueue cart-specific scripts and styles
- */
-add_action('wp_enqueue_scripts', function() {
-    if (!is_cart()) return;
-    wp_enqueue_style(
-        'ovb-cart-style',
-        OVB_BOOKING_URL . 'assets/css/ov-cart.css',
-        [],
-        filemtime(OVB_BOOKING_PATH . 'assets/css/ov-cart.css')
-    );
-    wp_enqueue_script(
-        'ovb-cart-script',
-        OVB_BOOKING_URL . 'assets/js/ov-cart.js',
-        ['jquery', 'wc-cart'],
-        filemtime(OVB_BOOKING_PATH . 'assets/js/ov-cart.js'),
-        true
-    );
-    wp_localize_script('ovb-cart-script', 'ovbCartVars', [
-        'ajax_url'           => admin_url('admin-ajax.php'),
-        'nonce'              => wp_create_nonce('ovb_nonce'),
-        'empty_cart_confirm' => __('Are you sure you want to empty your cart?', 'ov-booking'),
-        'checkout_url'       => wc_get_checkout_url(),
-        'is_user_logged_in'  => is_user_logged_in(),
-        'currency_symbol'    => get_woocommerce_currency_symbol(),
-    ]);
-});
+// /**
+//  * Enqueue cart-specific scripts and styles
+//  */
+// add_action('wp_enqueue_scripts', function() {
+//     if (!is_cart()) return;
+//     wp_enqueue_style(
+//         'ovb-cart-style',
+//         OVB_BOOKING_URL . 'assets/css/ov-cart.css',
+//         [],
+//         filemtime(OVB_BOOKING_PATH . 'assets/css/ov-cart.css')
+//     );
+//     wp_enqueue_script(
+//         'ovb-cart-script',
+//         OVB_BOOKING_URL . 'assets/js/ov-cart.js',
+//         ['jquery', 'wc-cart'],
+//         filemtime(OVB_BOOKING_PATH . 'assets/js/ov-cart.js'),
+//         true
+//     );
+//     wp_localize_script('ovb-cart-script', 'ovbCartVars', [
+//         'ajax_url'           => admin_url('admin-ajax.php'),
+//         'nonce'              => wp_create_nonce('ovb_nonce'),
+//         'empty_cart_confirm' => __('Are you sure you want to empty your cart?', 'ov-booking'),
+//         'checkout_url'       => wc_get_checkout_url(),
+//         'is_user_logged_in'  => is_user_logged_in(),
+//         'currency_symbol'    => get_woocommerce_currency_symbol(),
+//     ]);
+// });

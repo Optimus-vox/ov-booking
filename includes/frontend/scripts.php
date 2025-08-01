@@ -169,23 +169,6 @@ function ovb_enqueue_daterange_picker() {
 }
 
 /**
- * Gallery Assets
- */
-// function ovb_enqueue_gallery_assets() {
-//     add_action( 'wp_head', 'ovb_gallery_resource_hints', 1 );
-//     if ( ! wp_script_is( 'lightgallery-js', 'enqueued' ) ) {
-//         wp_enqueue_style( 'lightgallery-css',    'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css', [], '2.7.1' );
-//         wp_enqueue_script( 'lightgallery-js',    'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js',             [ 'jquery' ], '2.7.1', true );
-//         wp_enqueue_script( 'lightgallery-thumbnail', 'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js', [ 'lightgallery-js' ], '2.7.1', true );
-//         wp_enqueue_script( 'lightgallery-zoom',      'https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js',      [ 'lightgallery-js' ], '2.7.1', true );
-//     }
-// }
-// function ovb_gallery_resource_hints() {
-//     echo '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">';
-//     echo '<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>';
-// }
-
-/**
  * Slider Assets
  */
 function ovb_enqueue_slider_assets() {
@@ -294,10 +277,44 @@ function ovb_preload_critical_css() {
 }
 
 /**
- * CART, CHECKOUT, THANKYOU & ACCOUNT ASSETS...
- * (Retain your existing implementations here)
- * ...
+ * CART
  */
+add_action( 'wp_enqueue_scripts', 'ov_enqueue_cart_assets' );
+function ov_enqueue_cart_assets() {
+    // samo na WooCommerce cart strani
+    if ( ! is_cart() ) {
+        return;
+    }
+
+    // CSS
+    wp_enqueue_style(
+        'ovb-cart-style',
+        OVB_BOOKING_URL . 'assets/css/ov-cart.css',
+        [],
+        filemtime( OVB_BOOKING_PATH . 'assets/css/ov-cart.css' )
+    );
+
+    // JS
+    wp_enqueue_script(
+        'ovb-cart-script',
+        OVB_BOOKING_URL . 'assets/js/ov-cart.js',
+        [ 'jquery', 'wc-cart' ],
+        filemtime( OVB_BOOKING_PATH . 'assets/js/ov-cart.js' ),
+        true
+    );
+
+    // lokalizacija — IMENA MORAJU BITI KAKO JS OČEKUJE
+    wp_localize_script(
+        'ovb-cart-script',  // handle
+        'ovCartVars',       // JS var: window.ovCartVars
+        [
+            'ajax_url'            => esc_url( admin_url( 'admin-ajax.php' ) ),  // ovCartVars.ajax_url
+            'nonce'               => wp_create_nonce( 'ovb_nonce' ),           // ovCartVars.nonce
+            'emptyCartConfirmMsg' => __( 'Are you sure you want to empty your cart?', 'ov-booking' ), // ovCartVars.emptyCartConfirmMsg
+            'checkoutUrl'         => esc_url( wc_get_checkout_url() ),       // ovCartVars.checkoutUrl
+        ]
+    );
+}
 
 /**
  * UTILITY FUNCTIONS

@@ -41,23 +41,37 @@ jQuery(function ($) {
   });
 
   // Empty cart via AJAX
-  $(document).on("click", ".js-empty-cart", function (e) {
-    e.preventDefault();
-    var confirmMsg = ovCartVars.emptyCartConfirmMsg || "Are you sure you want to empty your cart?";
-    if (!confirm(confirmMsg)) {
-      return;
-    }
+ window.ovCartVars = window.ovCartVars || {};
 
-    $.post(ovCartVars.ajax_url, { action: "ovb_empty_cart" })
-      .done(function (response) {
-        if (response.success) {
-          window.location.reload();
-        } else {
-          alert("Could not empty cart.");
-        }
+    $(document).on("click", ".js-empty-cart", function (e) {
+      e.preventDefault();
+
+      // confirm poruka
+      if (!window.confirm(ovCartVars.emptyCartConfirmMsg)) {
+        return;
+      }
+
+      // AJAX poziv
+      $.ajax({
+        url: ovCartVars.ajax_url, // admin-ajax.php
+        method: "POST",
+        data: {
+          action: "ovb_empty_cart", // PHP handler mora da bude vezan na ovu akciju
+          nonce: ovCartVars.nonce,
+        },
       })
-      .fail(function () {
-        alert("AJAX request failed.");
-      });
-  });  
+        .done(function (response) {
+          if (response.success) {
+            // preusmeri ili reload, po potrebi
+            window.location.href = ovCartVars.checkoutUrl;
+          } else {
+            console.error("Empty cart failed:", response);
+            alert(response.data || "Empty cart failed.");
+          }
+        })
+        .fail(function (jqXHR, textStatus) {
+          console.error("AJAX error:", textStatus);
+          alert("AJAX request failed: " + textStatus);
+        });
+    });
 });
