@@ -1,14 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
   var CURRENT_DATE = new Date();
   var d = new Date();
-  var content = "January February March April May June July August September October November December".split(" ");
+  var content =
+    "January February March April May June July August September October November December".split(
+      " "
+    );
   var daysOfMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   let calendarData = {};
-  if (typeof ov_calendar_vars !== "undefined" && ov_calendar_vars.calendarData) {
+  if (
+    typeof ov_calendar_vars !== "undefined" &&
+    ov_calendar_vars.calendarData
+  ) {
     // Preslikaj sve ključeve iz ov_calendar_vars.calendarData u novi JS-objekt
     for (const key in ov_calendar_vars.calendarData) {
-      if (Object.prototype.hasOwnProperty.call(ov_calendar_vars.calendarData, key)) {
+      if (
+        Object.prototype.hasOwnProperty.call(ov_calendar_vars.calendarData, key)
+      ) {
         calendarData[key] = ov_calendar_vars.calendarData[key];
       }
     }
@@ -18,18 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
     typeof ov_calendar_vars.priceTypes !== "undefined"
       ? ov_calendar_vars.priceTypes
       : {
-        regular: "",
-        weekend: "",
-        discount: "",
-        custom: "",
-      };
+          regular: "",
+          weekend: "",
+          discount: "",
+          custom: "",
+        };
 
   function jsDayToMondayFirst(day) {
     return (day + 6) % 7;
   }
 
   function renderCalendar(startDay, totalDays, currentDate, month, year) {
-
     const calendar = document.querySelector(".admin-table tbody");
     if (!calendar) return;
     calendar.innerHTML = "";
@@ -39,7 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     for (let i = 1; i <= totalDays; i++) {
       let $day = $week.find("td").eq(currentDay);
-      const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+      const formattedDate = `${year}-${String(month + 1).padStart(
+        2,
+        "0"
+      )}-${String(i).padStart(2, "0")}`;
 
       const dayData = calendarData[formattedDate] || {};
       const clients = Array.isArray(dayData.clients) ? dayData.clients : [];
@@ -68,7 +78,9 @@ document.addEventListener("DOMContentLoaded", function () {
         $day.addClass("past-day");
       }
 
-      const isLastDay = clients.some((client) => client.rangeEnd === formattedDate);
+      const isLastDay = clients.some(
+        (client) => client.rangeEnd === formattedDate
+      );
       if (hasClients) {
         if (isLastDay) {
           status = "available";
@@ -181,25 +193,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // dayHTML += `</div>`;
 
-
-
-
       let dayHTML = `
     <div class="day-wrapper">
         <div class="day-header">
-            <div class="day-number ${i === currentDate ? "today-number" : ""}">${i}</div>
+            <div class="day-number ${
+              i === currentDate ? "today-number" : ""
+            }">${i}</div>
             <div class="price-row">
                 ${isPast ? `<span class="past-badge">Past</span>` : ""}
                 <div class="day-price editable-price" data-date="${formattedDate}">
-                    ${!isPast
-          ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    ${
+                      !isPast
+                        ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
                             </svg>`
-          : ""
-        }
+                        : ""
+                    }
                     ${typeof price === "number" ? price + "€" : "Add price"}
                     <span class="tooltip-text">
-                        Price: ${typeof price === "number" ? price + "€" : "Price not set"}<br>
+                        Price: ${
+                          typeof price === "number"
+                            ? price + "€"
+                            : "Price not set"
+                        }<br>
                         Status: ${status}
                     </span>
                 </div>
@@ -241,7 +257,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 data-firstname="${client.firstName}"
                 data-lastname="${client.lastName}"
                 data-bookingid="${client.bookingId}">
-                <span class="ovb-client-info${hasIcon ? " has-icon" : ""}">${iconHtml} ${client.firstName} ${client.lastName} ${hasIcon ? '<i class="icon-spacer"></i>' : ""}</span>
+                <span class="ovb-client-info${
+                  hasIcon ? " has-icon" : ""
+                }">${iconHtml} ${client.firstName} ${client.lastName} ${
+            hasIcon ? '<i class="icon-spacer"></i>' : ""
+          }</span>
             </div>
         `;
         });
@@ -266,9 +286,15 @@ document.addEventListener("DOMContentLoaded", function () {
             </svg>
         </button>
         <select class="ov-status-select" data-date="${formattedDate}">
-            <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
-            <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
-            <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
+            <option value="available" ${
+              status === "available" ? "selected" : ""
+            }>Available</option>
+            <option value="unavailable" ${
+              status === "unavailable" ? "selected" : ""
+            }>Unavailable</option>
+            <option value="booked" ${
+              status === "booked" ? "selected" : ""
+            }>Booked</option>
         </select>
     `;
       }
@@ -287,7 +313,6 @@ document.addEventListener("DOMContentLoaded", function () {
       // Close actions container and day wrapper
       dayHTML += `</div></div>`;
 
-
       // console.log(`Generated HTML for ${formattedDate}:`, dayHTML);
 
       $day.html(dayHTML);
@@ -296,10 +321,15 @@ document.addEventListener("DOMContentLoaded", function () {
       if (selectEl) {
         function updateSelectBackground() {
           const val = selectEl.value;
-          selectEl.classList.remove("status-available", "status-unavailable", "status-booked");
+          selectEl.classList.remove(
+            "status-available",
+            "status-unavailable",
+            "status-booked"
+          );
           if (!isPast) {
             if (val === "available") selectEl.classList.add("status-available");
-            else if (val === "unavailable") selectEl.classList.add("status-unavailable");
+            else if (val === "unavailable")
+              selectEl.classList.add("status-unavailable");
             else if (val === "booked") selectEl.classList.add("status-booked");
           } else {
             selectEl.value = "unavailable";
@@ -339,7 +369,9 @@ document.addEventListener("DOMContentLoaded", function () {
             select.val(previousStatus);
 
             // Resetuj klase i dodaj pravu
-            select.removeClass("status-available status-unavailable status-booked");
+            select.removeClass(
+              "status-available status-unavailable status-booked"
+            );
             if (previousStatus === "available") {
               select.addClass("status-available");
             } else if (previousStatus === "unavailable") {
@@ -466,21 +498,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (selectedStatus && statusRule) {
         for (let i = 1; i <= daysInMonth; i++) {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+          const dateStr = `${year}-${String(month + 1).padStart(
+            2,
+            "0"
+          )}-${String(i).padStart(2, "0")}`;
           const dateObj = new Date(dateStr);
           const dayOfWeek = dateObj.getUTCDay();
 
           if (
             (statusRule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
-            (statusRule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
+            (statusRule === "weekends" &&
+              (dayOfWeek === 0 || dayOfWeek === 6)) ||
             statusRule === "full_month"
           ) {
             calendarData[dateStr] = {
               ...calendarData[dateStr],
               status: selectedStatus,
-              price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+              price:
+                typeof calendarData[dateStr]?.price === "number"
+                  ? calendarData[dateStr].price
+                  : undefined,
               priceType: calendarData[dateStr]?.priceType ?? undefined,
-              clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
+              clients: Array.isArray(calendarData[dateStr]?.clients)
+                ? calendarData[dateStr].clients
+                : [],
             };
           }
 
@@ -493,9 +534,14 @@ document.addEventListener("DOMContentLoaded", function () {
               calendarData[dateStr] = {
                 ...calendarData[dateStr],
                 status: selectedStatus,
-                price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+                price:
+                  typeof calendarData[dateStr]?.price === "number"
+                    ? calendarData[dateStr].price
+                    : undefined,
                 priceType: calendarData[dateStr]?.priceType ?? undefined,
-                clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
+                clients: Array.isArray(calendarData[dateStr]?.clients)
+                  ? calendarData[dateStr].clients
+                  : [],
               };
             }
           }
@@ -532,26 +578,35 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Sačuvaj definisane cene
-
   jQuery("#apply_price").on("click", function (e) {
     e.preventDefault();
 
     const priceType = jQuery("#price_type").val();
     const rule = jQuery("#apply_rule").val();
     const selectedPrice = definedPriceTypes[priceType];
-    const selectedStatus = jQuery("#bulk_status").val(); // optional
+    const selectedStatus = jQuery("#bulk_status").val(); // može biti undefined
 
     if (typeof selectedPrice !== "number" || isNaN(selectedPrice)) {
-      return Swal.fire("Error", "Please enter a valid price for the selected price type.", "error");
+      return Swal.fire(
+        "Error",
+        "Please enter a valid price for the selected price type.",
+        "error"
+      );
     }
 
     let ruleLabel = "";
     if (rule === "weekdays") ruleLabel = "weekdays (Monday–Friday)";
     else if (rule === "weekends") ruleLabel = "weekends (Saturday–Sunday)";
-    else if (rule === "full_month") ruleLabel = "all days in the selected month";
+    else if (rule === "full_month")
+      ruleLabel = "all days in the selected month";
     else if (rule === "custom") {
       const picker = jQuery("#daterange").data("daterangepicker");
-      if (!picker) return Swal.fire("Error", "Date range picker is not initialized.", "error");
+      if (!picker)
+        return Swal.fire(
+          "Error",
+          "Date range picker is not initialized.",
+          "error"
+        );
       const start = picker.startDate.format("DD/MM/YYYY");
       const end = picker.endDate.format("DD/MM/YYYY");
       ruleLabel = `dates in range: ${start} – ${end}`;
@@ -574,26 +629,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const applyToDate = (dateStr) => {
         const existing = calendarData[dateStr] || {};
+        const hadNoPrice =
+          existing.price === undefined || existing.price === null;
+        const hasClients =
+          Array.isArray(existing.clients) && existing.clients.length > 0;
+
         let statusToSet = existing.status;
 
-        // Ako dan ranije nije imao cenu, a sada dodajemo cenu → status postaje 'available'
-        const hadNoPrice = existing.price === undefined || existing.price === null;
-
-        if (hadNoPrice && selectedPrice !== null && selectedPrice !== undefined && selectedPrice !== "") {
-          statusToSet = "available";
-        }
-
-        // Ako korisnik ručno izabere status, koristi to
         if (selectedStatus) {
           statusToSet = selectedStatus;
+        } else if (hadNoPrice && !hasClients) {
+          statusToSet = "available";
         }
 
         calendarData[dateStr] = {
           ...existing,
           price: selectedPrice,
           priceType: priceType,
-          status: statusToSet || "unavailable",
-          client: existing.client || null,
+          status: statusToSet || "available",
+          clients: hasClients ? existing.clients : [],
         };
       };
 
@@ -603,7 +657,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (rule === "weekdays" || rule === "weekends" || rule === "full_month") {
         for (let i = 1; i <= daysInMonth; i++) {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+          const dateStr = `${year}-${String(month + 1).padStart(
+            2,
+            "0"
+          )}-${String(i).padStart(2, "0")}`;
           const dayOfWeek = new Date(year, month, i).getDay();
 
           if (
@@ -611,70 +668,52 @@ document.addEventListener("DOMContentLoaded", function () {
             (rule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
             rule === "full_month"
           ) {
-            calendarData[dateStr] = {
-              ...calendarData[dateStr],
-              price: selectedPrice,
-              priceType: priceType,
-              status: selectedStatus || calendarData[dateStr]?.status || "available",
-              clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
-            };
-            // if (
-            //   (rule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) ||
-            //   (rule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) ||
-            //   rule === "full_month"
-            // ) {
-            //   applyToDate(dateStr);
-            // }
+            applyToDate(dateStr);
           }
         }
-
-        if (rule === "custom") {
-          const picker = jQuery("#daterange").data("daterangepicker");
-          const start = picker.startDate.startOf("day");
-          const end = picker.endDate.startOf("day");
-          let current = moment(start);
-
-          while (current.isSameOrBefore(end)) {
-            const dateStr = current.format("YYYY-MM-DD");
-            calendarData[dateStr] = {
-              ...calendarData[dateStr],
-              price: selectedPrice,
-              priceType: priceType,
-              status: selectedStatus || calendarData[dateStr]?.status || "available",
-              clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
-            };
-            current.add(1, "days");
-          }
-        }
-
-        myCalendar();
-
-        const productId = jQuery("#ov_product_id").val();
-        for (const key in calendarData) {
-          if (!Array.isArray(calendarData[key].clients)) {
-            calendarData[key].clients = [];
-          }
-        }
-        jQuery.ajax({
-          url: ov_calendar_vars.ajax_url,
-          method: "POST",
-          data: {
-            action: "ov_save_calendar_data",
-            security: ov_calendar_vars.nonce,
-            product_id: productId,
-            calendar_data: JSON.stringify(calendarData),
-            price_types: ov_calendar_vars.priceTypes,
-          },
-          dataType: "json",
-          success: function () {
-            Swal.fire("Success!", "Prices were successfully saved.", "success");
-          },
-          error: function (err) {
-            Swal.fire("Error", "An error occurred while saving data.", "error");
-            console.error("AJAX error:", err);
-          },
-        });
       }
+
+      if (rule === "custom") {
+        const picker = jQuery("#daterange").data("daterangepicker");
+        const start = picker.startDate.startOf("day");
+        const end = picker.endDate.startOf("day");
+        let current = moment(start);
+
+        while (current.isSameOrBefore(end)) {
+          const dateStr = current.format("YYYY-MM-DD");
+          applyToDate(dateStr);
+          current.add(1, "days");
+        }
+      }
+
+      myCalendar();
+
+      const productId = jQuery("#ov_product_id").val();
+      for (const key in calendarData) {
+        if (!Array.isArray(calendarData[key].clients)) {
+          calendarData[key].clients = [];
+        }
+      }
+
+      jQuery.ajax({
+        url: ov_calendar_vars.ajax_url,
+        method: "POST",
+        data: {
+          action: "ov_save_calendar_data",
+          security: ov_calendar_vars.nonce,
+          product_id: productId,
+          calendar_data: JSON.stringify(calendarData),
+          price_types: ov_calendar_vars.priceTypes,
+        },
+        dataType: "json",
+        success: function () {
+          Swal.fire("Success!", "Prices were successfully saved.", "success");
+        },
+        error: function (err) {
+          Swal.fire("Error", "An error occurred while saving data.", "error");
+          console.error("AJAX error:", err);
+        },
+      });
     });
   });
 
@@ -712,7 +751,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       for (let i = 1; i <= daysInMonth; i++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+          i
+        ).padStart(2, "0")}`;
         const dateObj = new Date(dateStr);
         const dayOfWeek = dateObj.getUTCDay();
 
@@ -724,9 +765,14 @@ document.addEventListener("DOMContentLoaded", function () {
           calendarData[dateStr] = {
             ...calendarData[dateStr],
             status: selectedStatus,
-            price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+            price:
+              typeof calendarData[dateStr]?.price === "number"
+                ? calendarData[dateStr].price
+                : undefined,
             priceType: calendarData[dateStr]?.priceType ?? undefined,
-            clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
+            clients: Array.isArray(calendarData[dateStr]?.clients)
+              ? calendarData[dateStr].clients
+              : [],
           };
         }
 
@@ -741,9 +787,14 @@ document.addEventListener("DOMContentLoaded", function () {
             calendarData[dateStr] = {
               ...calendarData[dateStr],
               status: selectedStatus,
-              price: typeof calendarData[dateStr]?.price === "number" ? calendarData[dateStr].price : undefined,
+              price:
+                typeof calendarData[dateStr]?.price === "number"
+                  ? calendarData[dateStr].price
+                  : undefined,
               priceType: calendarData[dateStr]?.priceType ?? undefined,
-              clients: Array.isArray(calendarData[dateStr]?.clients) ? calendarData[dateStr].clients : [],
+              clients: Array.isArray(calendarData[dateStr]?.clients)
+                ? calendarData[dateStr].clients
+                : [],
             };
             current.add(1, "days");
           }
@@ -769,10 +820,18 @@ document.addEventListener("DOMContentLoaded", function () {
           price_types: definedPriceTypes,
         },
         success: function (res) {
-          Swal.fire("Success!", "Status has been successfully applied.", "success");
+          Swal.fire(
+            "Success!",
+            "Status has been successfully applied.",
+            "success"
+          );
         },
         error: function (err) {
-          Swal.fire("Error", "An error occurred while saving the status.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while saving the status.",
+            "error"
+          );
           console.error("Error saving status:", err);
         },
       });
@@ -787,7 +846,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const productId = jQuery("#ov_product_id").val();
 
     if (!checkinTime || !checkoutTime) {
-      Swal.fire("Missing data", "Please enter both check-in and check-out times.", "warning");
+      Swal.fire(
+        "Missing data",
+        "Please enter both check-in and check-out times.",
+        "warning"
+      );
       return;
     }
 
@@ -811,7 +874,11 @@ document.addEventListener("DOMContentLoaded", function () {
           checkout_time: checkoutTime,
         },
         success: function (res) {
-          Swal.fire("Saved!", "Check-in and check-out times have been updated.", "success");
+          Swal.fire(
+            "Saved!",
+            "Check-in and check-out times have been updated.",
+            "success"
+          );
         },
         error: function (err) {
           Swal.fire("Error", "There was an error saving the times.", "error");
@@ -883,7 +950,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Parsiranje datuma iz stringa tipa "30. 7. 2025. – 7. 8. 2025."
-    const [startStr, endStr] = range.split("–").map(s => s.trim());
+    const [startStr, endStr] = range.split("–").map((s) => s.trim());
     const parseDate = (str) => {
       // format: "30. 7. 2025."
       const parts = str.replace(/\./g, "").split(" ");
@@ -901,10 +968,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     while (startDate <= endDate) {
-      const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(
-        2,
-        "0"
-      )}-${String(startDate.getDate()).padStart(2, "0")}`;
+      const dateStr = `${startDate.getFullYear()}-${String(
+        startDate.getMonth() + 1
+      ).padStart(2, "0")}-${String(startDate.getDate()).padStart(2, "0")}`;
 
       if (!calendarData[dateStr]) {
         calendarData[dateStr] = { clients: [], status: "booked" };
@@ -923,8 +989,17 @@ document.addEventListener("DOMContentLoaded", function () {
         guests,
         rangeStart: startStr,
         rangeEnd: endStr,
-        isCheckin: dateStr === `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, "0")}-${String(startDate.getDate()).padStart(2, "0")}`, // Start date
-        isCheckout: dateStr === `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`, // End date
+        isCheckin:
+          dateStr ===
+          `${startDate.getFullYear()}-${String(
+            startDate.getMonth() + 1
+          ).padStart(2, "0")}-${String(startDate.getDate()).padStart(2, "0")}`, // Start date
+        isCheckout:
+          dateStr ===
+          `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}-${String(endDate.getDate()).padStart(2, "0")}`, // End date
       });
 
       calendarData[dateStr].status = "booked";
@@ -991,7 +1066,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-
   // 12
 
   function myCalendar() {
@@ -1003,16 +1077,24 @@ document.addEventListener("DOMContentLoaded", function () {
     var $h3 = jQuery("<h3>").text(content[month] + " " + year);
     jQuery(".month-year").html($h3);
 
-    if (month === 1 && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0)) {
+    if (
+      month === 1 &&
+      ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0)
+    ) {
       totalDaysOfMonth = 29;
     }
 
-    var startDay = jsDayToMondayFirst(new Date(Date.UTC(year, month, 1)).getUTCDay());
+    var startDay = jsDayToMondayFirst(
+      new Date(Date.UTC(year, month, 1)).getUTCDay()
+    );
 
     renderCalendar(
       startDay,
       totalDaysOfMonth,
-      CURRENT_DATE.getUTCMonth() === month && CURRENT_DATE.getUTCFullYear() === year ? date : 0,
+      CURRENT_DATE.getUTCMonth() === month &&
+        CURRENT_DATE.getUTCFullYear() === year
+        ? date
+        : 0,
       month,
       year
     );
@@ -1086,6 +1168,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Čuvanje pojedinačne cene
+    // Čuvanje pojedinačne cene
     jQuery("#price_modal_save").on("click", function () {
       const date = jQuery("#price_modal_date_input").val();
       const newPrice = parseFloat(jQuery("#price_modal_input").val());
@@ -1095,13 +1178,26 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+      const existingStatus = calendarData[date]?.status;
+      const existingPrice = calendarData[date]?.price;
+
+      let newStatus = existingStatus || "available";
+
+      // Ako dan ranije nije imao cenu, a sada dodajemo validnu → status postaje "available"
+      const hadNoPrice = existingPrice === undefined || existingPrice === null;
+      if (hadNoPrice && !isNaN(newPrice) && existingStatus !== "booked") {
+        newStatus = "available";
+      }
+
       // Ažuriranje lokalnog objekta calendarData
       calendarData[date] = {
         ...calendarData[date],
         price: newPrice,
         priceType: "custom",
-        status: calendarData[date]?.status || "available",
-        clients: Array.isArray(calendarData[date]?.clients) ? calendarData[date].clients : [],
+        status: newStatus,
+        clients: Array.isArray(calendarData[date]?.clients)
+          ? calendarData[date].clients
+          : [],
       };
 
       const productId = jQuery("#ov_product_id").val();
@@ -1110,6 +1206,7 @@ document.addEventListener("DOMContentLoaded", function () {
           calendarData[key].clients = [];
         }
       }
+
       // Slanje na server
       jQuery.ajax({
         url: ov_calendar_vars.ajax_url,
@@ -1127,7 +1224,6 @@ document.addEventListener("DOMContentLoaded", function () {
           jQuery("#price_modal_wrapper").hide(); // zatvori modal
         },
         error: function (err) {
-          console.error("Greška pri čuvanju cene:", err);
           console.error("Greška pri čuvanju cene:", err);
         },
       });
@@ -1149,7 +1245,9 @@ document.addEventListener("DOMContentLoaded", function () {
       e.stopPropagation();
 
       const selectedDate = jQuery(this).data("date");
-      const formattedDate = moment(selectedDate, "YYYY-MM-DD").format("DD/MM/YYYY");
+      const formattedDate = moment(selectedDate, "YYYY-MM-DD").format(
+        "DD/MM/YYYY"
+      );
 
       jQuery("#client_modal_date").text(formattedDate);
       jQuery("#client_modal_date_input").val(selectedDate);
@@ -1168,7 +1266,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const guests = jQuery(this).data("guests");
       const bookingId = jQuery(this).data("bookingid");
 
-      const currentClient = (calendarData[date]?.clients || []).find((cl) => cl.bookingId == bookingId);
+      const currentClient = (calendarData[date]?.clients || []).find(
+        (cl) => cl.bookingId == bookingId
+      );
       const rangeStart = currentClient?.rangeStart;
       const rangeEnd = currentClient?.rangeEnd;
 
@@ -1180,7 +1280,11 @@ document.addEventListener("DOMContentLoaded", function () {
       jQuery("#client_action_bookingid_input").val(bookingId);
 
       if (rangeStart && rangeEnd) {
-        jQuery("#client_action_date_range").text(`${moment(rangeStart).format("DD/MM/YYYY")} - ${moment(rangeEnd).format("DD/MM/YYYY")}`);
+        jQuery("#client_action_date_range").text(
+          `${moment(rangeStart).format("DD/MM/YYYY")} - ${moment(
+            rangeEnd
+          ).format("DD/MM/YYYY")}`
+        );
       } else {
         jQuery("#client_action_date_range").text("N/A");
       }
@@ -1201,7 +1305,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const bookingIdToDelete = jQuery("#client_action_bookingid_input").val();
 
       if (calendarData[date] && Array.isArray(calendarData[date].clients)) {
-        calendarData[date].clients = calendarData[date].clients.filter((client) => client.bookingId !== bookingIdToDelete);
+        calendarData[date].clients = calendarData[date].clients.filter(
+          (client) => client.bookingId !== bookingIdToDelete
+        );
 
         if (calendarData[date].clients.length === 0) {
           calendarData[date].clients = [];
@@ -1260,8 +1366,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Nastavi sa lokalnim brisanjem iz calendarData kao i do sada:
           for (const day in calendarData) {
-            if (calendarData[day]?.clients && Array.isArray(calendarData[day].clients)) {
-              calendarData[day].clients = calendarData[day].clients.filter((client) => client.bookingId !== bookingId);
+            if (
+              calendarData[day]?.clients &&
+              Array.isArray(calendarData[day].clients)
+            ) {
+              calendarData[day].clients = calendarData[day].clients.filter(
+                (client) => client.bookingId !== bookingId
+              );
               if (calendarData[day].clients.length === 0) {
                 calendarData[day].clients = [];
                 calendarData[day].status = "available";
@@ -1356,8 +1467,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     jQuery("form#post").on("submit", function () {
       jQuery("#ov_bulk_status_input").val(jQuery("#bulk_status").val());
-      jQuery("#ov_status_apply_rule_input").val(jQuery("#status_apply_rule").val());
-      jQuery("#ov_status_daterange_input").val(jQuery("#status_daterange").val());
+      jQuery("#ov_status_apply_rule_input").val(
+        jQuery("#status_apply_rule").val()
+      );
+      jQuery("#ov_status_daterange_input").val(
+        jQuery("#status_daterange").val()
+      );
     });
   });
 });
