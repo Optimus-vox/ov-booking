@@ -618,13 +618,10 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
               .ovb-trip-details {
                 .ovb-trip-detail-item {
                   display: flex;
-                  align-items: center;
+                  align-items: flex-start;
+                  flex-direction: column;
                   justify-content: space-between;
                   margin-bottom: 10px;
-                  @media(max-width:450px){
-                    flex-direction: column;
-                    align-items: flex-start;
-                  }
                   .trip-details-stay{
                     display: flex;
                     align-items: center;
@@ -766,6 +763,7 @@ abbr[title] {
   }
   .ovb-review-order-table{
     color: #fff;
+    width: 100%;
   }
   .ovb-subtotal-row{
     td{
