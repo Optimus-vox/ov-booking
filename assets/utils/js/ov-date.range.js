@@ -59,6 +59,7 @@ function initOvDateRangePicker(config) {
   let currentYear = today.getFullYear();
 
   // ISPRAVKA: Dodana provera da li je date valjan
+  // ISPRAVKA: Dodana provera da li je date valjan
   function formatDate(date) {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
       return "";
@@ -69,6 +70,7 @@ function initOvDateRangePicker(config) {
     return `${y}-${m}-${d}`;
   }
 
+  // ISPRAVKA: Dodana provera da li je date valjan
   // ISPRAVKA: Dodana provera da li je date valjan
   function formatForInput(date) {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
@@ -120,6 +122,7 @@ function initOvDateRangePicker(config) {
     return wrapper;
   }
 
+
   function createDayElement(date) {
     const day = document.createElement("div");
     day.classList.add("ov-day");
@@ -132,8 +135,16 @@ function initOvDateRangePicker(config) {
     const label = document.createElement("div");
     label.className = "ov-label";
 
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const todayOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const dateOnly = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
 
     if (dateOnly < todayOnly) {
       day.classList.add("past-day");
@@ -537,10 +548,16 @@ function initOvDateRangePicker(config) {
       }
     });
 
+
     picker.addEventListener("click", (e) => e.stopPropagation());
 
     document.addEventListener("click", (e) => {
-      if (!alwaysOpen && isPickerOpen && !picker.contains(e.target) && e.target !== inputEl) {
+      if (
+        !alwaysOpen &&
+        isPickerOpen &&
+        !picker.contains(e.target) &&
+        e.target !== inputEl
+      ) {
         closePickerWithDelay();
       }
     });

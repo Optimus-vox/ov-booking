@@ -113,7 +113,10 @@ jQuery(document).ready(function () {
 
     for (let i = 1; i <= totalDays; i++) {
       let $day = $week.find("td").eq(currentDay);
-      const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+      const formattedDate = `${year}-${String(month + 1).padStart(
+        2,
+        "0"
+      )}-${String(i).padStart(2, "0")}`;
 
       const dayData = calendarData[formattedDate] || {};
       const clients = Array.isArray(dayData.clients) ? dayData.clients : [];
@@ -139,7 +142,9 @@ jQuery(document).ready(function () {
         $day.addClass("past-day");
       }
 
-      const isLastDay = clients.some((client) => client.rangeEnd === formattedDate);
+      const isLastDay = clients.some(
+        (client) => client.rangeEnd === formattedDate
+      );
       if (hasClients) {
         if (isLastDay) {
           status = "available";
@@ -212,7 +217,11 @@ jQuery(document).ready(function () {
                 data-firstname="${client.firstName}"
                 data-lastname="${client.lastName}"
                 data-bookingid="${client.bookingId}">
-                <span class="ovb-client-info${hasIcon ? " has-icon" : ""}">${iconHtml} ${client.firstName} ${client.lastName} ${hasIcon ? '<i class="icon-spacer"></i>' : ""}</span>
+                <span class="ovb-client-info${
+                  hasIcon ? " has-icon" : ""
+                }">${iconHtml} ${client.firstName} ${client.lastName} ${
+            hasIcon ? '<i class="icon-spacer"></i>' : ""
+          }</span>
             </div>
         `;
         });
@@ -237,9 +246,15 @@ jQuery(document).ready(function () {
             </svg>
         </button>
         <select class="ov-status-select" data-date="${formattedDate}">
-            <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
-            <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
-            <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
+            <option value="available" ${
+              status === "available" ? "selected" : ""
+            }>Available</option>
+            <option value="unavailable" ${
+              status === "unavailable" ? "selected" : ""
+            }>Unavailable</option>
+            <option value="booked" ${
+              status === "booked" ? "selected" : ""
+            }>Booked</option>
         </select>
     `;
       }
@@ -253,10 +268,15 @@ jQuery(document).ready(function () {
       if (selectEl) {
         function updateSelectBackground() {
           const val = selectEl.value;
-          selectEl.classList.remove("status-available", "status-unavailable", "status-booked");
+          selectEl.classList.remove(
+            "status-available",
+            "status-unavailable",
+            "status-booked"
+          );
           if (!isPast) {
             if (val === "available") selectEl.classList.add("status-available");
-            else if (val === "unavailable") selectEl.classList.add("status-unavailable");
+            else if (val === "unavailable")
+              selectEl.classList.add("status-unavailable");
             else if (val === "booked") selectEl.classList.add("status-booked");
           } else {
             selectEl.value = "unavailable";
@@ -296,7 +316,9 @@ jQuery(document).ready(function () {
             select.val(previousStatus);
 
             // Resetuj klase i dodaj pravu
-            select.removeClass("status-available status-unavailable status-booked");
+            select.removeClass(
+              "status-available status-unavailable status-booked"
+            );
             if (previousStatus === "available") {
               select.addClass("status-available");
             } else if (previousStatus === "unavailable") {
@@ -676,7 +698,11 @@ initOvDateRangePicker({
     const productId = jQuery("#ovb_product_id").val();
 
     if (!checkinTime || !checkoutTime) {
-      Swal.fire("Missing data", "Please enter both check-in and check-out times.", "warning");
+      Swal.fire(
+        "Missing data",
+        "Please enter both check-in and check-out times.",
+        "warning"
+      );
       return;
     }
 
@@ -700,7 +726,11 @@ initOvDateRangePicker({
           checkout_time: checkoutTime,
         },
         success: function (res) {
-          Swal.fire("Saved!", "Check-in and check-out times have been updated.", "success");
+          Swal.fire(
+            "Saved!",
+            "Check-in and check-out times have been updated.",
+            "success"
+          );
         },
         error: function (err) {
           Swal.fire("Error", "There was an error saving the times.", "error");
@@ -845,16 +875,24 @@ jQuery("#client_modal_save")
     var $h3 = jQuery("<h3>").text(content[month] + " " + year);
     jQuery(".month-year").html($h3);
 
-    if (month === 1 && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0)) {
+    if (
+      month === 1 &&
+      ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0)
+    ) {
       totalDaysOfMonth = 29;
     }
 
-    var startDay = jsDayToMondayFirst(new Date(Date.UTC(year, month, 1)).getUTCDay());
+    var startDay = jsDayToMondayFirst(
+      new Date(Date.UTC(year, month, 1)).getUTCDay()
+    );
 
     renderCalendar(
       startDay,
       totalDaysOfMonth,
-      CURRENT_DATE.getUTCMonth() === month && CURRENT_DATE.getUTCFullYear() === year ? date : 0,
+      CURRENT_DATE.getUTCMonth() === month &&
+        CURRENT_DATE.getUTCFullYear() === year
+        ? date
+        : 0,
       month,
       year
     );
@@ -937,6 +975,17 @@ jQuery("#client_modal_save")
         Swal.fire("Error", "Please enter a valid price", "error");
         lock_price_save = false;
         return;
+      }
+
+      const existingStatus = calendarData[date]?.status;
+      const existingPrice = calendarData[date]?.price;
+
+      let newStatus = existingStatus || "available";
+
+      // Ako dan ranije nije imao cenu, a sada dodajemo validnu → status postaje "available"
+      const hadNoPrice = existingPrice === undefined || existingPrice === null;
+      if (hadNoPrice && !isNaN(newPrice) && existingStatus !== "booked") {
+        newStatus = "available";
       }
 
       if (!calendarData[date]) {

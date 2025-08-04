@@ -78,7 +78,6 @@
   grid-template-columns: repeat(7, 1fr);
   gap: 3px;
   text-align: center;
-  grid-auto-rows: 58px;
 }
 
 /* === Jedan dan === */
