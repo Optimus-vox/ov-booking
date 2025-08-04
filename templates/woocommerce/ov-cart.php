@@ -105,16 +105,16 @@ get_header();
 
 
 <div class="ov-cart page-cart ov-page-bg">
-    <div class="ov-container">
+    <div class="ov-cart-container">
         <!-- HEADER -->
-        <div class="ov-header">
-            <a id="ov-back-btn" href="<?php echo esc_url($product_url); ?>" class="ov-back-btn ">
-                <img src="<?php echo esc_url(plugins_url('../../assets/images/arrow-left-white.png', __FILE__)); ?>"
+      <div class="ov-cart-header">
+            <a id="ov-back-btn" href="<?php echo esc_url( $product_url ); ?>" class="ov-cart-back">
+                <img src="<?php echo esc_url( plugins_url( '../../assets/images/arrow-left-white.png', __FILE__ ) ); ?>"
                     alt="arrow left white">
             </a>
 
             <!-- Empty Cart dugme -->
-            <h1 class="ov-title"><?php esc_html_e('Request to book', 'ov-booking'); ?></h1>
+            <h1 class="ov-cart-title"><?php esc_html_e( 'Request to book', 'ov-booking' ); ?></h1>
         </div>
 
         <!-- SADRŽAJ -->
@@ -225,7 +225,6 @@ get_header();
                                                     style="color:#7C4DFF;font-weight:600;margin-left:12px;">Checkout</span>
                                             </li>
                                         <?php endif; ?>
-                                        <hr>
                                         <li class="ov-breakdown-total">
                                             <strong><?php esc_html_e('Total', 'ov-booking'); ?>:</strong>
                                             <?php echo wc_price($breakdown_total); ?>
@@ -251,30 +250,32 @@ get_header();
 
 
 <!-- Login/Register Modal -->
-<div id="ov-login-modal" class="ov-login-register-cart-modal ov-modal">
-    <div class="ov-modal-backdrop ov-modal-backdrop"></div>
-    <div class="ov-modal-content">
-        <div class=" ov-modal-header">
-            <h2 class="ov-modal-title ">Welcome to IMG Traumimmobilien</h2>
-            <button type="button" class="ov-modal-close">&times;</button>
+
+<!-- Login/Register Modal -->
+<div id="ov-login-modal" class="ov-login-register-cart-modal">
+  <div class="ov-modal-backdrop"></div>
+  <div class="ov-modal-inner">
+    <div class="ov-modal-inner-header">
+      <h2 class="ov-modal-title">Welcome to IMG Traumimmobilien</h2>
+      <button type="button" class="ov-modal-close">&times;</button>
+    </div>
+    <p class="ov-modal-subtitle">Welcome back! / Create your account</p>
+
+    <?php if ( function_exists('ovb_render_google_login_button') ) : ?>
+    <!-- Social login buttons -->
+        <div class="ov-social-logins">
+            <?php ovb_render_google_login_button(); ?>
         </div>
-        <p class="ov-modal-subtitle">Welcome back! / Create your account</p>
 
-        <?php if (function_exists('ovb_render_google_login_button')): ?>
-            <!-- Social login buttons -->
-            <div class="ov-social-logins">
-                <?php ovb_render_google_login_button(); ?>
-            </div>
-
-            <div class="ov-divider">
-                <span>or</span>
-            </div>
-        <?php endif; ?>
+        <div class="ov-divider">
+            <span>or</span>
+        </div>
+    <?php endif; ?>
 
     <!-- Login Form -->
-    <form name="loginform" id="ovb_login-cart-form"
+    <form name="loginform" id="ov_login-cart-form"
       action="<?php echo esc_url( wp_login_url( wc_get_cart_url() ) ); ?>" method="post">
-      <input type="text" name="log" placeholder="E-Mail" required />
+      <input class="ov-input-regular email" type="text" name="log" placeholder="E-Mail" required />
       <div class="ov-login-password">
         <input type="password" name="pwd" placeholder="Password" required />
         <button type="button" class="ov-toggle-password dashicons dashicons-visibility" aria-label="Show password"></button>

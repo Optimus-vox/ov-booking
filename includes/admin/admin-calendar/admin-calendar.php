@@ -274,7 +274,7 @@ function render_calendar_meta_box($post)
     <!-- add client modal -->
     <div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1001;">
         <div id="client_modal">
-            <i class="close_modal" onclick="closeClientModal()">
+            <i class="close_modal" onclick="closeOvModal('#client_modal_wrapper')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                     <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
@@ -348,7 +348,7 @@ function render_calendar_meta_box($post)
 
                 <div class="buttons" style="margin-top: 20px;">
                     <button id="client_modal_save" type="button">Save</button>
-                    <button type="button" onclick="closeClientModal()">Cancel</button>
+                    <button type="button" onclick="closeOvModal('#client_modal_wrapper')">Cancel</button>
                 </div>
             </form>
         </div>
@@ -358,7 +358,7 @@ function render_calendar_meta_box($post)
     <!-- edit single price day modal -->
     <div id="price_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
         <div id="price_modal">
-            <i class="close_modal" onclick="jQuery('#price_modal_wrapper').hide()">
+            <i class="close_modal" onclick="closeOvModal('#price_modal_wrapper')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                     <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
@@ -370,7 +370,7 @@ function render_calendar_meta_box($post)
             <br><br>
             <div class="buttons">
                 <button id="price_modal_save">Save</button>
-                <button onclick="jQuery('#price_modal_wrapper').hide()">Cancel</button>
+                <button onclick="closeOvModal('#price_modal_wrapper')">Cancel</button>
             </div>
         </div>
     </div>
@@ -379,7 +379,7 @@ function render_calendar_meta_box($post)
     <div id="client_action_modal_wrapper"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
         <div id="client_action_modal">
-            <i class="close_modal" onclick="jQuery('#client_action_modal_wrapper').hide()">
+            <i class="close_modal" onclick='closeOvModal("#client_action_modal_wrapper")';>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                     <path fill="currentColor"
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
@@ -400,7 +400,7 @@ function render_calendar_meta_box($post)
             <div class="buttons">
                 <button id="delete_client_single">Delete reservation for this day</button>
                 <button id="delete_client_all">Delete reservation</button>
-                <button onclick="jQuery('#client_action_modal_wrapper').hide()">Cancel</button>
+                <button onclick='closeOvModal("#client_action_modal_wrapper")';>Cancel</button>
             </div>
             
         </div>
@@ -410,15 +410,18 @@ function render_calendar_meta_box($post)
         //     jQuery('#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input').val('');
         //     jQuery("#client_modal_wrapper").hide();
         // }
-          function closeClientModal() {
-    // Uništi daterange picker pre zatvaranja
+         function closeClientModal() {
+  // uništi datepicker
   document.querySelector("#date-range-picker .ov-picker-container")?.remove();
   window._ovb_client_picker = null;
 
-    jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
-    jQuery("#client_modal_wrapper").hide();
-    jQuery("body").css("overflow", "auto");
-  }
+  // očisti inpute
+  jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
+
+  // koristi helper za zatvaranje
+  closeOvModal('#client_modal_wrapper');
+}
+
     </script>
     <!-- remove client modal -->
 

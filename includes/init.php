@@ -73,6 +73,7 @@ foreach ($core_files as $file) {
 // Frontend components
 if (!is_admin() || wp_doing_ajax()) {
     $frontend_files = [
+      
         OVB_BOOKING_PATH . 'includes/frontend/scripts.php',
         OVB_BOOKING_PATH . 'includes/frontend/template-hooks.php',
         OVB_BOOKING_PATH . 'includes/frontend/standalone-templates.php',
@@ -85,10 +86,13 @@ if (!is_admin() || wp_doing_ajax()) {
         OVB_BOOKING_PATH . 'includes/frontend/remove-wrappers.php',
         OVB_BOOKING_PATH . 'includes/frontend/body-classes.php',
         OVB_BOOKING_PATH . 'includes/frontend/myaccount-template-override.php',
-        OVB_BOOKING_PATH . 'includes/frontend/elementor-hooks.php',
-        OVB_BOOKING_PATH . 'includes/frontend/order-meta-display.php',
+        // OVB_BOOKING_PATH . 'includes/frontend/elementor-hooks.php', // AŽURIRANO
         OVB_BOOKING_PATH . 'includes/frontend/excerpt.php', 
     ];
+     if ( class_exists(\Elementor\Plugin::class) && file_exists(OVB_BOOKING_PATH . 'includes/frontend/elementor-hooks.php') ) {
+        require_once OVB_BOOKING_PATH . 'includes/frontend/elementor-conflict-resolver.php'; // DODATO - mora biti prvo!
+        require_once OVB_BOOKING_PATH . 'includes/frontend/elementor-hooks.php';
+    }
     foreach ($frontend_files as $file) {
         if (file_exists($file)) {
             require_once $file;

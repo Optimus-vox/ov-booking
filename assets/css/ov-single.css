@@ -1,8 +1,25 @@
+html {
+  scroll-behavior: smooth;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(100% - 32px);
+  margin-inline: auto;
+
+  @media (min-width: 1100px) {
+    max-width: 1680px;
+  }
+}
+
 .single-product-wrapper {
+  background-color: #1b203a;
+  color: #fff;
   padding-top: 80px;
 
   .product {
     h1 {
+      color: #ffffff;
       display: block;
       margin-bottom: 40px;
     }
@@ -35,6 +52,7 @@
           }
         }
       }
+
     }
 
     .product-details {
@@ -62,12 +80,15 @@
 
             p,
             span {
+              font-size: 45px;
               margin: 0;
             }
           }
 
           .location-details-section {
             .street-name {
+              color: #fff;
+              text-decoration: underline;
               font-size: 19px;
               line-height: 22.5px;
             }
@@ -92,15 +113,16 @@
             }
           }
 
+
           .the-content {
             padding-bottom: 48px;
             border-bottom: 1px solid #fff;
+
             .ov-show-more-button,
             .ov-collapse-button {
               font-size: 19px;
-              color: #fff;
               text-decoration: underline;
-              transition: color 0.2s ease;
+              color: white;
               display: block;
               background: transparent;
               padding: 0;
@@ -119,9 +141,9 @@
             .ov-excerpt-preview p {
               padding: 0;
               margin: 0;
-              font-size: 16px;
-              text-align: left;
+
             }
+
           }
         }
 
@@ -129,12 +151,94 @@
           margin-top: 48px;
           padding-bottom: 48px;
           border-bottom: 1px solid #fff;
+
+          .apartment-rules-section {
+            h3 {
+              display: block;
+              margin: 0 0 24px 0;
+              font-size: 45px;
+              line-height: 100%;
+              color: #fff;
+            }
+
+            .apartment-rules-icons {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              column-gap: 140px;
+              row-gap: 16px;
+
+              .icon-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                .icon-item {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 25px;
+                  height: 25px;
+
+                  img {
+                    display: block;
+                    height: 100%;
+                    width: auto;
+                  }
+                }
+
+                .icon-text {
+                  font-size: 19px;
+                }
+              }
+            }
+          }
         }
 
         .product-details-offers {
           margin-top: 48px;
           padding-bottom: 48px;
           border-bottom: 1px solid #fff;
+
+          .apartment-info-section {
+            h3 {
+              display: block;
+              margin: 0 0 24px 0;
+              font-size: 45px;
+              line-height: 100%;
+              color: #fff;
+            }
+
+            .apartment-info-icons {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              column-gap: 140px;
+              row-gap: 16px;
+
+              .icon-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                .icon-item {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 25px;
+                  height: 25px;
+
+                  img {
+                    display: block;
+                    height: 100%;
+                    width: auto;
+                  }
+                }
+
+                .icon-text {
+                  font-size: 19px;
+                }
+              }
+            }
+          }
         }
 
         .ov-booking-calendar-section {
@@ -142,6 +246,11 @@
           padding-bottom: 48px;
 
           h3 {
+            display: block;
+            margin: 0 0 24px 0;
+            font-size: 45px;
+            line-height: 100%;
+            color: #fff;
             font-size: 21px;
           }
 
@@ -156,6 +265,8 @@
             height: 460px;
             width: 100%;
             background-color: #fff;
+
+            width: 100%;
             max-width: 100%;
             overflow-x: hidden;
             position: relative;
@@ -194,6 +305,14 @@
 
           .price {
             margin: 0;
+
+            .woocommerce-Price-amount {
+              bdi {
+                color: #fff;
+                font-size: 50px;
+                line-height: 100%;
+              }
+            }
           }
 
           .total-nights {
@@ -201,14 +320,13 @@
             line-height: 22.5px;
           }
 
-          .ov-price-summary-wrapper {
-            .ov-summary-price {
-              b {
+          .ov-price-summary-wrapper{
+            .ov-summary-price{
+              b{
                 font-size: 36px;
               }
             }
-
-            .ov-summary-nights {
+            .ov-summary-nights{
               font-size: 19px;
             }
           }
@@ -223,11 +341,32 @@
             line-height: 22.5px;
           }
 
+
+          .go-to-cart-button {
+            background-color: #8B5DFF;
+            color: white;
+            border-radius: 6px;
+            text-align: center;
+            padding: 16px 30px;
+            text-transform: uppercase;
+
+            &:hover {
+              background-color: #7C4DFF;
+            }
+          }
+
           .daterange {
+            background-color: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            outline: none;
+            padding: 13px 25px;
             font-size: 19px;
             line-height: 22.5px;
             margin: 5px 0 15px 0;
-            padding: 13px 25px;
+            width: 100%;
+            height: auto;
+            box-sizing: border-box;
           }
         }
 
@@ -243,7 +382,12 @@
 
           select {
             padding: 13px 25px;
+            background: transparent;
+            border: 1px solid white;
+            color: #fff;
+            outline: none;
             cursor: pointer;
+            border-radius: 0;
           }
 
           select,
@@ -261,6 +405,7 @@
             background: #1b203a;
             color: white;
             padding: 13px 25px;
+
             transition: 0.4s;
             border-radius: 0;
             border: 1px solid white;
@@ -283,6 +428,51 @@
           option:focus {
             background: #8B5DFF;
           }
+
+        }
+
+
+        .cart {
+          display: flex;
+          flex-direction: column;
+
+          .quantity {
+            float: none;
+            display: flex;
+            margin: 0;
+
+            label {
+              display: none;
+            }
+
+            .input-text {
+              width: 100%;
+              margin-bottom: 20px;
+              background-color: transparent;
+              border: 1px solid #fff;
+              color: #fff;
+              outline: none;
+              padding: 13px 25px;
+              font-size: 19px;
+              line-height: 22.5px;
+              text-align: left;
+            }
+          }
+
+          .single_add_to_cart_button {
+            width: 100%;
+            padding-top: 18px;
+            padding-bottom: 18px;
+            border-radius: 0;
+            border: 0;
+            background-color: #8b5dff;
+            color: #fff;
+            margin-top: 15px;
+
+            &:hover {
+              background-color: #7b47ff;
+            }
+          }
         }
       }
     }
@@ -290,6 +480,14 @@
     .google-maps {
       border-top: 1px solid #fff;
       padding: 60px 0;
+
+      h3 {
+        display: block;
+        margin: 0 0 24px 0;
+        font-size: 45px;
+        line-height: 100%;
+        color: #fff;
+      }
 
       .map-wrap {
         display: flex;
@@ -302,6 +500,14 @@
       padding-top: 60px;
       padding-bottom: 100px;
       color: #fff;
+
+      h3 {
+        display: block;
+        margin: 0 0 24px 0;
+        font-size: 45px;
+        line-height: 100%;
+        color: #fff;
+      }
 
       .policies {
         display: flex;
@@ -331,6 +537,9 @@
           .policy-info-more {
             font-size: 19px;
             line-height: 22.5px;
+            color: #fff;
+            text-decoration: underline;
+            transition: all 0.2s ease-in;
             display: inline;
 
             &:hover {
@@ -343,42 +552,45 @@
   }
 }
 
-/* Google Maps Iframe */
+
 .google-maps-iframe {
   position: relative;
+  /* 16:9 ratio */
   height: 500px;
   overflow: hidden;
   width: 100%;
   border-radius: 8px;
-
-  iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-    border: 0;
-  }
+  /* opcionalno, za estetiku */
 }
 
-/* Testimonials */
-.ov-testimonials-wrapper {
-  h3 {
-    margin: 60px 0 80px;
-  }
+.google-maps-iframe iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+}
+.ov-testimonials-wrapper{
+  
 }
 
-.ov-testimonials-carousel {
-  .owl-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.ov-testimonials-wrapper h3 {
+  margin: 60px 0 80px;
+  color: #fff;
+  text-align: center;
+  font-size: 45px;
+}
 
-  .ov-testimonial {
-    padding: 20px;
-    text-align: center;
-  }
+.ov-testimonials-carousel .owl-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ov-testimonials-carousel .ov-testimonial {
+  padding: 20px;
+  text-align: center;
 }
 
 .owl-dots {
@@ -386,17 +598,18 @@
   justify-content: center;
   gap: 10px;
   margin: 35px 0;
+}
 
-  button.owl-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #fff;
+.owl-dots button.owl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
 
-    &.active {
-      background-color: #8B5DFF;
-    }
-  }
+}
+
+.owl-dots button.owl-dot.active {
+  background-color: #8B5DFF;
 }
 
 .ov-testimonial-name {
@@ -407,11 +620,9 @@
 .ov-testimonial-rating {
   span {
     font-size: 30px;
-
-    &.half-star {
+    &.half-star{
       position: relative;
-
-      &::after {
+      &::after{
         content: '';
         background-color: #1b203a;
         position: absolute;
@@ -429,30 +640,29 @@
   font-style: italic;
   padding: 30px 40px;
   color: #fff;
+}
+.ov-testimonial-text p {
+  font-size: 21px;
+}
 
-  p {
-    font-size: 21px;
-  }
+.ov-testimonial-text .big-quote {
+  font-size: 60px;
+  color: #8B5DFF;
+  line-height: 1;
+  font-family: Georgia, serif;
+  user-select: none;
+}
 
-  .big-quote {
-    font-size: 60px;
-    color: #8B5DFF;
-    line-height: 1;
-    font-family: Georgia, serif;
-    user-select: none;
+.big-quote.open {
+  position: absolute;
+  top: 0px;
+  left: -10px;
+}
 
-    &.open {
-      position: absolute;
-      top: 0px;
-      left: -10px;
-    }
-
-    &.close {
-      position: absolute;
-      bottom: -33px;
-      right: -10px;
-    }
-  }
+.big-quote.close {
+  position: absolute;
+  bottom: -33px;
+  right: -10px;
 }
 
 @media screen and (max-width: 1680px) {
@@ -464,14 +674,14 @@
 @media screen and (max-width: 1356px) {
   .product-details {
     gap: 20px;
+  }
 
-    .product-details-left {
-      width: 60% !important;
-    }
+  .product-details-left {
+    width: 60% !important;
+  }
 
-    .product-details-right {
-      width: 40% !important;
-    }
+  .product-details-right {
+    width: 40% !important;
   }
 }
 
@@ -496,6 +706,7 @@
         .main-product-image {
           width: 100% !important;
         }
+
       }
     }
   }
@@ -545,6 +756,7 @@
       z-index: 10000;
       margin-bottom: 10px;
     }
+
   }
 }
 
@@ -616,6 +828,7 @@
           &.custom-dates {
             .daterange {
               font-size: 14px;
+
             }
           }
         }
@@ -624,7 +837,6 @@
   }
 }
 
-/* Typography Overrides for Mobile */
 .ov-excerpt-preview p,
 .ov-show-more-button,
 .ov-collapse-button,
@@ -632,3 +844,9 @@
 .ov-testimonial-text {
   font-size: 16px !important;
 }
+
+/* h3,
+.ov-testimonial-name {
+  font-size: 20px !important;
+
+} */

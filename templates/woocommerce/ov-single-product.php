@@ -75,7 +75,7 @@ $product_title_js = esc_js(get_the_title());
 get_header();
 ?>
 <main class="single-product-wrapper ov-page-bg">
-    <div class="ov-container">
+    <div class="container">
         <?php if (have_posts()):
             while (have_posts()):
                 the_post(); ?>
@@ -314,7 +314,9 @@ get_header();
                                     <span><?php echo esc_html($start_label . ' – ' . $end_label); ?></span>
                                 <?php } else { ?>
                                     <h3 class="ov-heading-large"><?php esc_html_e('Reservation details - Preview only', 'ov-booking'); ?></h3>
-                                    <span><?php// esc_html_e('Check dates in.', 'ov-booking'); ?></span>
+                                    <span>
+                                        <!-- esc_html_e('Check dates in.', 'ov-booking'); -->
+                                    </span>
                                 <?php } ?>
                                 <script>
                                     window.ovb_product_title = "<?php echo esc_js(get_the_title()); ?>";

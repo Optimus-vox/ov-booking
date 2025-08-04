@@ -23,6 +23,17 @@ const parseDMY = (s) => {
   const [d, m, y] = s.split("/").map((n) => parseInt(n, 10));
   return new Date(y, m - 1, d);
 };
+
+// === Modal open/close helpers ===
+function openOvModal(selector) {
+  jQuery('body').addClass('ovb-modal-open');
+  jQuery(selector).show();
+}
+function closeOvModal(selector) {
+  jQuery(selector).hide();
+  jQuery('body').removeClass('ovb-modal-open');
+}
+
 function jsDayToMondayFirst(day) {
   return (day + 6) % 7;
 }
@@ -957,8 +968,9 @@ jQuery("#client_modal_save")
     jQuery("#price_modal_date").text(moment(date).format("DD/MM/YYYY"));
     jQuery("#price_modal_date_input").val(date);
     jQuery("#price_modal_input").val(typeof currentPrice === "number" ? currentPrice : "");
-    jQuery("#price_modal_wrapper").show();
-    jQuery("body").css("overflow", "hidden");
+    // jQuery("#price_modal_wrapper").show();
+    // jQuery("body").css("overflow", "hidden");
+    openOvModal("#price_modal_wrapper");
   });
 
   // Čuvanje pojedinačne cene
@@ -1006,8 +1018,9 @@ jQuery("#client_modal_save")
       saveCalendarDataSafely("Price updated successfully.")
         .then(() => {
           myCalendar();
-          jQuery("#price_modal_wrapper").hide();
-          jQuery("body").css("overflow", "auto");
+          // jQuery("#price_modal_wrapper").hide();
+          // jQuery("body").css("overflow", "auto");
+          closeOvModal("#price_modal_wrapper");
         })
         .always(() => {
           lock_price_save = false;
@@ -1019,8 +1032,9 @@ jQuery("#client_modal_save")
   jQuery(document).on("click", "#client_modal_wrapper", function (e) {
     if (e.target.id === "client_modal_wrapper") {
       jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
-      jQuery("#client_modal_wrapper").hide();
-      jQuery("body").css("overflow", "auto");
+      // jQuery("#client_modal_wrapper").hide();
+      // jQuery("body").css("overflow", "auto");
+      closeOvModal("#client_modal_wrapper");
     }
   });
 
@@ -1036,10 +1050,7 @@ jQuery("#client_modal_save")
     // automatski setujemo checkout na +1 dan
     const nextDay = moment(selectedDate).add(1, "days").format("DD/MM/YYYY");
     jQuery("#custom-daterange-input").val(`${formattedDate} – ${nextDay}`);
-  
-
-    jQuery("#client_modal_wrapper").show();
-    jQuery("body").css("overflow", "hidden");
+    openOvModal("#client_modal_wrapper");
 
     setTimeout(() => {
       // clean up previous picker
@@ -1094,9 +1105,7 @@ jQuery("#client_modal_save")
     jQuery("#client_action_date").text(moment(date).format("DD/MM/YYYY"));
     jQuery("#client_action_date_input").val(date);
     jQuery("#client_action_email_input").val(email);
-
-    jQuery("#client_action_modal_wrapper").show();
-    jQuery("body").css("overflow", "hidden");
+    openOvModal("#client_action_modal_wrapper");
   });
 
   // Delete client single day
@@ -1179,8 +1188,9 @@ jQuery("#delete_client_all")
 function saveCalendarAndRefresh() {
   return saveCalendarDataSafely("Booking deleted successfully.").then(() => {
     myCalendar();
-    jQuery("#client_action_modal_wrapper").hide();
-    jQuery("body").css("overflow", "auto");
+    // jQuery("#client_action_modal_wrapper").hide();
+    // jQuery("body").css("overflow", "auto");
+    closeOvModal("#client_action_modal_wrapper");
   });
 }
 
@@ -1192,18 +1202,21 @@ function saveCalendarAndRefresh() {
         jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val(
           ""
         );
-        jQuery("#client_modal_wrapper").hide();
-        jQuery("body").css("overflow", "auto");
+        // jQuery("#client_modal_wrapper").hide();
+        // jQuery("body").css("overflow", "auto");
+        closeOvModal("#client_modal_wrapper");
       }
       // Close price modal
       if (jQuery("#price_modal_wrapper").is(":visible")) {
-        jQuery("#price_modal_wrapper").hide();
-        jQuery("body").css("overflow", "auto");
+        // jQuery("#price_modal_wrapper").hide();
+        // jQuery("body").css("overflow", "auto");
+        closeOvModal("#price_modal_wrapper");
       }
       // Close client action modal
       if (jQuery("#client_action_modal_wrapper").is(":visible")) {
-        jQuery("#client_action_modal_wrapper").hide();
-        jQuery("body").css("overflow", "auto");
+        // jQuery("#client_action_modal_wrapper").hide();
+        // jQuery("body").css("overflow", "auto");
+        closeOvModal("#client_action_modal_wrapper");
       }
     }
   });

@@ -22,7 +22,7 @@
             </ul> 
         </div> 
         <div class="ovb-myaccount-content"> 
-            <?php do_action( 'woocommerce_account_content' ); ?> 
+            <?php do_action( 'woocommerce_account_content' ); ?>            
         </div> 
     </div> 
 </div> 

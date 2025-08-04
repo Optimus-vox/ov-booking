@@ -612,6 +612,10 @@ td .day-wrapper {
   }
 }
 
+body.ovb-modal-open {
+    overflow: hidden !important;
+}
+
 @media (max-width: 1000px) {
   .admin-table-wrapper {
     overflow-x: auto;

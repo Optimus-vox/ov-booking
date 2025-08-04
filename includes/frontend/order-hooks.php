@@ -88,26 +88,26 @@ add_action('woocommerce_checkout_update_order_meta', function($order_id, $data =
 /**
  * ORDER ITEM META - ADD BOOKING DETAILS TO EACH ITEM
  */
-add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_item_key, $values, $order) {
-    if (!empty($values['ovb_all_dates'])) {
-        $item->add_meta_data('_ovb_calendar_data', sanitize_text_field($values['ovb_all_dates']));
-        $item->add_meta_data('booking_dates', sanitize_text_field($values['ovb_all_dates']));
-        $item->add_meta_data('ovb_all_dates', sanitize_text_field($values['ovb_all_dates']));
-    }
-    if (!empty($values['guests'])) {
-        $item->add_meta_data('_ovb_guests', intval($values['guests']));
-        $item->add_meta_data('guests', intval($values['guests']));
-        $item->add_meta_data('ovb_guest_count', intval($values['guests']));
-    }
-    if (!empty($values['start_date'])) {
-        $item->add_meta_data('_ovb_range_start', sanitize_text_field($values['start_date']));
-        $item->add_meta_data('rangeStart', sanitize_text_field($values['start_date']));
-    }
-    if (!empty($values['end_date'])) {
-        $item->add_meta_data('_ovb_range_end', sanitize_text_field($values['end_date']));
-        $item->add_meta_data('rangeEnd', sanitize_text_field($values['end_date']));
-    }
-}, 10, 4);
+// add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_item_key, $values, $order) {
+//     if (!empty($values['ovb_all_dates'])) {
+//         $item->add_meta_data('_ovb_calendar_data', sanitize_text_field($values['ovb_all_dates']));
+//         $item->add_meta_data('booking_dates', sanitize_text_field($values['ovb_all_dates']));
+//         $item->add_meta_data('ovb_all_dates', sanitize_text_field($values['ovb_all_dates']));
+//     }
+//     if (!empty($values['guests'])) {
+//         $item->add_meta_data('_ovb_guests', intval($values['guests']));
+//         $item->add_meta_data('guests', intval($values['guests']));
+//         $item->add_meta_data('ovb_guest_count', intval($values['guests']));
+//     }
+//     if (!empty($values['start_date'])) {
+//         $item->add_meta_data('_ovb_range_start', sanitize_text_field($values['start_date']));
+//         $item->add_meta_data('rangeStart', sanitize_text_field($values['start_date']));
+//     }
+//     if (!empty($values['end_date'])) {
+//         $item->add_meta_data('_ovb_range_end', sanitize_text_field($values['end_date']));
+//         $item->add_meta_data('rangeEnd', sanitize_text_field($values['end_date']));
+//     }
+// }, 10, 4);
 
 /**
  * COPY FIRST CART ITEM BOOKING DATA TO ORDER (for WC < 7.4)
