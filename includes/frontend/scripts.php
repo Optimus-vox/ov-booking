@@ -415,6 +415,17 @@ function ovb_enqueue_checkout_assets() {
     // Checkout conflict resolution
     add_action( 'wp_footer', 'ovb_resolve_checkout_conflicts', 999 );
 }
+/** THANK YOU PAGE CSS */
+function ov_enqueue_thank_you_assets()
+{
+    $is_thankyou = (function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received')) || isset($_GET['order-received']);
+    
+    if ($is_thankyou) {
+        wp_enqueue_style('ovb-thank-you-style', OVB_BOOKING_URL . 'assets/css/ov-thank-you.css');
+        wp_enqueue_script('ovb-thank-you-script', OVB_BOOKING_URL . 'assets/js/ov-thank-you.js', ['jquery'], '1.0', true);
+    }
+}
+add_action('wp_enqueue_scripts', 'ov_enqueue_thank_you_assets');
 
 /** CHECKOUT CONFLICT RESOLUTION */
 function ovb_resolve_checkout_conflicts() {
@@ -452,21 +463,7 @@ function ovb_enqueue_my_account_assets() {
     add_action( 'wp_footer', 'ovb_resolve_account_conflicts', 999 );
 }
 
-/** THANK YOU PAGE CSS */
-add_action( 'wp_enqueue_scripts', 'ovb_enqueue_thankyou_assets', 20 );
-function ovb_enqueue_thankyou_assets() {
-    if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) {
-        $css_file = OVB_BOOKING_PATH . 'assets/css/ov-thankyou.css';
-        if ( file_exists( $css_file ) ) {
-            wp_enqueue_style(
-                'ovb-thankyou-style',
-                OVB_BOOKING_URL . 'assets/css/ov-thankyou.css',
-                [], 
-                filemtime( $css_file )
-            );
-        }
-    }
-}
+
 
 /** MY ACCOUNT CONFLICT RESOLUTION */
 function ovb_resolve_account_conflicts() {
