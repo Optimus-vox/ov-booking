@@ -43,7 +43,7 @@ add_action('admin_bar_menu', function($wp_admin_bar) {
 }, 999);
 
 // Onemogućavanje shipping adrese na checkoutu
-add_filter('woocommerce_cart_needs_shipping_address', '__return_false');
+// add_filter('woocommerce_cart_needs_shipping_address', '__return_false'); // obo je vec u checkout-mods.php
 
 // Ukloni Downloads iz my account menija
 add_filter('woocommerce_account_menu_items', function($items) {

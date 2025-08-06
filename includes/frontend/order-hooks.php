@@ -301,6 +301,36 @@ add_action('woocommerce_admin_order_data_after_shipping_address', function($orde
     echo '</div>';
 });
 
+// admin orders 
+
+// Dodavanje kolone za gosta u order listu
+add_filter('manage_edit-shop_order_columns', 'ovb_add_guest_column');
+function ovb_add_guest_column($columns) {
+    $new_columns = [];
+    foreach ($columns as $key => $label) {
+        $new_columns[$key] = $label;
+        if ($key === 'order_number') {
+            $new_columns['guest_name'] = __('Guest', 'ov-booking');
+        }
+    }
+    return $new_columns;
+}
+
+// Prikaz imena gosta u admin order listi
+add_action('manage_shop_order_posts_custom_column', 'ovb_display_guest_column', 10, 2);
+function ovb_display_guest_column($column, $post_id) {
+    if ($column === 'guest_name') {
+        $first = get_post_meta($post_id, 'first_name', true);
+        $last  = get_post_meta($post_id, 'last_name', true);
+        echo $first || $last ? esc_html(trim("$first $last")) : '<em>' . __('No guest data', 'ov-booking') . '</em>';
+    }
+}
+
+// 3) Prikaz gostiju u Edit Order ekranu
+add_action( 'woocommerce_admin_order_data_after_billing_address', function( $order ) {
+    echo ovb_render_guests_html( ovb_get_order_guests( $order ) );
+}, 20 );
+// admin orders end - ovde alolololo
 /**
  * ADMIN: payer + guests info
  */

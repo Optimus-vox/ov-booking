@@ -22,3 +22,8 @@ html,body{
 body.hidden {
   overflow: hidden !important;
 }
+
+/* Disable WooCommerce product data */
+#woocommerce-product-data{
+    display: none !important;
+}

@@ -80,50 +80,27 @@ add_filter('the_content', 'ovb_trimmed_content_with_show_more');
 add_action('wp_footer', function() {
     if (!is_singular('product')) return;
     ?>
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const btn = document.querySelector(".ov-show-more-button");
-            if (!btn) return;
-            btn.addEventListener("click", function() {
-                document.querySelector(".ov-excerpt-preview").style.display = "none";
-                document.querySelector(".ov-excerpt-full").style.display = "block";
-            });
-        });
-    </script>
-    <style>
-        .ov-show-more-button {
-            background-color: #0073aa;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .ov-show-more-button:hover {
-            background-color: #005a87;
-        }
-    </style> -->
 
     <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const showMoreBtn = document.querySelector(".ov-show-more-button");
-    const collapseBtn = document.querySelector(".ov-collapse-button");
-    const preview = document.querySelector(".ov-excerpt-preview");
-    const full = document.querySelector(".ov-excerpt-full");
+        document.addEventListener("DOMContentLoaded", function() {
+            const showMoreBtn = document.querySelector(".ov-show-more-button");
+            const collapseBtn = document.querySelector(".ov-collapse-button");
+            const preview = document.querySelector(".ov-excerpt-preview");
+            const full = document.querySelector(".ov-excerpt-full");
 
-    if (showMoreBtn && collapseBtn && preview && full) {
-        showMoreBtn.addEventListener("click", function() {
-            preview.style.display = "none";
-            full.style.display = "block";
-        });
+            if (showMoreBtn && collapseBtn && preview && full) {
+                showMoreBtn.addEventListener("click", function() {
+                    preview.style.display = "none";
+                    full.style.display = "block";
+                });
 
-        collapseBtn.addEventListener("click", function() {
-            full.style.display = "none";
-            preview.style.display = "block";
+                collapseBtn.addEventListener("click", function() {
+                    full.style.display = "none";
+                    preview.style.display = "block";
+                });
+            }
         });
-    }
-});
-</script>
+    </script>
 
 <style>
     .ov-show-more-button,

@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 
 // Shipping
 //Onemogući shipping address u checkout-u
-add_filter('woocommerce_cart_needs_shipping_address','__return_false');
+// add_filter('woocommerce_cart_needs_shipping_address','__return_false');
 //Sakrij shipping calculator
 add_filter('woocommerce_shipping_calculator_enable','__return_false');
 //Ukloni sve shipping metode

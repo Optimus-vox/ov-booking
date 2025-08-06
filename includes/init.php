@@ -72,8 +72,8 @@ foreach ($core_files as $file) {
 
 // Frontend components
 if (!is_admin() || wp_doing_ajax()) {
+    // Initialize frontend files array
     $frontend_files = [
-      
         OVB_BOOKING_PATH . 'includes/frontend/scripts.php',
         OVB_BOOKING_PATH . 'includes/frontend/template-hooks.php',
         OVB_BOOKING_PATH . 'includes/frontend/standalone-templates.php',
@@ -83,16 +83,18 @@ if (!is_admin() || wp_doing_ajax()) {
         OVB_BOOKING_PATH . 'includes/frontend/shortcodes.php',
         OVB_BOOKING_PATH . 'includes/frontend/google-login.php',
         OVB_BOOKING_PATH . 'includes/frontend/account-hooks.php',
-        OVB_BOOKING_PATH . 'includes/frontend/remove-wrappers.php',
         OVB_BOOKING_PATH . 'includes/frontend/body-classes.php',
         OVB_BOOKING_PATH . 'includes/frontend/myaccount-template-override.php',
-        // OVB_BOOKING_PATH . 'includes/frontend/elementor-hooks.php', // AŽURIRANO
         OVB_BOOKING_PATH . 'includes/frontend/excerpt.php', 
+        OVB_BOOKING_PATH . 'includes/frontend/ovb-woocommerce-optimizations.php',
     ];
-     if ( class_exists(\Elementor\Plugin::class) && file_exists(OVB_BOOKING_PATH . 'includes/frontend/elementor-hooks.php') ) {
-        require_once OVB_BOOKING_PATH . 'includes/frontend/elementor-conflict-resolver.php'; // DODATO - mora biti prvo!
-        require_once OVB_BOOKING_PATH . 'includes/frontend/elementor-hooks.php';
+    
+    // Load Elementor manager FIRST if Elementor exists
+    if (class_exists('\Elementor\Plugin')) {
+        require_once OVB_BOOKING_PATH . 'includes/frontend/ovb-unified-elementor-manager.php';
     }
+    
+    // Load all other frontend files
     foreach ($frontend_files as $file) {
         if (file_exists($file)) {
             require_once $file;

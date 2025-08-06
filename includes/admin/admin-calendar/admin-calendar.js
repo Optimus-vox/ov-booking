@@ -138,6 +138,7 @@ jQuery(document).ready(function () {
       today.setHours(0, 0, 0, 0);
 
       const isPast = dayDate < today;
+      const isCheckoutDay = clients.some((client) => client.isCheckout);
 
       let price = dayData.price;
       let status = dayData.status ?? "available";
@@ -197,6 +198,7 @@ jQuery(document).ready(function () {
       // Always show clients without filtering end dates
       if (hasClients) {
         clients.forEach((client) => {
+         
           let iconHtml = "";
           let hasIcon = false;
           if (client.isCheckin && client.isCheckout) {
@@ -242,7 +244,7 @@ jQuery(document).ready(function () {
       dayHTML += `<div class="day-actions">`;
 
       // Show "+" button only for non-booked, non-past days
-      if (!hasClients && !isPast) {
+      if ((!hasClients && !isPast) || isCheckoutDay) {
         dayHTML += `
         <button class="add-client-button" data-date="${formattedDate}" title="Dodaj korisnika">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -257,15 +259,9 @@ jQuery(document).ready(function () {
             </svg>
         </button>
         <select class="ov-status-select" data-date="${formattedDate}">
-            <option value="available" ${
-              status === "available" ? "selected" : ""
-            }>Available</option>
-            <option value="unavailable" ${
-              status === "unavailable" ? "selected" : ""
-            }>Unavailable</option>
-            <option value="booked" ${
-              status === "booked" ? "selected" : ""
-            }>Booked</option>
+            <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
+            <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
+            <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
         </select>
     `;
       }

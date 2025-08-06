@@ -6,6 +6,11 @@ require_once dirname(__DIR__) . '../../helpers/logger.php';
 
 function render_calendar_meta_box($post)
 {
+    if ( 'publish' !== $post->post_status ) {
+        echo '<p style="text-align: center; margin: 20px 0 20px 0;font-size: 32px;">' . esc_html__( 'You need to fill all the fields and publish post to use calendar features', 'ov-booking' ) . '</p>';
+        return;
+    }
+
     wp_nonce_field('sacuvaj_additional_info_nonce', 'additional_info_nonce');
     // Get existing values
     $values = get_post_meta($post->ID, '_apartment_additional_info', true);
@@ -406,21 +411,17 @@ function render_calendar_meta_box($post)
         </div>
     </div>
     <script>
-        // function closeClientModal() {
-        //     jQuery('#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #client_date_range, #client_modal_date_input').val('');
-        //     jQuery("#client_modal_wrapper").hide();
-        // }
-         function closeClientModal() {
-  // uništi datepicker
-  document.querySelector("#date-range-picker .ov-picker-container")?.remove();
-  window._ovb_client_picker = null;
+        function closeClientModal() {
+            // uništi datepicker
+            document.querySelector("#date-range-picker .ov-picker-container")?.remove();
+            window._ovb_client_picker = null;
 
-  // očisti inpute
-  jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
+            // očisti inpute
+            jQuery("#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin").val("");
 
-  // koristi helper za zatvaranje
-  closeOvModal('#client_modal_wrapper');
-}
+            // koristi helper za zatvaranje
+            closeOvModal('#client_modal_wrapper');
+        }
 
     </script>
     <!-- remove client modal -->

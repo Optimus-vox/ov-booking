@@ -396,28 +396,7 @@ function ovb_apply_bulk_status_rule($product_id, $status, $rule, $daterange = ''
 /**
  * ADMIN COLUMNS
  */
-// Dodavanje kolone za gosta u order listu
-add_filter('manage_edit-shop_order_columns', 'ovb_add_guest_column');
-function ovb_add_guest_column($columns) {
-    $new_columns = [];
-    foreach ($columns as $key => $label) {
-        $new_columns[$key] = $label;
-        if ($key === 'order_number') {
-            $new_columns['guest_name'] = __('Guest', 'ov-booking');
-        }
-    }
-    return $new_columns;
-}
 
-// Prikaz imena gosta u admin order listi
-add_action('manage_shop_order_posts_custom_column', 'ovb_display_guest_column', 10, 2);
-function ovb_display_guest_column($column, $post_id) {
-    if ($column === 'guest_name') {
-        $first = get_post_meta($post_id, 'first_name', true);
-        $last  = get_post_meta($post_id, 'last_name', true);
-        echo $first || $last ? esc_html(trim("$first $last")) : '<em>' . __('No guest data', 'ov-booking') . '</em>';
-    }
-}
 
 /**
  * CHECKOUT & SHOP HELPER FUNCTIONS
@@ -489,5 +468,29 @@ function ovb_debug_product_meta($product_id) {
 add_action('load-post.php', function() {
     if (isset($_GET['post']) && get_post_type($_GET['post']) === 'product') {
         ovb_debug_product_meta(intval($_GET['post']));
+    }
+});
+
+// --------------------------------------------------
+// Ukloni WooCommerce Product Data metabox
+// --------------------------------------------------
+// add_action( 'add_meta_boxes', 'ovb_remove_product_data_metabox', 25 );
+// function ovb_remove_product_data_metabox() {
+//     if ( get_post_type() !== 'product' ) {
+//         return;
+//     }
+//     // ID metaboxa je 'woocommerce-product-data'
+//     remove_meta_box( 'woocommerce-product-data', 'product', 'normal' );
+// }
+
+add_action('admin_init', function() {
+    if (class_exists('WooCommerce')) {
+        remove_meta_box('woocommerce-product-data', 'product', 'normal');
+    }
+});
+
+add_action('admin_head', function() {
+    if (get_post_type() === 'product') {
+        echo '<style>#woocommerce-product-data { display: none !important; }</style>';
     }
 });

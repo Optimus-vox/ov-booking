@@ -144,42 +144,6 @@ function ovb_enqueue_product_assets() {
 
     // 4) Single-product scripts & styles
     ovb_enqueue_product_scripts( $product_id );
-    
-    // 5) Conflict resolution
-    add_action( 'wp_footer', 'ovb_resolve_product_conflicts', 999 );
-}
-
-/** CONFLICT RESOLUTION FOR PRODUCT PAGES */
-function ovb_resolve_product_conflicts() {
-    ?>
-    <script>
-    (function($) {
-        'use strict';
-        
-        // Remove duplicate lazyload observer
-        if (typeof window.lazyloadRunObserver !== 'undefined') {
-            delete window.lazyloadRunObserver;
-        }
-        
-        // Elementor assets fallback
-        if (typeof elementorFrontend !== 'undefined' && elementorFrontend.config) {
-            elementorFrontend.config.urls = elementorFrontend.config.urls || {};
-            elementorFrontend.config.urls.assets = elementorFrontend.config.urls.assets || '<?php echo esc_js( plugins_url( "assets/", ELEMENTOR__FILE__ ) ); ?>';
-        }
-
-        // Prevent duplicate jQuery-ready handlers
-        var originalReady = $.fn.ready, readyFired = false;
-        $.fn.ready = function(fn) {
-            if (readyFired) {
-                fn.call(document, $);
-                return this;
-            }
-            return originalReady.call(this, fn);
-        };
-        $(document).ready(function(){ readyFired = true; });
-    })(jQuery);
-    </script>
-    <?php
 }
 
 /** Calendar core (Moment.js + Daterangepicker) */
@@ -375,24 +339,9 @@ function ov_enqueue_cart_assets() {
             'checkoutUrl'         => esc_url( wc_get_checkout_url() ),
         ]
     );
-    
-    // Cart conflict resolution
-    add_action( 'wp_footer', 'ovb_resolve_cart_conflicts', 999 );
+
 }
 
-/** CART CONFLICT RESOLUTION */
-function ovb_resolve_cart_conflicts() {
-    ?>
-    <script>
-    (function($) {
-        'use strict';
-        if (typeof window.lazyloadRunObserver !== 'undefined') {
-            delete window.lazyloadRunObserver;
-        }
-    })(jQuery);
-    </script>
-    <?php
-}
 
 /** CHECKOUT PAGE CSS */
 add_action( 'wp_enqueue_scripts', 'ovb_enqueue_checkout_assets', 20 );
@@ -411,9 +360,6 @@ function ovb_enqueue_checkout_assets() {
             filemtime( $css_file )
         );
     }
-    
-    // Checkout conflict resolution
-    add_action( 'wp_footer', 'ovb_resolve_checkout_conflicts', 999 );
 }
 /** THANK YOU PAGE CSS */
 function ov_enqueue_thank_you_assets()
@@ -426,20 +372,6 @@ function ov_enqueue_thank_you_assets()
     }
 }
 add_action('wp_enqueue_scripts', 'ov_enqueue_thank_you_assets');
-
-/** CHECKOUT CONFLICT RESOLUTION */
-function ovb_resolve_checkout_conflicts() {
-    ?>
-    <script>
-    (function($) {
-        'use strict';
-        if (typeof window.lazyloadRunObserver !== 'undefined') {
-            delete window.lazyloadRunObserver;
-        }
-    })(jQuery);
-    </script>
-    <?php
-}
 
 /** MY ACCOUNT PAGE CSS */
 add_action( 'wp_enqueue_scripts', 'ovb_enqueue_my_account_assets', 20 );
@@ -460,23 +392,7 @@ function ovb_enqueue_my_account_assets() {
     }
     
     // My Account conflict resolution
-    add_action( 'wp_footer', 'ovb_resolve_account_conflicts', 999 );
-}
-
-
-
-/** MY ACCOUNT CONFLICT RESOLUTION */
-function ovb_resolve_account_conflicts() {
-    ?>
-    <script>
-    (function($) {
-        'use strict';
-        if (typeof window.lazyloadRunObserver !== 'undefined') {
-            delete window.lazyloadRunObserver;
-        }
-    })(jQuery);
-    </script>
-    <?php
+    // add_action( 'wp_footer', 'ovb_resolve_account_conflicts', 999 );
 }
 
 /** UTILITY FUNCTIONS */
