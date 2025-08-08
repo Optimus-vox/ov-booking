@@ -81,6 +81,7 @@ function ovb_add_google_maps_meta_box() {
     );
 }
 
+
 // Manual order from admin (security, fallback, pricing)
 // add_action('wp_ajax_ovb_admin_create_manual_order', 'ovb_create_manual_order');
 // function ovb_create_manual_order() {
@@ -112,6 +113,155 @@ function ovb_add_google_maps_meta_box() {
 //         wp_die();
 //     }
 // }
+
+// === MANUAL ORDER FROM ADMIN CALENDAR ===
+// AJAX: POST { action: 'ovb_admin_create_manual_order', nonce, product_id, client_data (JSON) }
+// add_action('wp_ajax_ovb_admin_create_manual_order', 'ovb_admin_create_manual_order');
+// function ovb_admin_create_manual_order() {
+//     check_ajax_referer('ovb_nonce', 'nonce');
+//     if (!current_user_can('edit_products')) {
+//         wp_send_json_error(__('Security check failed', 'ov-booking'));
+//     }
+
+//     $product_id = absint($_POST['product_id'] ?? 0);
+//     // $client_data_json = stripslashes($_POST['client_data'] ?? '{}');
+//        $client_data_json = wp_unslash( $_POST['client_data']  ?? '{}' );
+//     $client_data = json_decode($client_data_json, true);
+
+//     if (!$product_id || !is_array($client_data)) {
+//         wp_send_json_error(__('Invalid data provided', 'ov-booking'));
+//     }
+
+//     // Validate required fields
+//     $required_fields = ['rangeStart', 'rangeEnd', 'firstName', 'lastName', 'email'];
+//     foreach ($required_fields as $field) {
+//         if (empty($client_data[$field])) {
+//             wp_send_json_error(sprintf(__('Missing required field: %s', 'ov-booking'), $field));
+//         }
+//     }
+
+//     $start_date = $client_data['rangeStart'];
+//     $end_date   = $client_data['rangeEnd'];
+//     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+//         wp_send_json_error(__('Invalid date format', 'ov-booking'));
+//     }
+//     if (strtotime($start_date) > strtotime($end_date)) {
+//         wp_send_json_error(__('Start date cannot be after end date', 'ov-booking'));
+//     }
+
+//     $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
+//     if (!is_array($calendar_data)) $calendar_data = [];
+
+//     // Pravi niz svih datuma (uključujući i poslednji dan)
+//     $all_dates = [];
+//     $dt = new DateTime($start_date);
+//     $dt_end = new DateTime($end_date);
+//     while ($dt <= $dt_end) {
+//         $all_dates[] = $dt->format('Y-m-d');
+//         $dt->modify('+1 day');
+//     }
+
+//     // Izračunaj total price iz calendar_data (ako nema - 0)
+//     $total_price = 0;
+//     foreach ($all_dates as $date) {
+//         $day_price = isset($calendar_data[$date]['price']) ? floatval($calendar_data[$date]['price']) : 0;
+//         $total_price += $day_price;
+//     }
+
+//     // Ako nema cenu, koristi default proizvod cenu (fallback, ali realno treba da piše cenu po danima)
+//     $product = wc_get_product($product_id);
+//     if (!$product) {
+//         wp_send_json_error(__('Product not found', 'ov-booking'));
+//     }
+//     if ($total_price <= 0) $total_price = floatval($product->get_price());
+
+//     // Kreiraj Woo Order
+//     $order = wc_create_order();
+//     if (is_wp_error($order)) {
+//         wp_send_json_error(__('Failed to create order', 'ov-booking'));
+//     }
+
+//     // Dodaj proizvod sa totalnom cenom (OVO JE KLJUČNO!)
+//     $item_id = $order->add_product($product, 1, [
+//         'subtotal' => $total_price,
+//         'total'    => $total_price,
+//     ]);
+//     if (!$item_id) {
+//         wp_send_json_error(__('Failed to add product to order', 'ov-booking'));
+//     }
+
+//     // Billing podaci
+//     $order->set_billing_first_name(sanitize_text_field($client_data['firstName']));
+//     $order->set_billing_last_name(sanitize_text_field($client_data['lastName']));
+//     $order->set_billing_email(sanitize_email($client_data['email']));
+//     $order->set_billing_phone(sanitize_text_field($client_data['phone'] ?? ''));
+
+//     // Meta podaci
+//     $dates_string = implode(',', $all_dates);
+//     $booking_id = time() . '_' . rand(1000, 9999);
+//     $order->update_meta_data('_ovb_booking_id', $booking_id);
+//     $order->update_meta_data('start_date', $start_date);
+//     $order->update_meta_data('end_date', $end_date);
+//     $order->update_meta_data('guests', absint($client_data['guests'] ?? 1));
+//     $order->update_meta_data('all_dates', $dates_string);
+//     $order->update_meta_data('booking_client_first_name', sanitize_text_field($client_data['firstName']));
+//     $order->update_meta_data('booking_client_last_name', sanitize_text_field($client_data['lastName']));
+//     $order->update_meta_data('booking_client_email', sanitize_email($client_data['email']));
+//     $order->update_meta_data('booking_client_phone', sanitize_text_field($client_data['phone'] ?? ''));
+
+//     // Item meta podaci
+//     $item = $order->get_item($item_id);
+//     if ($item) {
+//         $item->add_meta_data('ovb_all_dates', $dates_string);
+//         $item->add_meta_data('booking_dates', $dates_string);
+//         $item->add_meta_data('guests', absint($client_data['guests'] ?? 1));
+//         $item->add_meta_data('_ovb_range_start', $start_date);
+//         $item->add_meta_data('_ovb_range_end', $end_date);
+//         $item->save();
+//     }
+
+//     // Upisuje cenu!
+//     $order->set_total($total_price);
+//     $order->save();
+//     $order->set_status('completed', __('Manual booking created via admin calendar.', 'ov-booking'));
+
+//     // Update calendar_data sa klijentom (kao do sada)
+//     foreach ($all_dates as $i => $date_key) {
+//         if (!isset($calendar_data[$date_key])) {
+//             $calendar_data[$date_key] = [
+//                 'status'  => 'available',
+//                 'clients' => [],
+//                 'isPast'  => (strtotime($date_key) < strtotime(date('Y-m-d')))
+//             ];
+//         }
+//         if (!is_array($calendar_data[$date_key]['clients'])) {
+//             $calendar_data[$date_key]['clients'] = [];
+//         }
+//         $calendar_data[$date_key]['clients'][] = [
+//             'bookingId'  => $booking_id,
+//             'firstName'  => sanitize_text_field($client_data['firstName']),
+//             'lastName'   => sanitize_text_field($client_data['lastName']),
+//             'email'      => sanitize_email($client_data['email']),
+//             'phone'      => sanitize_text_field($client_data['phone'] ?? ''),
+//             'guests'     => absint($client_data['guests'] ?? 1),
+//             'rangeStart' => $start_date,
+//             'rangeEnd'   => $end_date,
+//             'isCheckin'  => ($i === 0),
+//             'isCheckout' => ($i === count($all_dates) - 1),
+//             'order_id'   => $order->get_id()
+//         ];
+//         $calendar_data[$date_key]['status'] = 'booked';
+//     }
+//     update_post_meta($product_id, '_ovb_calendar_data', $calendar_data);
+
+//     wp_send_json_success([
+//         'order_id'   => $order->get_id(),
+//         'booking_id' => $booking_id,
+//         'total'      => $total_price,
+//         'message'    => __('Order created successfully', 'ov-booking'),
+//     ]);
+// }
+
 
 /**
  * BOOKING PROCESSING FUNCTIONS
@@ -391,6 +541,23 @@ function ovb_apply_bulk_status_rule($product_id, $status, $rule, $daterange = ''
         }
     }
     update_post_meta($product_id, '_ovb_calendar_data', $calendar);
+}
+
+// Provera da li postoji booking u kalendaru
+function ovb_booking_exists_in_calendar($calendar_data, $booking_id) {
+    if (!is_array($calendar_data)) return false;
+    
+    foreach ($calendar_data as $date => $data) {
+        if (isset($data['clients']) && is_array($data['clients'])) {
+            foreach ($data['clients'] as $client) {
+                if (isset($client['bookingId']) && $client['bookingId'] === $booking_id) {
+                    return true;
+                }
+            }
+        }
+    }
+    
+    return false;
 }
 
 /**

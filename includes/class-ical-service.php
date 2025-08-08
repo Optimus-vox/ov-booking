@@ -394,6 +394,10 @@ class OVB_iCal_Service
         echo $ics;
         exit;
     }
+
+    public function fetch_and_import() {
+    // TODO: Implement fetching and importing logic here.
+    }
 } // end class
 
 // Register REST route for .ics

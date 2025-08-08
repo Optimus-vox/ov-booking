@@ -286,7 +286,7 @@ function render_calendar_meta_box($post)
                 </svg>
 
             </i>
-            <h3>Dodaj korisnika</h3>
+            <h3>Add Client</h3>
             <div class="add-information">
                 <label for="client_first_name">First name</label>
                 <input type="text" id="client_first_name" name="client_first_name">
