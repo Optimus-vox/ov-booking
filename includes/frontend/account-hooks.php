@@ -6,11 +6,7 @@ add_filter('woocommerce_my_account_get_addresses', function($addresses) {
     unset($addresses['shipping']);
     return $addresses;
 });
-// Brisanje shipping polja iz forme
-add_filter('woocommerce_checkout_fields', function($fields) {
-    unset($fields['shipping']);
-    return $fields;
-});
+
 // Uklanjanje shipping sekcije iz My Account editacije adresa
 add_filter('woocommerce_account_edit_address_endpoints', function($endpoints) {
     unset($endpoints['shipping']);

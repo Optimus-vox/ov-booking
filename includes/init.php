@@ -86,13 +86,13 @@ if (!is_admin() || wp_doing_ajax()) {
         OVB_BOOKING_PATH . 'includes/frontend/body-classes.php',
         OVB_BOOKING_PATH . 'includes/frontend/myaccount-template-override.php',
         OVB_BOOKING_PATH . 'includes/frontend/excerpt.php', 
-        OVB_BOOKING_PATH . 'includes/frontend/ovb-woocommerce-optimizations.php',
+        // OVB_BOOKING_PATH . 'includes/frontend/ovb-woocommerce-optimizations.php',
     ];
     
     // Load Elementor manager FIRST if Elementor exists
-    if (class_exists('\Elementor\Plugin')) {
-        require_once OVB_BOOKING_PATH . 'includes/frontend/ovb-unified-elementor-manager.php';
-    }
+    // if (class_exists('\Elementor\Plugin')) {
+    //     require_once OVB_BOOKING_PATH . 'includes/frontend/ovb-unified-elementor-manager.php';
+    // }
     
     // Load all other frontend files
     foreach ($frontend_files as $file) {
@@ -117,6 +117,8 @@ if (is_admin()) {
         OVB_BOOKING_PATH . 'includes/admin/testimonials.php',
         OVB_BOOKING_PATH . 'includes/admin/admin-calendar/admin-calendar-ajax.php',
         OVB_BOOKING_PATH . 'includes/admin/admin-calendar/admin-calendar.php',
+        OVB_BOOKING_PATH . 'includes/frontend/order-hooks.php',
+        OVB_BOOKING_PATH . 'includes/frontend/order-meta-display.php',
     ];
     foreach ($admin_files as $file) {
         if (file_exists($file)) {

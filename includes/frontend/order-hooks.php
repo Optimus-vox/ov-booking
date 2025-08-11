@@ -496,181 +496,332 @@ add_action('before_delete_post', function($post_id) {
 /**
  * ADMIN: BOOKING DATA IN ORDER LIST & DETAILS
  */
-add_filter('manage_woocommerce_page_wc-orders_columns', function($columns) {
-    $new = [];
-    foreach ($columns as $key => $label) {
-        $new[$key] = $label;
-        if ($key === 'order_status') {
-            $new['check-in-column'] = __('Check In', 'ov-booking');
-            $new['check-out-column'] = __('Check Out', 'ov-booking');
-            $new['guests-column'] = __('Total guests', 'ov-booking');
-        }
-    }
-    return $new;
-});
-add_action('manage_woocommerce_page_wc-orders_custom_column', function($column, $order) {
-    $df = get_option('date_format');
-    switch ($column) {
-        case 'check-in-column':
-            $d = $order->get_meta('start_date') ?: $order->get_meta('_ovb_start_date');
-            echo $d ? date_i18n($df, strtotime($d)) : '<em>(no date)</em>';
-            break;
-        case 'check-out-column':
-            $d = $order->get_meta('end_date') ?: $order->get_meta('_ovb_end_date');
-            echo $d ? date_i18n($df, strtotime($d)) : '<em>(no date)</em>';
-            break;
-        case 'guests-column':
-            $g = $order->get_meta('guests') ?: $order->get_meta('_ovb_guests_num');
-            echo $g ?: '<em>(no guests)</em>';
-            break;
-    }
-}, 10, 2);
 
-// ADMIN: booking info in order details (shipping address metabox)
-// add_action('woocommerce_admin_order_data_after_shipping_address', function($order){
-//     $start_date = $order->get_meta('start_date') ?: $order->get_meta('_ovb_start_date');
-//     $end_date = $order->get_meta('end_date') ?: $order->get_meta('_ovb_end_date');
-//     if (!$start_date || !$end_date) return;
-//     $wp_date_format = get_option('date_format');
-//     echo '<div class="ovb-booking-dates-wrapper" style="margin-top:20px; font-weight:bold;">';
-//     echo '<h1 style="margin-bottom:15px">' . __('Period of Stay:', 'ov-booking') . '</h1>';
-//     echo '<div class="ovb-booking-dates check-in" style="display:flex; align-items:center; gap:5px; margin-bottom:10px">';
-//     echo '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" ...></svg> ';
-//     echo '<h2 style="margin:0">' . esc_html(date_i18n($wp_date_format, strtotime($start_date))) . '</h2>';
-//     echo '</div>';
-//     echo '<div class="ovb-booking-dates check-out" style="display:flex; align-items:center; gap:5px">';
-//     echo '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" ...></svg> ';
-//     echo '<h2 style="margin:0">' . esc_html(date_i18n($wp_date_format, strtotime($end_date))) . '</h2>';
-//     echo '</div>';
-//     echo '</div>';
-// });
 
-add_action('woocommerce_admin_order_data_after_shipping_address', function($order){
-    $start_date = $order->get_meta('start_date');
-    $end_date   = $order->get_meta('end_date');
-    if ($start_date || $end_date) {
-        echo '<div class="ovb-booking-dates-wrapper" style="margin-top:20px; font-weight:bold;">';
-        echo '<h3 style="margin-bottom:10px;">' . __('Booking Dates', 'ov-booking') . '</h3>';
-        if ($start_date) {
-            echo '<div style="margin-bottom:4px;">' . __('Check-in:', 'ov-booking') . ' <strong>' . date_i18n(get_option('date_format'), strtotime($start_date)) . '</strong></div>';
-        }
-        if ($end_date) {
-            echo '<div>' . __('Check-out:', 'ov-booking') . ' <strong>' . date_i18n(get_option('date_format'), strtotime($end_date)) . '</strong></div>';
-        }
-        echo '</div>';
-    }
-});
+/*--------------------------------------------------------------
+ *  2. Dodajemo kolone (legacy, HPOS, wc-admin)
+ *--------------------------------------------------------------*/
+add_filter('manage_edit-shop_order_columns', 'ovb_add_booking_columns', 20);
+add_filter('manage_hpos_shop_order_columns', 'ovb_add_booking_columns', 20);
+add_filter( 'manage_woocommerce_page_wc-orders_columns', 'ovb_add_booking_columns', 20 );
 
-// admin orders 
+function ovb_add_booking_columns( $columns ) {
+	$insert = [
+		'ovb_check_in'  => __( 'Check In', 'ov-booking' ),
+		'ovb_check_out' => __( 'Check Out', 'ov-booking' ),
+		'ovb_guests'    => __( 'Guests',   'ov-booking' ),
+	];
 
-// Dodavanje kolone za gosta u order listu
-add_filter('manage_edit-shop_order_columns', 'ovb_add_guest_column');
-function ovb_add_guest_column($columns) {
-    $new_columns = [];
-    foreach ($columns as $key => $label) {
-        $new_columns[$key] = $label;
-        if ($key === 'order_number') {
-            $new_columns['guest_name'] = __('Guest', 'ov-booking');
-        }
-    }
-    return $new_columns;
+	// Ubacujemo posle prvog default-kolone (broj narudžbe)
+	return array_slice( $columns, 0, 1, true ) + $insert + $columns;
 }
 
-// Prikaz imena gosta u admin order listi
-add_action('manage_shop_order_posts_custom_column', 'ovb_display_guest_column', 10, 2);
-function ovb_display_guest_column($column, $post_id) {
-    if ($column === 'guest_name') {
-        $first = get_post_meta($post_id, 'first_name', true);
-        $last  = get_post_meta($post_id, 'last_name', true);
-        echo $first || $last ? esc_html(trim("$first $last")) : '<em>' . __('No guest data', 'ov-booking') . '</em>';
+/*--------------------------------------------------------------
+ *  3. Render kolona (radi na sva 3 interfejsa)
+ *--------------------------------------------------------------*/
+add_action( 'manage_shop_order_posts_custom_column',          'ovb_render_booking_columns', 10, 2 ); // legacy
+add_action( 'manage_hpos_shop_order_custom_column',           'ovb_render_booking_columns', 10, 2 ); // HPOS
+add_action( 'manage_woocommerce_page_wc-orders_custom_column','ovb_render_booking_columns', 10, 2 ); // wc-admin
+
+function ovb_render_booking_columns( $column, $order_id_or_obj ) {
+    $order = $order_id_or_obj instanceof WC_Order ? $order_id_or_obj : wc_get_order( $order_id_or_obj );
+    if ( ! $order ) { return; }
+
+    $m = ovb_get_order_booking_meta( $order );
+
+    switch ( $column ) {
+        case 'ovb_check_in':
+            echo ovb_fmt_date( $m['check_in'] );
+            break;
+
+        case 'ovb_check_out':
+            echo ovb_fmt_date( $m['check_out'] );
+            break;
+
+        case 'ovb_guests':
+            echo ( null !== $m['guests'] ? (int) $m['guests'] : '—' );
+            break;
     }
 }
 
-// 3) Prikaz gostiju u Edit Order ekranu
-add_action( 'woocommerce_admin_order_data_after_billing_address', function( $order ) {
-    echo ovb_render_guests_html( ovb_get_order_guests( $order ) );
-}, 20 );
+/*--------------------------------------------------------------
+ *  4. Sakrij sirove item-meta ključeve u admin-UI
+ *--------------------------------------------------------------*/
+add_filter( 'woocommerce_hidden_order_itemmeta', function ( $hidden ) {
+	return array_merge(
+		$hidden,
+		[
+			'rangeStart',
+			'rangeEnd',
+			'guests',
+			'booking_dates',
+			'booking_id',
+		]
+	);
+}, 10, 1 );
+
+/*--------------------------------------------------------------
+ *  5. Lepši prikaz ispod svake stavke u narudžbini
+ *--------------------------------------------------------------*/
+add_action( 'woocommerce_after_order_itemmeta', 'ovb_show_order_item_booking_badge', 10, 3 );
+
+function ovb_show_order_item_booking_badge( $item_id, $item, $product ) {
+    $order = $item->get_order();
+    if ( ! $order ) { return; }
+
+    $m = ovb_get_order_booking_meta( $order );
+    if ( empty($m['check_in']) || empty($m['check_out']) ) { return; }
+
+    // broj noćenja
+    $nights = max( 0, (int) floor( ( strtotime($m['check_out']) - strtotime($m['check_in']) ) / DAY_IN_SECONDS ) );
+
+    echo '<div class="ovb-badge" style="margin:8px 0 0; padding:8px 10px; background:#f5f5fa; border:1px solid #e5e7eb; border-radius:6px; font-size:12px; line-height:1.4;">'
+        . '<strong>' . esc_html__('Booking', 'ov-booking') . ':</strong> '
+        . esc_html( date_i18n( get_option('date_format'), strtotime($m['check_in']) ) ) . ' → '
+        . esc_html( date_i18n( get_option('date_format'), strtotime($m['check_out']) ) )
+        . ( $nights ? ' · ' . sprintf( _n('%d night','%d nights', $nights, 'ov-booking'), $nights ) : '' )
+        . ( null !== $m['guests'] ? ' · ' . sprintf( _n('%d guest','%d guests', (int)$m['guests'], 'ov-booking'), (int)$m['guests'] ) : '' )
+        . '</div>';
+}
+
+
+
 // admin orders end - ovde alolololo
 /**
  * ADMIN: payer + guests info
  */
-add_action('woocommerce_admin_order_item_headers', function($order){
-    // Payer info
-    echo '<div class="ovb-order-customer" style="margin:0 0 20px 0; padding:16px; background:#f5f5fa; border-radius:0;">';
-    echo '<h3 style="margin-bottom:10px;">' . __('Details of the Payer:', 'ov-booking') . '</h3>';
-    echo '<ul style="margin-left:0; padding-left:0; width:fit-content;">';
-    $fields = [
-        'Full Name' => ($order->get_meta('booking_client_first_name') ?: $order->get_billing_first_name()) . ' ' . ($order->get_meta('booking_client_last_name') ?: $order->get_billing_last_name()),
-        'Email' => $order->get_meta('booking_client_email') ?: $order->get_billing_email(),
-        'Phone' => $order->get_meta('booking_client_phone') ?: $order->get_billing_phone(),
-        'Address' => $order->get_billing_address_1(),
-        'City' => $order->get_billing_city(),
-        'Country' => WC()->countries->countries[$order->get_billing_country()] ?? $order->get_billing_country(),
-    ];
-    foreach ($fields as $label => $val) {
-        if ($val) {
-            if ($label === 'Phone') {
-                echo '<li><strong>' . esc_html($label) . ':</strong> <a href="tel:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
-            } elseif ($label === 'Email') {
-                echo '<li><strong>' . esc_html($label) . ':</strong> <a href="mailto:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
-            } else {
-                echo '<li><strong>' . esc_html($label) . ':</strong> ' . esc_html($val) . '</li>';
-            }
-        }
-    }
-    echo '</ul>';
-    echo '</div>';
 
-    // Guests info
+add_action('woocommerce_admin_order_item_headers', function($order){
+    if ( ! $order instanceof WC_Order ) { return; }
+
+    // --- Payer (Podaci o platiocu)
+    $first    = trim( (string) ($order->get_meta('booking_client_first_name') ?: $order->get_billing_first_name()) );
+    $last     = trim( (string) ($order->get_meta('booking_client_last_name')  ?: $order->get_billing_last_name()) );
+    $email    = trim( (string) ($order->get_meta('booking_client_email')      ?: $order->get_billing_email()) );
+    $phone    = trim( (string) ($order->get_meta('booking_client_phone')      ?: $order->get_billing_phone()) );
+    $addr1    = trim( (string) $order->get_billing_address_1() );
+    $addr2    = trim( (string) $order->get_billing_address_2() );
+    $city     = trim( (string) $order->get_billing_city() );
+    $postcode = trim( (string) $order->get_billing_postcode() );
+    $countryC = trim( (string) $order->get_billing_country() );
+
+    $countryN = $countryC;
+    if ( function_exists('WC') && isset( WC()->countries ) ) {
+        $map = WC()->countries->get_countries();
+        if ( isset( $map[ $countryC ] ) ) { $countryN = $map[ $countryC ]; }
+    }
+
+    $addr     = trim( $addr1 . ( $addr2 ? ' ' . $addr2 : '' ) );
+    $li_style = 'display:flex;align-items:center;gap:6px;margin:2px 0;';
+
+    echo '<div class="ovb-order-customer" style="margin:0 0 10px 0; padding:16px; background:#f5f5fa; border:1px solid #dcdcde; border-radius:6px;">';
+    echo '<h3 style="margin:0 0 8px; font-size:13px;">' . esc_html__('Podaci o platiocu', 'ov-booking') . '</h3>';
+    echo '<ul style="margin:0; padding-left:5px; list-style:none;">';
+    if ($first)    echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Ime','ov-booking').':</strong> '.esc_html($first).'</li>';
+    if ($last)     echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Prezime','ov-booking').':</strong> '.esc_html($last).'</li>';
+    if ($email)    echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Email','ov-booking').':</strong> <a href="mailto:'.esc_attr($email).'">'.esc_html($email).'</a></li>';
+    if ($phone)    { $tel = preg_replace('/[^0-9+]/', '', $phone);
+                     echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Telefon','ov-booking').':</strong> <a href="tel:'.esc_attr($tel).'">'.esc_html($phone).'</a></li>'; }
+    if ($addr)     echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Adresa','ov-booking').':</strong> '.esc_html($addr).'</li>';
+    if ($city)     echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Grad','ov-booking').':</strong> '.esc_html($city).'</li>';
+    if ($postcode) echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Poštanski broj','ov-booking').':</strong> '.esc_html($postcode).'</li>';
+    if ($countryC) echo '<li style="'.esc_attr($li_style).'"><strong>'.esc_html__('Država','ov-booking').':</strong> '.esc_html($countryN).'</li>';
+    echo '</ul></div>';
+
+    // --- Guests
     $guests = $order->get_meta('_ovb_guests');
-    if (!is_array($guests) || empty($guests)) {
+    if ( !is_array($guests) || empty($guests) ) {
         $guests = [[
             'first_name' => $order->get_meta('booking_client_first_name') ?: $order->get_billing_first_name(),
-            'last_name' => $order->get_meta('booking_client_last_name') ?: $order->get_billing_last_name(),
-            'email' => $order->get_meta('booking_client_email') ?: $order->get_billing_email(),
-            'phone' => $order->get_meta('booking_client_phone') ?: $order->get_billing_phone(),
-            'birthdate' => $order->get_meta('birthdate') ?: '',
-            'gender' => $order->get_meta('gender') ?: '',
-            'id_number' => $order->get_meta('id_number') ?: '',
+            'last_name'  => $order->get_meta('booking_client_last_name')  ?: $order->get_billing_last_name(),
+            'email'      => $order->get_meta('booking_client_email')      ?: $order->get_billing_email(),
+            'phone'      => $order->get_meta('booking_client_phone')      ?: $order->get_billing_phone(),
+            'birthdate'  => $order->get_meta('birthdate') ?: '',
+            'gender'     => $order->get_meta('gender') ?: '',
+            'id_number'  => $order->get_meta('id_number') ?: '',
         ]];
     }
     $is_paid_by_other = $order->get_meta('_ovb_paid_by_other') === 'yes';
 
-    if (!empty($guests)) {
-        echo '<div style="display:flex; flex-wrap:wrap; gap:30px;">';
-        foreach ($guests as $i => $guest) {
-            echo '<div style="flex: 1 1 300px; background:#fff; padding:15px; border:1px solid #e5e5e5; border-radius:6px;">';
-            $label = 'Guest #' . ($is_paid_by_other ? ($i + 1) : $i);
-            if (!$is_paid_by_other && $i === 0) $label = 'Booking Person';
-            echo '<strong style="display:block; margin-bottom:10px;">' . esc_html($label) . '</strong>';
-            if ($is_paid_by_other && $i === 0) {
-                echo '<span style="font-size:12px; color:#7c3aed; margin-top:4px; display:block;">(Different from payer)</span>';
+    if ( !empty($guests) ) {
+        echo '<div class="ovb-guests" style="display:flex; flex-wrap:wrap; gap:16px; margin:12px 0;">';
+        foreach ( $guests as $i => $guest ) {
+            echo '<div style="flex:1 1 300px; background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:12px 14px;">';
+
+            $label = $is_paid_by_other ? sprintf( esc_html__('Gost #%d','ov-booking'), $i+1 )
+                                       : ( $i === 0 ? esc_html__('Osoba koja rezerviše','ov-booking')
+                                                    : sprintf( esc_html__('Gost #%d','ov-booking'), $i ) );
+            echo '<strong style="display:block; margin-bottom:8px;">' . $label . '</strong>';
+            if ( $is_paid_by_other && $i === 0 ) {
+                echo '<span style="font-size:12px; color:#7c3aed; display:block; margin:-4px 0 6px;">(' . esc_html__('Različit od platioca','ov-booking') . ')</span>';
             }
-            echo '<ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px;">';
-            $full_name = trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? ''));
-            if ($full_name) {
-                echo '<li><strong>Full Name:</strong> ' . esc_html($full_name) . '</li>';
-            }
-            if (!empty($guest['email'])) {
+
+            echo '<ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:4px;">';
+
+            $full_name = trim( ($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? '') );
+            if ( $full_name ) echo '<li><strong>'.esc_html__('Ime i prezime','ov-booking').':</strong> ' . esc_html($full_name) . '</li>';
+
+            if ( !empty($guest['email']) ) {
                 echo '<li><strong>Email:</strong> <a href="mailto:' . esc_attr($guest['email']) . '">' . esc_html($guest['email']) . '</a></li>';
             }
-            if (!empty($guest['phone'])) {
-                echo '<li><strong>Phone:</strong> <a href="tel:' . esc_attr($guest['phone']) . '">' . esc_html($guest['phone']) . '</a></li>';
+            if ( !empty($guest['phone']) ) {
+                $gtel = preg_replace('/[^0-9+]/', '', $guest['phone']);
+                echo '<li><strong>'.esc_html__('Telefon','ov-booking').':</strong> <a href="tel:' . esc_attr($gtel) . '">' . esc_html($guest['phone']) . '</a></li>';
             }
-            if (!empty($guest['birthdate'])) {
-                $birth_ts = strtotime($guest['birthdate']);
-                $birth_formatted = $birth_ts ? date_i18n(get_option('date_format'), $birth_ts) : $guest['birthdate'];
-                echo '<li><strong>Date of Birth:</strong> ' . esc_html($birth_formatted) . '</li>';
+            if ( !empty($guest['birthdate']) ) {
+                $ts = strtotime($guest['birthdate']);
+                $bf = $ts ? date_i18n( get_option('date_format'), $ts ) : $guest['birthdate'];
+                echo '<li><strong>'.esc_html__('Datum rođenja','ov-booking').':</strong> ' . esc_html($bf) . '</li>';
             }
-            if (!empty($guest['gender'])) {
-                echo '<li><strong>Gender:</strong> ' . esc_html(ucfirst($guest['gender'])) . '</li>';
+            if ( !empty($guest['gender']) ) {
+                echo '<li><strong>'.esc_html__('Pol','ov-booking').':</strong> ' . esc_html( ucfirst($guest['gender']) ) . '</li>';
             }
-            if (!empty($guest['id_number'])) {
-                echo '<li><strong>ID Number:</strong> ' . esc_html($guest['id_number']) . '</li>';
+            if ( !empty($guest['id_number']) ) {
+                echo '<li><strong>'.esc_html__('Broj lične karte','ov-booking').':</strong> ' . esc_html($guest['id_number']) . '</li>';
             }
-            echo '</ul>';
-            echo '</div>';
+            echo '</ul></div>';
         }
         echo '</div>';
     }
 });
+
+
+// add_action('woocommerce_admin_order_item_headers', function($order){
+//     // Payer info
+//     echo '<div class="ovb-order-customer" style="margin:0 0 10px 0; padding:16px; background:#f5f5fa; border-radius:0;">';
+//     echo '<h3 style="margin-bottom:10px;">' . __('Details of the Payer:', 'ov-booking') . '</h3>';
+//     echo '<ul style="margin-left:0; padding-left:0; width:fit-content;">';
+//     $fields = [
+//         'Full Name' => ($order->get_meta('booking_client_first_name') ?: $order->get_billing_first_name()) . ' ' . ($order->get_meta('booking_client_last_name') ?: $order->get_billing_last_name()),
+//         'Email' => $order->get_meta('booking_client_email') ?: $order->get_billing_email(),
+//         'Phone' => $order->get_meta('booking_client_phone') ?: $order->get_billing_phone(),
+//         'Address' => $order->get_billing_address_1(),
+//         'City' => $order->get_billing_city(),
+//         'Country' => WC()->countries->countries[$order->get_billing_country()] ?? $order->get_billing_country(),
+//     ];
+//     foreach ($fields as $label => $val) {
+//         if ($val) {
+//             if ($label === 'Phone') {
+//                 echo '<li><strong>' . esc_html($label) . ':</strong> <a href="tel:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
+//             } elseif ($label === 'Email') {
+//                 echo '<li><strong>' . esc_html($label) . ':</strong> <a href="mailto:' . esc_attr($val) . '">' . esc_html($val) . '</a></li>';
+//             } else {
+//                 echo '<li><strong>' . esc_html($label) . ':</strong> ' . esc_html($val) . '</li>';
+//             }
+//         }
+//     }
+//     echo '</ul>';
+//     echo '</div>';
+
+//     // Guests info
+//     $guests = $order->get_meta('_ovb_guests');
+//     if (!is_array($guests) || empty($guests)) {
+//         $guests = [[
+//             'first_name' => $order->get_meta('booking_client_first_name') ?: $order->get_billing_first_name(),
+//             'last_name' => $order->get_meta('booking_client_last_name') ?: $order->get_billing_last_name(),
+//             'email' => $order->get_meta('booking_client_email') ?: $order->get_billing_email(),
+//             'phone' => $order->get_meta('booking_client_phone') ?: $order->get_billing_phone(),
+//             'birthdate' => $order->get_meta('birthdate') ?: '',
+//             'gender' => $order->get_meta('gender') ?: '',
+//             'id_number' => $order->get_meta('id_number') ?: '',
+//         ]];
+//     }
+//     $is_paid_by_other = $order->get_meta('_ovb_paid_by_other') === 'yes';
+
+//     if (!empty($guests)) {
+//         echo '<div style="display:flex; flex-wrap:wrap; gap:30px;">';
+//         foreach ($guests as $i => $guest) {
+//             echo '<div style="flex: 1 1 300px; background:#fff; padding:15px;">';
+//             $label = 'Guest #' . ($is_paid_by_other ? ($i + 1) : $i);
+//             if (!$is_paid_by_other && $i === 0) $label = 'Booking Person';
+//             echo '<strong style="display:block; margin-bottom:10px;">' . esc_html($label) . '</strong>';
+//             if ($is_paid_by_other && $i === 0) {
+//                 echo '<span style="font-size:12px; color:#7c3aed; margin-top:4px; display:block;">(Different from payer)</span>';
+//             }
+//             echo '<ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px;">';
+//             $full_name = trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? ''));
+//             if ($full_name) {
+//                 echo '<li><strong>Full Name:</strong> ' . esc_html($full_name) . '</li>';
+//             }
+//             if (!empty($guest['email'])) {
+//                 echo '<li><strong>Email:</strong> <a href="mailto:' . esc_attr($guest['email']) . '">' . esc_html($guest['email']) . '</a></li>';
+//             }
+//             if (!empty($guest['phone'])) {
+//                 echo '<li><strong>Phone:</strong> <a href="tel:' . esc_attr($guest['phone']) . '">' . esc_html($guest['phone']) . '</a></li>';
+//             }
+//             if (!empty($guest['birthdate'])) {
+//                 $birth_ts = strtotime($guest['birthdate']);
+//                 $birth_formatted = $birth_ts ? date_i18n(get_option('date_format'), $birth_ts) : $guest['birthdate'];
+//                 echo '<li><strong>Date of Birth:</strong> ' . esc_html($birth_formatted) . '</li>';
+//             }
+//             if (!empty($guest['gender'])) {
+//                 echo '<li><strong>Gender:</strong> ' . esc_html(ucfirst($guest['gender'])) . '</li>';
+//             }
+//             if (!empty($guest['id_number'])) {
+//                 echo '<li><strong>ID Number:</strong> ' . esc_html($guest['id_number']) . '</li>';
+//             }
+//             echo '</ul>';
+//             echo '</div>';
+//         }
+//         echo '</div>';
+//     }
+// });
+
+// === Reorder admin Orders columns (HPOS + legacy) — checkbox first, pa traženi redosled ===
+if ( ! function_exists('ovb_reorder_admin_order_columns') ) {
+    function ovb_reorder_admin_order_columns( $columns ) {
+        $out  = [];
+        $used = [];
+
+        // 1) Checkbox uvek prvi
+        if ( isset( $columns['cb'] ) ) {
+            $out['cb']  = $columns['cb'];
+            $used['cb'] = true;
+        }
+
+        // 2) Traženi redosled (BEZ 'cb' ovde!)
+        $desired = [
+            ['order','order_number','wc_order_number','order_title'], // Order
+            ['ovb_guests'],                                           // Guests (custom)
+            ['ovb_check_in'],                                         // Check In (custom)
+            ['ovb_check_out'],                                        // Check Out (custom)
+            ['date','order_date'],                                    // Date
+            ['status','order_status'],                                // Status
+            ['total','order_total'],                                  // Total
+            ['origin','order_source','source','wc_order_source'],     // Origin (ako postoji)
+        ];
+
+        foreach ( $desired as $choices ) {
+            foreach ( $choices as $key ) {
+                if ( isset( $columns[$key] ) && ! isset( $used[$key] ) ) {
+                    $out[$key]  = $columns[$key];
+                    $used[$key] = true;
+                    break;
+                }
+            }
+        }
+
+        // 3) Ostale kolone (koje nismo mapirali) dodaj pre actions; actions uvek poslednji
+        $actions_key = null;
+        foreach ( $columns as $key => $label ) {
+            if ( isset( $used[$key] ) ) continue;
+
+            if ( in_array( $key, ['wc_actions','order_actions'], true ) ) {
+                $actions_key = $key;
+                continue;
+            }
+            $out[$key] = $label;
+        }
+
+        if ( $actions_key && isset( $columns[$actions_key] ) ) {
+            $out[$actions_key] = $columns[$actions_key];
+        }
+
+        return $out;
+    }
+}
+
+// HPOS / wc-admin Orders
+add_filter( 'manage_woocommerce_page_wc-orders_columns', 'ovb_reorder_admin_order_columns', 99 );
+// Legacy post-type ekran
+add_filter( 'manage_edit-shop_order_columns',            'ovb_reorder_admin_order_columns', 99 );

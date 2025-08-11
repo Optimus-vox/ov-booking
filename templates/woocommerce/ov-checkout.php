@@ -1,6 +1,8 @@
 <?php
 defined('ABSPATH') || exit;
 
+define('OVB_CHECKOUT_LOADED', true);
+
 $checkout = WC()->checkout();
 
 if (function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received')) {
@@ -20,13 +22,6 @@ if (function_exists('wc_print_notices')) {
 if (!class_exists('WC_Cart') || !WC()->cart || WC()->cart->is_empty()) {
     echo '<div class="ov-cart page-cart">';
     echo '<p class="ov-cart-empty">' . esc_html__('Vaša korpa je prazna.', 'ov-booking') . '</p>';
-    echo '</div>';
-    return;
-}
-
-if (!is_user_logged_in()) {
-    echo '<div class="ov-cart page-cart">';
-    echo '<p class="ov-cart-error">' . esc_html__('You must be logged in to make a booking.', 'ov-booking') . '</p>';
     echo '</div>';
     return;
 }
@@ -87,7 +82,25 @@ if ( function_exists('is_checkout') && is_checkout() && ! is_wc_endpoint_url('or
     wp_enqueue_style('woocommerce-layout');
     wp_enqueue_style('woocommerce-smallscreen');
 }
-include plugin_dir_path(__FILE__) . '../../includes/ov-checkout-full-template.php';
+
+$fullcheckfile = plugin_dir_path(__FILE__) . '../../includes/ov-checkout-full-template.php';
+// include plugin_dir_path(__FILE__) . '../../includes/ov-checkout-full-template.php';
+
+ob_start();
+if ( file_exists($fullcheckfile) ) {
+    include $fullcheckfile;
+}
+$html = ob_get_clean();
+
+if ( strpos($html, 'ov-checkout-content') === false ) {
+    echo '<div class="ov-checkout-content" id="ov-checkout-content">';
+    echo $html;
+    echo '</div>';
+} else {
+    echo $html;
+}
+
+echo "\n<!-- OVB: ov-checkout.php loaded -->\n";
 
 
 get_footer();

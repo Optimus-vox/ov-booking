@@ -616,9 +616,9 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
           }
 
           .ov-summary-card{
-            #order_review_heading{
+            /* #order_review_heading{
 
-            }
+            } */
             .ovb-product-image {
               width: 100%;
               overflow: hidden;
@@ -793,9 +793,9 @@ abbr[title] {
         &:nth-of-type(2){
           display: none;
         }
-        &.ovb-checkout-row{
+        /* &.ovb-checkout-row{
          
-        }
+        } */
         &.ovb-subtotal-row{
           border-top: 2px solid white !important;
           border-color: #fff;

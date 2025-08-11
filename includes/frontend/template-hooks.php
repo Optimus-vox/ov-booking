@@ -97,6 +97,18 @@ function ovb_override_view_order_template($template, $template_name, $template_p
     return $template;
 }
 
+//test brisi ako ne radi
+// // === HARDEN: Force core WC checkout template (bypass broken theme override) ===
+// add_filter('woocommerce_locate_template', function($template, $template_name, $template_path){
+//     if ( function_exists('is_checkout') && is_checkout() && $template_name === 'checkout/form-checkout.php' ) {
+//         $core = WC()->plugin_path() . '/templates/checkout/form-checkout.php';
+//         if ( file_exists($core) ) {
+//             return $core;
+//         }
+//     }
+//     return $template;
+// }, 999, 3);
+
 /**
  * SHOP PAGE ELEMENTOR DUPLICATE PREVENTION
  */

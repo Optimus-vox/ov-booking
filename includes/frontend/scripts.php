@@ -343,14 +343,15 @@ function ov_enqueue_cart_assets() {
 }
 
 
-/** CHECKOUT PAGE CSS */
-add_action( 'wp_enqueue_scripts', 'ovb_enqueue_checkout_assets', 20 );
+/** CHECKOUT PAGE CSS - HIGH PRIORITY */
+add_action( 'wp_enqueue_scripts', 'ovb_enqueue_checkout_assets', 999 );
 function ovb_enqueue_checkout_assets() {
     if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
         return;
     }
 
     $css_file = OVB_BOOKING_PATH . 'assets/css/ov-checkout.css';
+    $js_file = OVB_BOOKING_PATH . 'assets/js/ov-checkout.js';
 
     if ( file_exists( $css_file ) ) {
         wp_enqueue_style(
@@ -358,6 +359,35 @@ function ovb_enqueue_checkout_assets() {
             OVB_BOOKING_URL . 'assets/css/ov-checkout.css',
             [],
             filemtime( $css_file )
+        );
+        
+        // Force CSS to load after theme styles
+        wp_style_add_data('ovb-checkout-style', 'priority', 999);
+        
+        // Add inline CSS to force display
+        wp_add_inline_style('ovb-checkout-style', '
+            /* FORCE CHECKOUT CONTENT DISPLAY */
+            .ov-checkout-content {
+                display: grid !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            @media(max-width:1100px) {
+                .ov-checkout-content {
+                    display: flex !important;
+                    flex-direction: column-reverse !important;
+                }
+            }
+        ');
+    }
+    
+    if ( file_exists( $js_file ) ) {
+        wp_enqueue_script(
+            'ovb-checkout-script',
+            OVB_BOOKING_URL . 'assets/js/ov-checkout.js',
+            ['jquery'],
+            filemtime( $js_file ),
+            true
         );
     }
 }

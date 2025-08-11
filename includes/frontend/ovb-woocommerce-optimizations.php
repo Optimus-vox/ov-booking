@@ -86,10 +86,10 @@ add_action('woocommerce_init', 'ovb_additional_booking_customizations');
 function ovb_additional_booking_customizations() {
     
     // Remove "Add to cart" message and redirect to cart
-    add_filter('woocommerce_add_to_cart_redirect', function($url) {
-        // Stay on product page instead of redirecting to cart
-        return false;
-    });
+    // add_filter('woocommerce_add_to_cart_redirect', function($url) {
+    //     // Stay on product page instead of redirecting to cart
+    //     return false;
+    // });
     
     // Custom success message for bookings
     add_filter('woocommerce_add_to_cart_message_html', function($message, $products) {
@@ -116,41 +116,60 @@ function ovb_additional_booking_customizations() {
 /**
  * Checkout optimizations for bookings
  */
-add_action('woocommerce_checkout_init', 'ovb_checkout_booking_optimizations');
-function ovb_checkout_booking_optimizations() {
-    
-    // Remove billing address fields that aren't needed for bookings
-    add_filter('woocommerce_checkout_fields', function($fields) {
-        // Keep only essential fields
-        $essential_fields = [
-            'billing_first_name',
-            'billing_last_name', 
-            'billing_email',
-            'billing_phone',
-            'billing_country', // Might be needed for tax purposes
-        ];
-        
-        // Remove non-essential billing fields
-        foreach ($fields['billing'] as $key => $field) {
-            if (!in_array($key, $essential_fields)) {
-                unset($fields['billing'][$key]);
-            }
-        }
-        
-        // Remove shipping fields completely
-        unset($fields['shipping']);
-        
+add_filter('woocommerce_checkout_fields', 'ovb_checkout_fields_keep_and_order', 9999);
+function ovb_checkout_fields_keep_and_order( $fields ) {
+    if ( empty($fields['billing']) || !is_array($fields['billing']) ) {
         return $fields;
-    });
-    
-    // Make phone required for bookings
-    add_filter('woocommerce_billing_fields', function($fields) {
-        if (isset($fields['billing_phone'])) {
-            $fields['billing_phone']['required'] = true;
+    }
+
+    // Zadrži i poređaj ova polja (po redu)
+    $keep = [
+        'billing_first_name',
+        'billing_last_name',
+        'billing_phone',
+        'billing_email',
+        'billing_country',
+        'billing_address_1',
+        'billing_address_2',
+        'billing_city',
+        'billing_state',
+        'billing_postcode',
+        // 'billing_company', // uključi ako želiš
+    ];
+
+    // 1) ukloni sve što nije na listi (samo u billing sekciji)
+    foreach ( array_keys($fields['billing']) as $key ) {
+        if ( ! in_array($key, $keep, true) ) {
+            unset($fields['billing'][$key]);
         }
-        return $fields;
-    });
+    }
+
+    // 2) jasan redosled billing polja
+    $sorted = [];
+    foreach ( $keep as $k ) {
+        if ( isset($fields['billing'][$k]) ) {
+            $sorted[$k] = $fields['billing'][$k];
+        }
+    }
+    // ubaci eventualno preostala polja (ako ih je drugi plugin dodao)
+    foreach ( $fields['billing'] as $k => $v ) {
+        if ( ! isset($sorted[$k]) ) {
+            $sorted[$k] = $v;
+        }
+    }
+    $fields['billing'] = $sorted;
+
+    // 3) obaveznost telefona (ako postoji)
+    if ( isset($fields['billing']['billing_phone']) ) {
+        $fields['billing']['billing_phone']['required'] = true;
+    }
+
+    // 4) ugasi shipping sekciju
+    unset($fields['shipping']);
+
+    return $fields;
 }
+
 
 /**
  * Email customizations for bookings
@@ -178,25 +197,20 @@ function ovb_booking_email_customizations() {
 /**
  * Admin customizations for bookings
  */
-add_action('admin_init', 'ovb_admin_booking_customizations');
-function ovb_admin_booking_customizations() {
-    
-    // Change admin menu labels
-    add_filter('woocommerce_admin_order_item_headers', function($headers) {
-        $headers['item'] = __('Booking Item', 'ov-booking');
-        return $headers;
-    });
-    
-    // Add booking-specific admin notices
+add_action('admin_init', function() {
     add_action('admin_notices', function() {
         $screen = get_current_screen();
-        if ($screen && $screen->id === 'shop_order') {
-            echo '<div class="notice notice-info">';
-            echo '<p>' . __('This is a booking order. Handle with special care regarding dates and customer communication.', 'ov-booking') . '</p>';
-            echo '</div>';
+        if ( ! $screen ) return;
+
+        // Classic edit screen + HPOS wc-orders (lista i edit)
+        $targets = ['shop_order', 'woocommerce_page_wc-orders', 'woocommerce_page_wc-orders--edit'];
+        if ( in_array($screen->id, $targets, true) ) {
+            echo '<div class="notice notice-info"><p>'
+               . esc_html__('This is a booking order. Handle with special care regarding dates and customer communication.', 'ov-booking')
+               . '</p></div>';
         }
     });
-}
+});
 
 /**
  * Performance optimizations

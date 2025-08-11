@@ -412,6 +412,9 @@ function ovb_admin_create_manual_order() {
         // Save Check-in and Check-out dates into the WC_Order object
         // $order->update_meta_data( 'ovb_check_in_date', sanitize_text_field( $client_data['rangeStart'] ) );
         // $order->update_meta_data( 'ovb_check_out_date', sanitize_text_field( $client_data['rangeEnd'] ) );
+        $order->update_meta_data('ovb_check_in_date', $start);
+        $order->update_meta_data('ovb_check_out_date', $end);
+        $order->update_meta_data('_ovb_guests_num', $client_data['guests']);
 
 
         // 11) ZAVRŠI ORDER
