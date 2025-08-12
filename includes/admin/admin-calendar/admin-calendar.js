@@ -136,7 +136,14 @@ jQuery(document).ready(function () {
       today.setHours(0, 0, 0, 0);
 
       const isPast = dayDate < today;
-      const isCheckoutDay = clients.some((client) => client.isCheckout);
+
+      // Koliko ih ulazi/izlazi tog dana
+      const checkins = clients.filter((c) => c.isCheckin).length;
+      const checkouts = clients.filter((c) => c.isCheckout).length;
+
+      // Stanja dana
+      const departuresOnly = checkouts > 0 && checkins === 0; // samo izlazak
+      const turnoverDay = checkouts > 0 && checkins > 0; // izlazak + ulazak
 
       let price = dayData.price;
       let status = dayData.status ?? "available";
@@ -154,7 +161,7 @@ jQuery(document).ready(function () {
 
       const isLastDay = clients.some((client) => client.rangeEnd === formattedDate);
       if (hasClients) {
-        if (isLastDay) {
+        if (turnoverDay || isLastDay) {
           status = "available";
         } else {
           status = "booked";
@@ -236,8 +243,13 @@ jQuery(document).ready(function () {
       // Start actions container
       dayHTML += `<div class="day-actions">`;
 
-      // Show "+" button only for non-booked, non-past days
-      if ((!hasClients && !isPast) || isCheckoutDay) {
+      // (+) i status:
+      //  - nema klijenata → prikaži (ako nije prošao dan)
+      //  - samo checkout tog dana (niko ne ulazi) → prikaži (da možeš da dodaš novog gosta)
+      //  - čim postoji i checkin (turnover) ILI ukupno 2 klijenta → sakrij
+      const canShowActions = !isPast && (!hasClients || (departuresOnly && clients.length < 2));
+
+      if (canShowActions) {
         dayHTML += `
         <button class="add-client-button" data-date="${formattedDate}" title="Add client">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">

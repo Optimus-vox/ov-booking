@@ -86,28 +86,49 @@ add_action('woocommerce_checkout_update_order_meta', function($order_id, $data =
 }, 10, 2);
 
 /**
- * ORDER ITEM META - ADD BOOKING DETAILS TO EACH ITEM
+ * ORDER ITEM META - ADD BOOKING DETAILS TO EACH ITEM | ICS
  */
-// add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_item_key, $values, $order) {
-//     if (!empty($values['ovb_all_dates'])) {
-//         $item->add_meta_data('_ovb_calendar_data', sanitize_text_field($values['ovb_all_dates']));
-//         $item->add_meta_data('booking_dates', sanitize_text_field($values['ovb_all_dates']));
-//         $item->add_meta_data('ovb_all_dates', sanitize_text_field($values['ovb_all_dates']));
-//     }
-//     if (!empty($values['guests'])) {
-//         $item->add_meta_data('_ovb_guests', intval($values['guests']));
-//         $item->add_meta_data('guests', intval($values['guests']));
-//         $item->add_meta_data('ovb_guest_count', intval($values['guests']));
-//     }
-//     if (!empty($values['start_date'])) {
-//         $item->add_meta_data('_ovb_range_start', sanitize_text_field($values['start_date']));
-//         $item->add_meta_data('rangeStart', sanitize_text_field($values['start_date']));
-//     }
-//     if (!empty($values['end_date'])) {
-//         $item->add_meta_data('_ovb_range_end', sanitize_text_field($values['end_date']));
-//         $item->add_meta_data('rangeEnd', sanitize_text_field($values['end_date']));
-//     }
-// }, 10, 4);
+add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_item_key, $values, $order) {
+
+    // 1) Datumi na stavku: ako imamo CSV iz korpe – koristi njega
+    if (!empty($values['ovb_all_dates'])) {
+        $csv = sanitize_text_field($values['ovb_all_dates']);
+        $item->add_meta_data('ovb_all_dates', $csv);
+        $item->add_meta_data('booking_dates', $csv);
+        $item->add_meta_data('_ovb_calendar_data', $csv); // BC sa starim kodom
+    } else {
+        // 2) Fallback: konstruiši CSV iz start/end ako postoji
+        $start = !empty($values['start_date']) ? sanitize_text_field($values['start_date']) : '';
+        $end   = !empty($values['end_date'])   ? sanitize_text_field($values['end_date'])   : '';
+        if ($start && $end) {
+            $dates = [];
+            $t = strtotime($start); $te = strtotime($end);
+            while ($t && $te && $t <= $te) { $dates[] = date('Y-m-d', $t); $t = strtotime('+1 day', $t); }
+            if ($dates) {
+                $csv = implode(',', $dates);
+                $item->add_meta_data('ovb_all_dates', $csv);
+                $item->add_meta_data('booking_dates', $csv);
+                $item->add_meta_data('_ovb_calendar_data', $csv);
+            }
+        }
+    }
+
+    if (!empty($values['guests'])) {
+        $g = absint($values['guests']);
+        $item->add_meta_data('guests', $g);
+        $item->add_meta_data('_ovb_guests', $g);
+        $item->add_meta_data('ovb_guest_count', $g);
+    }
+    if (!empty($values['start_date'])) {
+        $item->add_meta_data('rangeStart', sanitize_text_field($values['start_date']));
+        $item->add_meta_data('_ovb_range_start', sanitize_text_field($values['start_date']));
+    }
+    if (!empty($values['end_date'])) {
+        $item->add_meta_data('rangeEnd', sanitize_text_field($values['end_date']));
+        $item->add_meta_data('_ovb_range_end', sanitize_text_field($values['end_date']));
+    }
+}, 10, 4);
+
 
 /**
  * COPY FIRST CART ITEM BOOKING DATA TO ORDER (for WC < 7.4)
@@ -164,62 +185,156 @@ add_action('woocommerce_order_status_completed', function($order_id) {
 /**
  * CALENDAR UPDATE ON ORDER COMPLETED
  */
-add_action('woocommerce_order_status_completed', function($order_id) {
+// add_action('woocommerce_order_status_completed', function($order_id) {
+//     $order = wc_get_order($order_id);
+//     if (!$order) return;
+
+//     $guest_first = $order->get_meta('booking_client_first_name') ?: $order->get_meta('first_name') ?: $order->get_billing_first_name();
+//     $guest_last  = $order->get_meta('booking_client_last_name') ?: $order->get_meta('last_name') ?: $order->get_billing_last_name();
+//     $guest_email = $order->get_meta('booking_client_email') ?: $order->get_meta('email') ?: $order->get_billing_email();
+//     $guest_phone = $order->get_meta('booking_client_phone') ?: $order->get_meta('phone') ?: $order->get_billing_phone();
+
+//     foreach ($order->get_items() as $item) {
+//         $prod_id = $item->get_product_id();
+//         $item_id = $item->get_id();
+//         if (!$prod_id) continue;
+
+//         $booking_id = $order_id . '_' . $item_id;
+//         $dates_meta = $item->get_meta('ovb_all_dates') ?: $item->get_meta('_ovb_calendar_data') ?: $item->get_meta('booking_dates');
+//         if (empty($dates_meta) || !is_string($dates_meta)) continue;
+
+//         $dates = array_filter(array_map('trim', explode(',', $dates_meta)));
+//         if (empty($dates)) continue;
+
+//         $calendar_data = get_post_meta($prod_id, '_ovb_calendar_data', true);
+//         if (!is_array($calendar_data)) $calendar_data = [];
+
+//         $client_data = [
+//             'firstName'   => $guest_first,
+//             'lastName'    => $guest_last,
+//             'email'       => $guest_email,
+//             'phone'       => $guest_phone,
+//             'guests'      => $order->get_meta('guests') ?: $order->get_meta('_ovb_guests_num') ?: 1,
+//             'rangeStart'  => $dates[0] ?? '',
+//             'rangeEnd'    => end($dates) ?: '',
+//         ];
+
+//         $last_date = end($dates);
+
+//         foreach ($dates as $i => $date) {
+//             if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
+//                 $calendar_data[$date] = [];
+//             }
+//             $existing_clients = $calendar_data[$date]['clients'] ?? [];
+//             if (!is_array($existing_clients)) $existing_clients = [];
+//             $existing_clients = array_filter($existing_clients, fn($cl) => !isset($cl['bookingId']) || $cl['bookingId'] !== $booking_id);
+//             $existing_clients[] = array_merge($client_data, [
+//                 'bookingId'   => $booking_id,
+//                 'isCheckin'   => ($i === 0),
+//                 'isCheckout'  => ($i === count($dates)-1),
+//             ]);
+//             $calendar_data[$date] = array_merge($calendar_data[$date], [
+//                 'status' => ($i === count($dates)-1) ? ($calendar_data[$date]['status'] ?? 'available') : 'booked',
+//                 'clients' => array_values($existing_clients),
+//             ]);
+//         }
+//         update_post_meta($prod_id, '_ovb_calendar_data', $calendar_data);
+//     }
+// }, 20, 1);
+// === OVB: Sync u kalendar kad order postane completed (robustan, sa fallbackom) ===
+add_action('woocommerce_order_status_completed', 'ovb_calendar_sync_on_completed', 10, 1);
+function ovb_calendar_sync_on_completed( $order_id ) {
     $order = wc_get_order($order_id);
-    if (!$order) return;
+    if ( ! $order ) return;
 
-    $guest_first = $order->get_meta('booking_client_first_name') ?: $order->get_meta('first_name') ?: $order->get_billing_first_name();
-    $guest_last  = $order->get_meta('booking_client_last_name') ?: $order->get_meta('last_name') ?: $order->get_billing_last_name();
-    $guest_email = $order->get_meta('booking_client_email') ?: $order->get_meta('email') ?: $order->get_billing_email();
-    $guest_phone = $order->get_meta('booking_client_phone') ?: $order->get_meta('phone') ?: $order->get_billing_phone();
+    foreach ( $order->get_items() as $item ) {
+        $product_id = $item->get_product_id();
+        if ( ! $product_id ) continue;
 
-    foreach ($order->get_items() as $item) {
-        $prod_id = $item->get_product_id();
-        $item_id = $item->get_id();
-        if (!$prod_id) continue;
-
-        $booking_id = $order_id . '_' . $item_id;
+        // 1) Pokušaj sa item meta (kako tvoj stari kod radi)
         $dates_meta = $item->get_meta('ovb_all_dates') ?: $item->get_meta('_ovb_calendar_data') ?: $item->get_meta('booking_dates');
-        if (empty($dates_meta) || !is_string($dates_meta)) continue;
-
-        $dates = array_filter(array_map('trim', explode(',', $dates_meta)));
-        if (empty($dates)) continue;
-
-        $calendar_data = get_post_meta($prod_id, '_ovb_calendar_data', true);
-        if (!is_array($calendar_data)) $calendar_data = [];
-
-        $client_data = [
-            'firstName'   => $guest_first,
-            'lastName'    => $guest_last,
-            'email'       => $guest_email,
-            'phone'       => $guest_phone,
-            'guests'      => $order->get_meta('guests') ?: $order->get_meta('_ovb_guests_num') ?: 1,
-            'rangeStart'  => $dates[0] ?? '',
-            'rangeEnd'    => end($dates) ?: '',
-        ];
-
-        $last_date = end($dates);
-
-        foreach ($dates as $i => $date) {
-            if (!isset($calendar_data[$date]) || !is_array($calendar_data[$date])) {
-                $calendar_data[$date] = [];
-            }
-            $existing_clients = $calendar_data[$date]['clients'] ?? [];
-            if (!is_array($existing_clients)) $existing_clients = [];
-            $existing_clients = array_filter($existing_clients, fn($cl) => !isset($cl['bookingId']) || $cl['bookingId'] !== $booking_id);
-            $existing_clients[] = array_merge($client_data, [
-                'bookingId'   => $booking_id,
-                'isCheckin'   => ($i === 0),
-                'isCheckout'  => ($i === count($dates)-1),
-            ]);
-            $calendar_data[$date] = array_merge($calendar_data[$date], [
-                'status' => ($i === count($dates)-1) ? ($calendar_data[$date]['status'] ?? 'available') : 'booked',
-                'clients' => array_values($existing_clients),
-            ]);
+        $dates = [];
+        if ( is_string($dates_meta) && trim($dates_meta) !== '' ) {
+            $dates = array_values(array_filter(array_map('trim', explode(',', $dates_meta))));
         }
-        update_post_meta($prod_id, '_ovb_calendar_data', $calendar_data);
+
+        // 2) Fallback: koristi order meta (start/end) ako item meta ne postoji
+        if ( empty($dates) ) {
+            $start = $order->get_meta('ovb_check_in_date')  ?: $order->get_meta('_ovb_start_date') ?: $order->get_meta('start_date');
+            $end   = $order->get_meta('ovb_check_out_date') ?: $order->get_meta('_ovb_end_date')   ?: $order->get_meta('end_date');
+            if ( $start && $end ) {
+                if ( function_exists('ovb_generate_date_range') ) {
+                    $dates = ovb_generate_date_range($start, $end);
+                } else {
+                    // fallback generator
+                    $dates = [];
+                    $t = strtotime($start); $te = strtotime($end);
+                    while ($t <= $te) { $dates[] = date('Y-m-d', $t); $t = strtotime('+1 day', $t); }
+                }
+            }
+        }
+
+        if ( empty($dates) ) continue;
+
+        // Podaci o gostu
+        $guest_first = $order->get_meta('booking_client_first_name') ?: $order->get_meta('first_name') ?: $order->get_billing_first_name();
+        $guest_last  = $order->get_meta('booking_client_last_name') ?: $order->get_meta('last_name')  ?: $order->get_billing_last_name();
+        $guest_email = $order->get_meta('booking_client_email')      ?: $order->get_meta('email')      ?: $order->get_billing_email();
+        $guest_phone = $order->get_meta('booking_client_phone')      ?: $order->get_meta('phone')      ?: $order->get_billing_phone();
+
+        $booking_id = $order_id . '_' . $item->get_id();
+
+        // 3) Učitaj kalendar meta – normalizuj u array (back-compat za JSON)
+        $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
+        if ( is_string($calendar_data) ) {
+            $decoded = json_decode($calendar_data, true);
+            $calendar_data = is_array($decoded) ? $decoded : [];
+        }
+        if ( ! is_array($calendar_data) ) $calendar_data = [];
+
+        // 4) Upis po danima (idempotentno – prvo ukloni isti bookingId pa dodaj)
+        $total = count($dates);
+        foreach ( $dates as $i => $date ) {
+            if ( ! isset($calendar_data[$date]) || ! is_array($calendar_data[$date]) ) {
+                $calendar_data[$date] = ['status' => 'available', 'isPast' => false, 'clients' => []];
+            }
+            $clients = isset($calendar_data[$date]['clients']) && is_array($calendar_data[$date]['clients'])
+                ? $calendar_data[$date]['clients'] : [];
+
+            $clients = array_values(array_filter($clients, function($cl) use ($booking_id){
+                return !isset($cl['bookingId']) || $cl['bookingId'] !== $booking_id;
+            }));
+
+            $clients[] = [
+                'bookingId'  => $booking_id,
+                'firstName'  => sanitize_text_field($guest_first),
+                'lastName'   => sanitize_text_field($guest_last),
+                'email'      => sanitize_email($guest_email),
+                'phone'      => sanitize_text_field($guest_phone),
+                'guests'     => (int) ($order->get_meta('guests') ?: $order->get_meta('_ovb_guests_num') ?: 1),
+                'rangeStart' => $dates[0],
+                'rangeEnd'   => $dates[$total-1],
+                'isCheckin'  => ($i === 0),
+                'isCheckout' => ($i === $total - 1),
+                'order_id'   => $order_id,
+            ];
+
+            $calendar_data[$date]['clients'] = $clients;
+            $calendar_data[$date]['status']  = ($i === $total - 1) ? 'available' : 'booked';
+        }
+
+        // 5) Sačuvaj kao ARRAY (ne JSON)
+        update_post_meta($product_id, '_ovb_calendar_data', $calendar_data);
     }
-}, 20, 1);
+}
+
+// status_changed
+add_action('woocommerce_order_status_changed', function($order_id, $from, $to, $order){
+    if ($to === 'completed') {
+        ovb_calendar_sync_on_completed($order_id);
+    }
+}, 10, 4);
+
 
 /**
  * RELEASE DATES ON CANCEL/REFUND/DELETE ORDER
@@ -232,42 +347,6 @@ add_action('untrashed_post', 'ovb_restore_calendar_dates_on_untrash', 10, 1);
 /**
  * Uklanja rezervaciju iz kalendara kada se order obriše (trash)
  */
-// function ovb_release_calendar_dates_on_cancel($order) {
-//     $order = is_numeric($order) ? wc_get_order($order) : $order;
-//     if (!$order) return;
-
-//     foreach ($order->get_items() as $item) {
-//         $product_id = $item->get_product_id();
-//         if (!$product_id) continue;
-        
-//         $item_id = $item->get_id();
-//         $booking_id = $order->get_id() . '_' . $item_id;
-        
-//         $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
-//         if (!is_array($calendar_data)) $calendar_data = [];
-        
-//         // Proveri da li booking uopšte postoji u kalendaru
-//         if (!ovb_booking_exists_in_calendar($calendar_data, $booking_id)) {
-//             continue;
-//         }
-        
-//         foreach ($calendar_data as $date => &$data) {
-//             if (!isset($data['clients']) || !is_array($data['clients'])) continue;
-            
-//             // Ukloni samo ako postoji
-//             $data['clients'] = array_values(array_filter($data['clients'], 
-//                 fn($cl) => !isset($cl['bookingId']) || $cl['bookingId'] !== $booking_id
-//             ));
-            
-//             if (empty($data['clients'])) {
-//                 $data['status'] = 'available';
-//             }
-//         }
-//         unset($data);
-        
-//         update_post_meta($product_id, '_ovb_calendar_data', $calendar_data);
-//     }
-// }
 
 function ovb_release_calendar_dates_on_cancel($order) {
     $order = is_numeric($order) ? wc_get_order($order) : $order;
@@ -276,39 +355,50 @@ function ovb_release_calendar_dates_on_cancel($order) {
     foreach ($order->get_items() as $item) {
         $product_id = $item->get_product_id();
         if (!$product_id) continue;
-        
-        $item_id = $item->get_id();
+
+        $item_id    = $item->get_id();
         $booking_id = $order->get_id() . '_' . $item_id;
-        
-        $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
-        if (!is_array($calendar_data)) $calendar_data = [];
-        
+
+        // 1) Pribavi datume iz item-meta ili fallback na order-meta
         $dates_meta = $item->get_meta('ovb_all_dates') ?: $item->get_meta('_ovb_calendar_data') ?: $item->get_meta('booking_dates');
-        if (empty($dates_meta) || !is_string($dates_meta)) continue;
-        
-        $dates = array_filter(array_map('trim', explode(',', $dates_meta)));
-        
-        foreach ($dates as $date) {
-            if (!isset($calendar_data[$date])) continue;
-            
-            if (isset($calendar_data[$date]['clients']) && is_array($calendar_data[$date]['clients'])) {
-                $calendar_data[$date]['clients'] = array_values(array_filter(
-                    $calendar_data[$date]['clients'],
-                    function($client) use ($booking_id) {
-                        return !isset($client['bookingId']) || $client['bookingId'] !== $booking_id;
-                    }
-                ));
-                
-                // If no clients left, set status to available
-                if (empty($calendar_data[$date]['clients'])) {
-                    $calendar_data[$date]['status'] = 'available';
-                }
+        $dates = [];
+        if (is_string($dates_meta) && trim($dates_meta) !== '') {
+            $dates = array_values(array_filter(array_map('trim', explode(',', $dates_meta))));
+        }
+        if (empty($dates)) {
+            $start = $order->get_meta('ovb_check_in_date')  ?: $order->get_meta('_ovb_start_date') ?: $order->get_meta('start_date');
+            $end   = $order->get_meta('ovb_check_out_date') ?: $order->get_meta('_ovb_end_date')   ?: $order->get_meta('end_date');
+            if ($start && $end) {
+                $t = strtotime($start); $te = strtotime($end);
+                while ($t && $te && $t <= $te) { $dates[] = date('Y-m-d', $t); $t = strtotime('+1 day', $t); }
             }
         }
-        
+        if (empty($dates)) continue;
+
+        // 2) Učitaj kalendar (array/JSON safe)
+        $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
+        if (is_string($calendar_data)) {
+            $tmp = json_decode($calendar_data, true);
+            $calendar_data = is_array($tmp) ? $tmp : [];
+        }
+        if (!is_array($calendar_data)) $calendar_data = [];
+
+        // 3) Ukloni bookingId po danima
+        foreach ($dates as $date) {
+            if (empty($calendar_data[$date]) || empty($calendar_data[$date]['clients'])) continue;
+            $calendar_data[$date]['clients'] = array_values(array_filter(
+                (array)$calendar_data[$date]['clients'],
+                function($cl) use($booking_id){ return !isset($cl['bookingId']) || $cl['bookingId'] !== $booking_id; }
+            ));
+            if (empty($calendar_data[$date]['clients'])) {
+                $calendar_data[$date]['status'] = (!empty($calendar_data[$date]['price']) && $calendar_data[$date]['price'] > 0) ? 'available' : 'unavailable';
+            }
+        }
+
         update_post_meta($product_id, '_ovb_calendar_data', $calendar_data);
     }
 }
+
 /**
  * Vraća rezervaciju u kalendar kada se order vrati iz traša
  */
@@ -469,29 +559,30 @@ add_action('before_delete_post', function($post_id) {
 
         $booking_id = $order->get_id() . '_' . $item->get_id();
 
-        // Ukloni klijenta sa tim bookingId iz svih datuma u kalendaru za taj proizvod
-        $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
-        if ($calendar_data) {
-            $calendar = json_decode($calendar_data, true);
-            foreach ($calendar as $date => &$day) {
-                if (!empty($day['clients'])) {
-                    $before = count($day['clients']);
-                    $day['clients'] = array_filter($day['clients'], function($cl) use($booking_id) {
-                        return $cl['bookingId'] !== $booking_id;
-                    });
-                    if ($before !== count($day['clients'])) {
-                        // Update status
-                        if (empty($day['clients'])) {
-                            $day['clients'] = [];
-                            $day['status'] = (!empty($day['price']) && $day['price'] > 0) ? 'available' : 'unavailable';
-                        }
-                    }
-                }
-            }
-            update_post_meta($product_id, '_ovb_calendar_data', wp_json_encode($calendar));
+        // Array/JSON safe load
+        $calendar = get_post_meta($product_id, '_ovb_calendar_data', true);
+        if (is_string($calendar)) {
+            $tmp = json_decode($calendar, true);
+            $calendar = is_array($tmp) ? $tmp : [];
         }
+        if (!is_array($calendar)) $calendar = [];
+
+        foreach ($calendar as $date => &$day) {
+            if (empty($day['clients']) || !is_array($day['clients'])) continue;
+            $before = count($day['clients']);
+            $day['clients'] = array_values(array_filter($day['clients'], function($cl) use($booking_id){
+                return !isset($cl['bookingId']) || $cl['bookingId'] !== $booking_id;
+            }));
+            if ($before !== count($day['clients'])) {
+                $day['status'] = (!empty($day['price']) && $day['price'] > 0) ? 'available' : 'unavailable';
+            }
+        }
+        unset($day);
+
+        update_post_meta($product_id, '_ovb_calendar_data', $calendar);
     }
 });
+
 
 /**
  * ADMIN: BOOKING DATA IN ORDER LIST & DETAILS

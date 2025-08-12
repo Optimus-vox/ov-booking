@@ -270,6 +270,7 @@ td .day-wrapper {
   border-radius: 10px;
   font-weight: 500;
   cursor: pointer;
+  margin-bottom: auto;
 }
 
 .day-price.editable-price {
