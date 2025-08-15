@@ -1,29 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-/**
- * ======================================
- *  TEMPLATE HOOKS & ELEMENTOR CONTROL
- * ======================================
- */
-
-/**
- * ONEMOGUĆI WP UPDATE CHECKS NA FRONTEND-U
- */
-add_action( 'init', 'ovb_disable_frontend_update_checks', 1 );
-function ovb_disable_frontend_update_checks() {
-    if ( ! is_admin() ) {
-        add_filter( 'pre_site_transient_update_core',    '__return_null' );
-        add_filter( 'pre_site_transient_update_plugins', '__return_null' );
-        add_filter( 'pre_site_transient_update_themes',  '__return_null' );
-
-        remove_action( 'init',             'wp_version_check' );
-        remove_action( 'init',             'wp_update_plugins' );
-        remove_action( 'init',             'wp_update_themes' );
-        remove_action( 'load-plugins.php', 'wp_update_plugins' );
-        remove_action( 'load-themes.php',  'wp_update_themes' );
-    }
-}
 
 /**
  * UKLONI WOOCOMMERCE DEFAULT HOOKS
@@ -97,17 +74,6 @@ function ovb_override_view_order_template($template, $template_name, $template_p
     return $template;
 }
 
-//test brisi ako ne radi
-// // === HARDEN: Force core WC checkout template (bypass broken theme override) ===
-// add_filter('woocommerce_locate_template', function($template, $template_name, $template_path){
-//     if ( function_exists('is_checkout') && is_checkout() && $template_name === 'checkout/form-checkout.php' ) {
-//         $core = WC()->plugin_path() . '/templates/checkout/form-checkout.php';
-//         if ( file_exists($core) ) {
-//             return $core;
-//         }
-//     }
-//     return $template;
-// }, 999, 3);
 
 /**
  * SHOP PAGE ELEMENTOR DUPLICATE PREVENTION
@@ -145,6 +111,51 @@ function ovb_limit_elementor_products($content, $widget) {
     }
     return $content;
 }
+
+//checkot form prosirenje
+
+// add_action('woocommerce_after_checkout_billing_form', 'ovb_render_custom_checkout_blocks', 6);
+// if ( ! function_exists('ovb_render_custom_checkout_blocks') ) {
+//     function ovb_render_custom_checkout_blocks() {
+//         $file = __DIR__ . '/custom-checkout-blocks.php'; // includes/frontend/custom-checkout-blocks.php
+//         if ( file_exists($file) ) {
+//             include $file;
+//         }
+//     }
+// }
+//test
+// === Render unified sekcija (firma / druga osoba / gosti) ispod billing polja ===
+add_action('woocommerce_after_checkout_billing_form', 'ovb_render_unified_checkout_sections', 6);
+// Fallback ako tema/templejt ne puca prethodni hook:
+add_action('woocommerce_checkout_after_customer_details', 'ovb_render_unified_checkout_sections', 6);
+
+function ovb_render_unified_checkout_sections() {
+    static $done = false;
+    if ($done) return;
+
+    // samo na glavnoj checkout stranici (ne na thankyou/pay endpointima)
+    if (function_exists('is_checkout') && is_checkout()) {
+        if (function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received')) return;
+        if (function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-pay')) return;
+
+        // Putanja do fajla
+        $file = defined('OVB_BOOKING_PATH')
+            ? trailingslashit(OVB_BOOKING_PATH) . 'templates/checkout/custom-checkout-blocks.php'
+            : plugin_dir_path(__FILE__) . 'templates/checkout/custom-checkout-blocks.php';
+
+        if (file_exists($file)) {
+            $done = true;
+            include $file;
+        } else {
+            if (function_exists('ovb_log_error')) {
+                ovb_log_error('custom-checkout-blocks.php not found at: ' . $file, 'checkout');
+            }
+        }
+    }
+}
+//test
+
+
 
 /**
  * DODATNA SHOP PAGE OPTIMIZACIJA

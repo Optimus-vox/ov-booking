@@ -70,18 +70,18 @@ foreach ($all_dates as $i => $date) {
 // Pripremi datume i cene po danu
 get_header();
 
-if ( function_exists('is_checkout') && is_checkout() && ! is_wc_endpoint_url('order-received') ) {
-    // Registruje i enqueue-uje sve skripte potrebne za Checkout logiku
-    WC()->frontend_includes();
-    wp_enqueue_script('wc-checkout');          // toggle payment methods
-    wp_enqueue_script('wc-country-select');
-    wp_enqueue_script('wc-address-i18n');
-    wp_enqueue_script('wc-credit-card-form');  // Stripe/Klarna card fields
+// if ( function_exists('is_checkout') && is_checkout() && ! is_wc_endpoint_url('order-received') ) {
+//     // Registruje i enqueue-uje sve skripte potrebne za Checkout logiku
+//     WC()->frontend_includes();
+//     wp_enqueue_script('wc-checkout');          // toggle payment methods
+//     wp_enqueue_script('wc-country-select');
+//     wp_enqueue_script('wc-address-i18n');
+//     wp_enqueue_script('wc-credit-card-form');  // Stripe/Klarna card fields
     
-    wp_enqueue_style('woocommerce-general');
-    wp_enqueue_style('woocommerce-layout');
-    wp_enqueue_style('woocommerce-smallscreen');
-}
+//     wp_enqueue_style('woocommerce-general');
+//     wp_enqueue_style('woocommerce-layout');
+//     wp_enqueue_style('woocommerce-smallscreen');
+// }
 
 $fullcheckfile = plugin_dir_path(__FILE__) . '../../includes/ov-checkout-full-template.php';
 // include plugin_dir_path(__FILE__) . '../../includes/ov-checkout-full-template.php';

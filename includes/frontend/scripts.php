@@ -12,16 +12,6 @@ if ( file_exists( dirname( __DIR__ ) . '/helpers/logger.php' ) ) {
     require_once dirname( __DIR__ ) . '/helpers/logger.php';
 }
 
-/** GLOBAL OPTIMIZATIONS */
-function ovb_disable_frontend_updates() {
-    add_filter( 'pre_site_transient_update_core',   '__return_null' );
-    add_filter( 'pre_site_transient_update_plugins','__return_null' );
-    add_filter( 'pre_site_transient_update_themes', '__return_null' );
-    remove_action( 'init', 'wp_version_check' );
-    remove_action( 'init', 'wp_update_plugins' );
-    remove_action( 'init', 'wp_update_themes' );
-}
-add_action( 'init', 'ovb_disable_frontend_updates', 1 );
 
 /** SAFE ELEMENTOR CONFIG - only if Elementor is present */
 if ( class_exists( \Elementor\Plugin::class ) ) {
@@ -342,55 +332,213 @@ function ov_enqueue_cart_assets() {
 
 }
 
-
-/** CHECKOUT PAGE CSS - HIGH PRIORITY */
-add_action( 'wp_enqueue_scripts', 'ovb_enqueue_checkout_assets', 999 );
+/**********************
+ * CHECKOUT (UNIFIED) *
+ *********************/
+add_action('wp_enqueue_scripts', 'ovb_enqueue_checkout_assets', 9999);
 function ovb_enqueue_checkout_assets() {
-    if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
-        return;
-    }
+    if ( ! function_exists('is_checkout') || ! is_checkout() ) return;
+    if ( function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received') ) return;
 
     $css_file = OVB_BOOKING_PATH . 'assets/css/ov-checkout.css';
-    $js_file = OVB_BOOKING_PATH . 'assets/js/ov-checkout.js';
+    $js_file  = OVB_BOOKING_PATH . 'assets/js/ov-checkout.js';
 
-    if ( file_exists( $css_file ) ) {
-        wp_enqueue_style(
+    /* -------------------------------
+     *  STYLES (vezani za Woo/Blocks)
+     * ------------------------------- */
+    $style_deps = [];
+    foreach (['woocommerce-general','woocommerce-layout','woocommerce-smallscreen','wc-blocks-style'] as $h) {
+        if ( wp_style_is($h, 'registered') ) { $style_deps[] = $h; }
+    }
+
+    if ( file_exists($css_file) ) {
+        wp_register_style(
             'ovb-checkout-style',
             OVB_BOOKING_URL . 'assets/css/ov-checkout.css',
-            [],
-            filemtime( $css_file )
+            $style_deps,
+            filemtime($css_file)
         );
-        
-        // Force CSS to load after theme styles
-        wp_style_add_data('ovb-checkout-style', 'priority', 999);
-        
-        // Add inline CSS to force display
-        wp_add_inline_style('ovb-checkout-style', '
-            /* FORCE CHECKOUT CONTENT DISPLAY */
-            .ov-checkout-content {
-                display: grid !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-            @media(max-width:1100px) {
-                .ov-checkout-content {
-                    display: flex !important;
-                    flex-direction: column-reverse !important;
-                }
-            }
-        ');
+        wp_enqueue_style('ovb-checkout-style');
+
+  
     }
-    
-    if ( file_exists( $js_file ) ) {
-        wp_enqueue_script(
-            'ovb-checkout-script',
-            OVB_BOOKING_URL . 'assets/js/ov-checkout.js',
-            ['jquery'],
-            filemtime( $js_file ),
-            true
-        );
+
+    // Ako Woo ima SelectWoo/Select2 stilove – obezbedi da postoje pre naših inicijalizacija
+    if ( wp_style_is('select2', 'registered') ) {
+        wp_enqueue_style('select2');
     }
+
+    /* -------------------------------
+     *  SCRIPTS (classic + blocks deps)
+     * ------------------------------- */
+    $script_deps = array_filter([
+        'jquery',
+        wp_script_is('wc-checkout', 'registered') ? 'wc-checkout' : null,
+        wp_script_is('wc-blocks-checkout', 'registered') ? 'wc-blocks-checkout' : null,
+        wp_script_is('wc-address-i18n', 'registered') ? 'wc-address-i18n' : null,
+        wp_script_is('wc-country-select', 'registered') ? 'wc-country-select' : null,
+    ]);
+
+    // Ako postoji SelectWoo/Select2 – učitaj pre našeg inline-a
+    if ( wp_script_is('selectWoo', 'registered') ) {
+        $script_deps[] = 'selectWoo';
+    } elseif ( wp_script_is('select2', 'registered') ) {
+        $script_deps[] = 'select2';
+    }
+
+    // Uvek registruj handle (i kad nema fajla) da inline pouzdano radi
+    $js_src = file_exists($js_file) ? OVB_BOOKING_URL . 'assets/js/ov-checkout.js' : '';
+    $js_ver = file_exists($js_file) ? filemtime($js_file) : null;
+    wp_register_script('ovb-checkout-script', $js_src, $script_deps, $js_ver, true);
+    wp_enqueue_script('ovb-checkout-script');
+
+    /* -------------------------------
+     *  INLINE: toggles + repeater + SelectWoo/Select2 (sa dropdownParent)
+     * ------------------------------- */
+    $inline = <<<'JS'
+jQuery(function($){
+  if (window.__ovbUnifiedInit) return; window.__ovbUnifiedInit = true;
+
+  // Selektori (tvoji) + fallback na starije klase
+  var $isCo      = $('#ovb_is_company');
+  var $wrapCo    = $('.ovb-company-fields-wrap').length ? $('.ovb-company-fields-wrap') : $('.ovb-company-fields');
+  var $isOther   = $('#ovb_is_other').length ? $('#ovb_is_other') : $('#ovb_guest_different');
+  var $wrapOther = $('.ovb-other-fields-wrap').length ? $('.ovb-other-fields-wrap') : $('.ovb-guest-fields');
+
+  var $rep   = $('#ovb-guest-repeater');
+  var $total = $('#ovb_guests_total');
+
+  function setRequired($wrap, on){
+    if(!$wrap || !$wrap.length) return;
+    $wrap.find('[data-required]').each(function(){
+      if(on){ $(this).attr('required','required'); }
+      else  { $(this).removeAttr('required'); }
+    });
+  }
+  function toggleWrap($cb, $wrap){
+    if(!$cb || !$cb.length || !$wrap || !$wrap.length) return;
+    var on = $cb.is(':checked');
+    $wrap.toggle(on);
+    setRequired($wrap, on);
+    if (window.ovbEnhanceSelects) window.ovbEnhanceSelects($wrap);
+  }
+
+  function toggleCompany(){ toggleWrap($isCo, $wrapCo); }
+  function toggleOther(){   toggleWrap($isOther, $wrapOther); }
+
+  // Guests repeater (bez <18 logike)
+  function guestRowTpl(i){
+    return '' +
+      '<div class="ovb-guest-row" data-index="'+i+'">' +
+        '<input type="text"  name="ovb_guest['+i+'][first_name]" placeholder="Ime" required>' +
+        '<input type="text"  name="ovb_guest['+i+'][last_name]"  placeholder="Prezime" required>' +
+        '<select name="ovb_guest['+i+'][gender]" required data-no-search="1">' +
+          '<option value="">Pol...</option>' +
+          '<option value="M">Muški</option>' +
+          '<option value="F">Ženski</option>' +
+        '</select>' +
+        '<input type="date" name="ovb_guest['+i+'][dob]" placeholder="Datum rođenja" required>' +
+        '<input type="tel"  name="ovb_guest['+i+'][phone]" placeholder="Telefon">' +
+        '<input type="text" name="ovb_guest['+i+'][passport]" placeholder="Broj pasoša/lične karte (opciono)">' +
+      '</div>';
+  }
+
+  function ensureRows(n){
+    if(!$rep.length) return;
+    var have = $rep.find('.ovb-guest-row').length;
+    if(have < n){
+      for(var i=have;i<n;i++){
+        $rep.append( guestRowTpl(i) );
+        if (window.ovbEnhanceSelects) {
+          window.ovbEnhanceSelects($rep.find('.ovb-guest-row').last());
+        }
+      }
+    } else if(have > n){
+      $rep.find('.ovb-guest-row').slice(n).remove();
+    }
+  }
+
+  function baseGuests(){
+    var otherOn = $isOther && $isOther.length ? $isOther.is(':checked') : false;
+    return 1 + (otherOn ? 1 : 0);
+  }
+
+  function syncGuests(){
+    if(!$total || !$total.length) return;
+    var t = parseInt($total.val() || '1', 10);
+    if(!isFinite(t) || t < 1) t = 1;
+    var need = Math.max(0, t - baseGuests());
+    ensureRows(need);
+  }
+
+  // --- SelectWoo / Select2 UX (jedinstvena inicijalizacija + dropdownParent)
+  if (!window.__ovbSelectsInit) {
+    window.__ovbSelectsInit = true;
+
+    window.ovbEnhanceSelects = function($ctx){
+      var $scope = $ctx && $ctx.length ? $ctx : $(document);
+      var $sels = $scope.find('.ovb-company-fields-wrap select, .ovb-other-fields-wrap select, #ovb-guest-repeater select');
+
+      $sels.each(function(){
+        var $el = $(this);
+        if ($el.hasClass('select2-hidden-accessible')) return; // već init
+
+        // dropdownParent: veži za lokalni kontejner da ne razvuče layout
+        var $parent = $el.closest('.ovb-company-fields-wrap, .ovb-other-fields-wrap, .ovb-checkout-section, .ovb-checkout-content, .woocommerce-checkout');
+        if (!$parent.length) $parent = $(document.body);
+
+        var searchable = $el.find('option').length > 7 && !$el.is('[data-no-search]');
+        var opts = {
+          width: '100%',
+          minimumResultsForSearch: searchable ? 0 : Infinity,
+          dropdownParent: $parent
+        };
+
+        if ($.fn.selectWoo)      { $el.selectWoo(opts); }
+        else if ($.fn.select2)   { $el.select2(opts); }
+      });
+    };
+
+    // prvi run
+    window.ovbEnhanceSelects($(document));
+
+    // Woo klasični eventi i fragmenti
+    $(document.body).on('updated_checkout updated_wc_div country_to_state_changed wc_fragments_loaded', function(){
+      window.ovbEnhanceSelects($(document));
+    });
+
+    // WC Blocks i ostali DOM update-i
+    if ('MutationObserver' in window) {
+      var obs = new MutationObserver(function(){ window.ovbEnhanceSelects($(document)); });
+      obs.observe(document.body, {childList:true, subtree:true});
+    }
+  }
+
+  // INIT UI
+  toggleCompany();
+  toggleOther();
+  syncGuests();
+
+  // LISTENERS
+  $(document).on('change', '#ovb_is_company', function(){ toggleCompany(); syncGuests(); });
+  $(document).on('change', '#ovb_is_other, #ovb_guest_different', function(){ toggleOther(); syncGuests(); });
+  $(document).on('change', '#ovb_guests_total', syncGuests);
+});
+JS;
+    wp_add_inline_script('ovb-checkout-script', $inline, 'after');
 }
+
+/**
+ * (Opcionalno) Elementor: obezbedi da naš CSS bude poslednji
+ */
+// add_action('elementor/frontend/after_enqueue_styles', function(){
+//     if ( function_exists('is_checkout') && is_checkout() && wp_style_is('ovb-checkout-style', 'registered') ) {
+//         wp_dequeue_style('ovb-checkout-style');
+//         wp_enqueue_style('ovb-checkout-style');
+//     }
+// }, 99);
+
+
 /** THANK YOU PAGE CSS */
 function ov_enqueue_thank_you_assets()
 {
@@ -450,33 +598,3 @@ function ovb_get_clean_calendar_data( $product_id ) {
     return is_array( $raw ) ? $raw : [];
 }
 
-/** SHOP PAGE SPECIFIC HANDLING */
-add_action( 'wp_enqueue_scripts', 'ovb_handle_shop_page', 25 );
-function ovb_handle_shop_page() {
-    if ( ! function_exists( 'is_shop' ) || ! is_shop() ) {
-        return;
-    }
-    
-    add_action( 'wp_footer', function() {
-        ?>
-        <script>
-        (function($) {
-            'use strict';
-            $(document).ready(function() {
-                $('.elementor-widget-woocommerce-products').each(function(i){
-                    if(i>0)$(this).remove();
-                });
-                $('.woocommerce ul.products li.product').each(function(){
-                    var $t=$(this),
-                        title=$t.find('.woocommerce-loop-product__title').text(),
-                        dup=$('.woocommerce ul.products li.product').filter(function(){
-                            return $(this).find('.woocommerce-loop-product__title').text()===title && this!==$t[0];
-                        });
-                    if(dup.length)dup.remove();
-                });
-            });
-        })(jQuery);
-        </script>
-        <?php
-    }, 999 );
-}

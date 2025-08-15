@@ -54,23 +54,23 @@ function ovb_get_product_calendar_data($product_id) {
 
 
 // === Booking meta helpers (centralizovano) ===
-if ( ! function_exists('ovb_get_order_booking_meta') ) {
-    function ovb_get_order_booking_meta( $order_or_id ) {
-        $order = $order_or_id instanceof WC_Order ? $order_or_id : wc_get_order( $order_or_id );
-        if ( ! $order ) {
-            return ['check_in' => '', 'check_out' => '', 'guests' => null];
-        }
-        $check_in  = $order->get_meta('ovb_check_in_date') ?: $order->get_meta('_ovb_start_date') ?: $order->get_meta('start_date');
-        $check_out = $order->get_meta('ovb_check_out_date') ?: $order->get_meta('_ovb_end_date')   ?: $order->get_meta('end_date');
-        $guests    = $order->get_meta('_ovb_guests_num')     ?: $order->get_meta('guests');
+// if ( ! function_exists('ovb_get_order_booking_meta') ) {
+//     function ovb_get_order_booking_meta( $order_or_id ) {
+//         $order = $order_or_id instanceof WC_Order ? $order_or_id : wc_get_order( $order_or_id );
+//         if ( ! $order ) {
+//             return ['check_in' => '', 'check_out' => '', 'guests' => null];
+//         }
+//         $check_in  = $order->get_meta('ovb_check_in_date') ?: $order->get_meta('_ovb_start_date') ?: $order->get_meta('start_date');
+//         $check_out = $order->get_meta('ovb_check_out_date') ?: $order->get_meta('_ovb_end_date')   ?: $order->get_meta('end_date');
+//         $guests    = $order->get_meta('_ovb_guests_num')     ?: $order->get_meta('guests');
 
-        return [
-            'check_in'  => $check_in ?: '',
-            'check_out' => $check_out ?: '',
-            'guests'    => ( '' !== (string) $guests ? (int) $guests : null ),
-        ];
-    }
-}
+//         return [
+//             'check_in'  => $check_in ?: '',
+//             'check_out' => $check_out ?: '',
+//             'guests'    => ( '' !== (string) $guests ? (int) $guests : null ),
+//         ];
+//     }
+// }
 if ( ! function_exists('ovb_fmt_date') ) {
     function ovb_fmt_date( $date ) {
         return $date ? esc_html( date_i18n( get_option('date_format'), strtotime( $date ) ) ) : '—';

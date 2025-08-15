@@ -116,61 +116,14 @@ function ovb_additional_booking_customizations() {
 /**
  * Checkout optimizations for bookings
  */
-add_filter('woocommerce_checkout_fields', 'ovb_checkout_fields_keep_and_order', 9999);
-function ovb_checkout_fields_keep_and_order( $fields ) {
-    if ( empty($fields['billing']) || !is_array($fields['billing']) ) {
-        return $fields;
-    }
-
-    // Zadrži i poređaj ova polja (po redu)
-    $keep = [
-        'billing_first_name',
-        'billing_last_name',
-        'billing_phone',
-        'billing_email',
-        'billing_country',
-        'billing_address_1',
-        'billing_address_2',
-        'billing_city',
-        'billing_state',
-        'billing_postcode',
-        // 'billing_company', // uključi ako želiš
-    ];
-
-    // 1) ukloni sve što nije na listi (samo u billing sekciji)
-    foreach ( array_keys($fields['billing']) as $key ) {
-        if ( ! in_array($key, $keep, true) ) {
-            unset($fields['billing'][$key]);
-        }
-    }
-
-    // 2) jasan redosled billing polja
-    $sorted = [];
-    foreach ( $keep as $k ) {
-        if ( isset($fields['billing'][$k]) ) {
-            $sorted[$k] = $fields['billing'][$k];
-        }
-    }
-    // ubaci eventualno preostala polja (ako ih je drugi plugin dodao)
-    foreach ( $fields['billing'] as $k => $v ) {
-        if ( ! isset($sorted[$k]) ) {
-            $sorted[$k] = $v;
-        }
-    }
-    $fields['billing'] = $sorted;
-
-    // 3) obaveznost telefona (ako postoji)
-    if ( isset($fields['billing']['billing_phone']) ) {
-        $fields['billing']['billing_phone']['required'] = true;
-    }
-
-    // 4) ugasi shipping sekciju
-    unset($fields['shipping']);
-
-    return $fields;
-}
-
-
+add_filter('woocommerce_cart_needs_shipping', '__return_false', 10);
+add_filter('woocommerce_cart_needs_shipping_address', '__return_false', 10); 
+// ili ovo ispod - testiraj
+// add_filter('woocommerce_checkout_fields', function($fields) {
+//     $fields['billing']  = []; // nema default billing polja
+//     $fields['shipping'] = []; // potpuno gasimo shipping UI
+//     return $fields;
+// }, 9999);
 /**
  * Email customizations for bookings
  */

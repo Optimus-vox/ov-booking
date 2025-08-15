@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 add_action('woocommerce_admin_order_data_after_shipping_address', function( $order ){
     $m = function_exists('ovb_get_order_booking_meta') ? ovb_get_order_booking_meta( $order ) : null;
     if ( ! $m || ( empty($m['check_in']) && empty($m['check_out']) && is_null($m['guests']) ) ) { return; }
-
+    $has_company = $order->get_meta('_ovb_invoice_company');
     //CSS styles
     $li_style = 'display:flex; align-items:center; gap:6px; margin:2px 0 5px;';
 
@@ -32,6 +32,13 @@ add_action('woocommerce_admin_order_data_after_shipping_address', function( $ord
         echo '<li style="' . esc_attr($li_style) . '">'
             . '<strong>'. esc_html__('Guests','ov-booking') .':</strong> ' . (int) $m['guests']
             . '</li>';
+    }
+
+    if ($has_company) {
+        echo '<li style="' . esc_attr($li_style) . '"><strong>'.esc_html__('Company','ov-booking').':</strong> ' . esc_html( $order->get_meta('_ovb_company_name') );
+        $pib = $order->get_meta('_ovb_company_pib');
+        if ($pib) echo ' — PIB: ' . esc_html($pib);
+        echo '</li>';
     }
 
     echo '</ul></div>';

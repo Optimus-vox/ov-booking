@@ -170,7 +170,8 @@ add_action('wp_ajax_ovb_delete_booking_and_order', function() {
     $order = wc_get_order($order_id);
     if ($order) {
         if ($order->get_type() === 'shop_order' && get_post_type($order_id) === 'shop_order') {
-            wp_trash_post($order_id);
+            // wp_trash_post($order_id);
+            $order->trash();
         } else {
             $order->update_status('trash');
         }

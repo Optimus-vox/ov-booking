@@ -403,8 +403,8 @@ function render_calendar_meta_box($post)
             </div>
             <br>
             <div class="buttons">
-                <button id="delete_client_single">Delete reservation for this day</button>
                 <button id="delete_client_all">Delete reservation</button>
+                <button id="delete_client_single">Delete reservation for this day</button>
                 <button onclick='closeOvModal("#client_action_modal_wrapper")';>Cancel</button>
             </div>
             

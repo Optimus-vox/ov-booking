@@ -17,10 +17,8 @@
         ?>
 
         <!-- VAŽNO: Dodaj proper form attributes za Klarna -->
-        <form name="checkout" id="checkout" method="post" class="checkout ovb-checkout-form woocommerce-checkout" action="<?php echo esc_url(wc_get_checkout_url()); ?>" enctype="multipart/form-data" novalidate>
+        <form name="checkout" id="checkout" method="post" class="checkout ovb-checkout-form woocommerce-checkout" action="<?php echo esc_url(wc_get_checkout_url()); ?>" enctype="multipart/form-data">
             
-            <!-- DODAJ NONCE FIELDS -->
-            <?php wp_nonce_field('woocommerce-process_checkout', 'woocommerce-process-checkout-nonce'); ?>
             
             <div class="ov-checkout-content">
 
@@ -50,17 +48,11 @@
                                 }
                                 ?>
                             </div>
+                  
 
-                            <?php if ($guests > 0): ?>
+                            <?php if ($guests > 1): ?>
                                 <div id="ovb-guests-section" class="ovb-guests-section">
-                                    <h4>Podaci o gostima</h4>
-                                    <label class="ovb-checkbox-label" style="margin-bottom:10px;">
-                                        <input type="checkbox" id="ovb-different-payer-checkbox" name="ovb_different_payer" value="1">
-                                        <span>Druga osoba plaća rezervaciju?</span>
-                                        <span class="ovb-help-text" style="display:block; font-size:12px; color:#b1b1b1; margin-left:28px;">
-                                            (Npr. roditelj, firma, posrednik. Ako ste vi gost i plaćate, ostavite prazno.)
-                                        </span>
-                                    </label>
+                                    <h3>Podaci o gostima</h3>
                                     <div id="ovb-guests-wrapper" class="ovb-guests-wrapper"></div>
                                 </div>
 
@@ -70,57 +62,58 @@
                                     const wrapper = document.getElementById('ovb-guests-wrapper');
                                     const payerCheckbox = document.getElementById('ovb-different-payer-checkbox');
 
-                                    function renderGuestFields(count) {
-                                        wrapper.innerHTML = '';
-                                        for (let i = 1; i <= count; i++) {
-                                            let phoneLabel = 'Telefon';
-                                            if ((count >= 2 && i === 1) || count === 2) {
-                                                phoneLabel += ' <span class="required">*</span>';
-                                            }
+                                function renderGuestFields(count) {
+                                    wrapper.innerHTML = '';
+                                    for (let i = 1; i <= count; i++) {
+                                        const isPhoneRequired = (i === 1);
+                                        const phoneAsterisk = isPhoneRequired ? ' <span class="required">*</span>' : '';
+                                        const phoneRequiredAttr = isPhoneRequired ? 'required' : '';
 
-                                            wrapper.innerHTML += `
-                                                <div class="ov-guest-row">
-                                                    <h3 style="margin-bottom:20px;">Gost ${i}</h3>
-                                                    <div class="ov-form-group">
-                                                        <label for="ovb_guest[${i}][first_name]">Ime <span class="required">*</span></label>
-                                                        <input type="text" class="ov-input-regular" name="ovb_guest[${i}][first_name]" required>
-                                                    </div>
-                                                    <div class="ov-form-group">
-                                                        <label for="ovb_guest[${i}][last_name]">Prezime <span class="required">*</span></label>
-                                                        <input type="text" class="ov-input-regular" name="ovb_guest[${i}][last_name]" required>
-                                                    </div>
-                                                    <div class="ov-form-group">
-                                                        <label for="ovb_guest[${i}][gender]">Pol <span class="required">*</span></label>
-                                                        <select class="ov-select-regular" name="ovb_guest[${i}][gender]" required>
-                                                            <option value="">Izaberi...</option>
-                                                            <option value="male">Muški</option>
-                                                            <option value="female">Ženski</option>
-                                                            <option value="diverse">Drugo</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="ov-form-group">
-                                                        <label for="ovb_guest[${i}][birthdate]">Datum rođenja <span class="required">*</span></label>
-                                                        <div class="ovb-date-picker-wrap">
-                                                            <input type="date" class="ov-input-regular ovb-date-input" name="ovb_guest[${i}][birthdate]" required>
-                                                            <span class="ovb-date-calendar-icon"></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="ov-form-group">
-                                                        <label for="ovb_guest[${i}][phone]">${phoneLabel}</label>
-                                                        <input type="text" class="ov-input-regular ovb-guest-phone" name="ovb_guest[${i}][phone]" data-guest-idx="${i}" autocomplete="tel">
-                                                    </div>
-                                                    <div class="ov-form-group">
-                                                        <label for="ovb_guest[${i}][id_number]">Broj pasoša/lične karte (opciono)</label>
-                                                        <input type="text" class="ov-input-regular" name="ovb_guest[${i}][id_number]">
-                                                    </div>
-                                                    <div class="ov-form-group" style="margin-top:6px;">
-                                                        <label for="is_child_${i}" style="display:inline;">Gost je dete (ispod 18)</label>
-                                                        <input type="checkbox" name="ovb_guest[${i}][is_child]" value="1" id="is_child_${i}">
+                                        wrapper.innerHTML += `
+                                            <div class="ov-guest-row">
+                                                <h4 style="margin-bottom:20px;">Gost ${i === 1 ? ' ' : i}</h4>
+                                                <div class="ov-form-group">
+                                                    <label for="ovb_guest[${i}][first_name]">Ime <span class="required">*</span></label>
+                                                    <input type="text" class="ov-input-regular" name="ovb_guest[${i}][first_name]" required>
+                                                </div>
+                                                <div class="ov-form-group">
+                                                    <label for="ovb_guest[${i}][last_name]">Prezime <span class="required">*</span></label>
+                                                    <input type="text" class="ov-input-regular" name="ovb_guest[${i}][last_name]" required>
+                                                </div>
+                                                <div class="ov-form-group">
+                                                    <label for="ovb_guest[${i}][gender]">Pol <span class="required">*</span></label>
+                                                    <select class="ov-select-regular" name="ovb_guest[${i}][gender]" required>
+                                                        <option value="">Izaberi...</option>
+                                                        <option value="male">Muški</option>
+                                                        <option value="female">Ženski</option>
+                                                        <option value="diverse">Drugo</option>
+                                                    </select>
+                                                </div>
+                                                <div class="ov-form-group">
+                                                    <label for="ovb_guest[${i}][birthdate]">Datum rođenja <span class="required">*</span></label>
+                                                    <div class="ovb-date-picker-wrap">
+                                                        <input type="date" class="ov-input-regular ovb-date-input" name="ovb_guest[${i}][birthdate]" required>
+                                                        <span class="ovb-date-calendar-icon"></span>
                                                     </div>
                                                 </div>
-                                            `;
-                                        }
+                                                <div class="ov-form-group">
+                                                    <label for="ovb_guest[${i}][phone]">Telefon${phoneAsterisk}</label>
+                                                    <input type="text"
+                                                        class="ov-input-regular ovb-guest-phone"
+                                                        name="ovb_guest[${i}][phone]"
+                                                        data-guest-idx="${i}"
+                                                        autocomplete="tel"
+                                                        ${phoneRequiredAttr}>
+                                                </div>
+                                                <div class="ov-form-group">
+                                                    <label for="ovb_guest[${i}][id_number]">Broj pasoša/lične karte (opciono)</label>
+                                                    <input type="text" class="ov-input-regular" name="ovb_guest[${i}][id_number]">
+                                                </div>
+                                            </div>
+                                        `;
                                     }
+                                }
+
 
                                     function updateGuests() {
                                         const isDifferentPayer = payerCheckbox && payerCheckbox.checked;
@@ -156,7 +149,7 @@
                             }
                             do_action('woocommerce_checkout_after_customer_details'); 
                             ?>
-
+                                      <?php do_action('woocommerce_after_checkout_billing_form', $checkout); ?>
                         </div> <!-- /.ovb-customer-details-container -->
                     </div> <!-- /.checkout-form -->
                 </div> <!-- /.ov-checkout-steps -->

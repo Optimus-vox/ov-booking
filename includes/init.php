@@ -86,6 +86,7 @@ if (!is_admin() || wp_doing_ajax()) {
         OVB_BOOKING_PATH . 'includes/frontend/body-classes.php',
         OVB_BOOKING_PATH . 'includes/frontend/myaccount-template-override.php',
         OVB_BOOKING_PATH . 'includes/frontend/excerpt.php', 
+        OVB_BOOKING_PATH . 'includes/ovb-woocommerce-optimizations.php', 
         // OVB_BOOKING_PATH . 'includes/frontend/ovb-woocommerce-optimizations.php',
     ];
     
