@@ -140,3 +140,85 @@ add_action('woocommerce_checkout_create_order', function($order, $data){
     $order->update_meta_data('_ovb_guests_total', $total);
     $order->update_meta_data('_ovb_guests_json', wp_json_encode($clean));
 }, 10, 2);
+
+// Loader za WCPay express dugmad (Apple/Google Pay)
+add_action('wp_footer', function () {
+    if ( ! function_exists('is_checkout') || ! is_checkout() || is_order_received_page() ) {
+        return;
+    }
+    ?>
+    <script>
+    (function () {
+        // na checkoutu smo, proveri da li uopšte postoji WCPay express element
+        function getExpressEl() {
+            return document.getElementById('wcpay-express-checkout-element');
+        }
+        function getWrapper(el) {
+            // najčešće je u .wcpay-express-checkout-wrapper
+            return (el && el.closest('.wcpay-express-checkout-wrapper')) || (el && el.parentNode) || null;
+        }
+        function hasReady(el) {
+            return !!(el && el.classList.contains('is-ready'));
+        }
+        function ensureLoader(wrapper) {
+            if (!wrapper) return null;
+            var existing = wrapper.querySelector('.ovb-mini-loader');
+            if (existing) return existing;
+            var l = document.createElement('div');
+            l.className = 'ovb-mini-loader';
+            l.innerHTML = '<span class="loader"></span> <span>Učitavanje načina plaćanja…</span>';
+            wrapper.insertBefore(l, wrapper.firstChild);
+            return l;
+        }
+        function hideLoader(wrapper) {
+            if (!wrapper) return;
+            var l = wrapper.querySelector('.ovb-mini-loader');
+            if (l) l.remove();
+        }
+
+        function armLoader() {
+            var el = getExpressEl();
+            if (!el) { // nema express elemenata → nema loadera
+                return;
+            }
+            var wrap = getWrapper(el);
+            if (hasReady(el)) { // već spremno
+                hideLoader(wrap);
+                return;
+            }
+
+            // prikaži loader
+            ensureLoader(wrap);
+
+            // posmatraj promenu klase dok ne postane is-ready
+            var obs = new MutationObserver(function () {
+                if (hasReady(el)) {
+                    hideLoader(wrap);
+                    obs.disconnect();
+                }
+            });
+            obs.observe(el, { attributes: true, attributeFilter: ['class'] });
+
+            // failsafe 8s
+            setTimeout(function () { hideLoader(wrap); obs.disconnect(); }, 8000);
+        }
+
+        // prvi prolaz (kad se DOM učita)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', armLoader);
+        } else {
+            armLoader();
+        }
+
+        // ako se checkout osveži (promena total-a, adrese, itd.)
+        if (window.jQuery) {
+            jQuery(document.body).on('updated_checkout', function () {
+                armLoader();
+            });
+        }
+    })();
+    </script>
+    <?php
+}, 999);
+// OVB: bez podrazumevanog payment metoda
+add_filter( 'woocommerce_default_checkout_payment_method', '__return_empty_string', 20 );

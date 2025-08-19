@@ -35,9 +35,26 @@
 
                     <div class="checkout-form">
                         <div id="customer_details" class="ovb-customer-details-container">
+                            
+                            <?php
+                                // Prikaži loader i wrap samo ako neko zaista visi na HOOK-u
+                                $ovb_has_express_hook = has_action('woocommerce_checkout_before_customer_details');
+                                ?>
+
+                                <?php if ( $ovb_has_express_hook ): ?>
+                                    <div id="ovb-express-area" class="ovb-express-area">
+
+                                        <?php do_action('woocommerce_checkout_before_customer_details'); ?>
+                                    </div>
+                                <?php else: ?>
+                                    <?php // nema hook-a => nema ni loadera ?>
+                                    <?php do_action('woocommerce_checkout_before_customer_details'); ?>
+                                <?php endif; ?>
+
                             <?php 
                             // BILLING FIELDS - VAŽNO za Klarna
-                            do_action('woocommerce_checkout_before_customer_details'); 
+                            
+                            //do_action('woocommerce_checkout_before_customer_details'); 
                             ?>
                             
                             <div class="woocommerce-billing-fields">
@@ -46,6 +63,7 @@
                                 foreach ($fields as $key => $field) {
                                     woocommerce_form_field($key, $field, $checkout->get_value($key));
                                 }
+                                   do_action('woocommerce_checkout_after_customer_details'); 
                                 ?>
                             </div>
                   
@@ -147,7 +165,7 @@
                                 </div>
                                 <?php
                             }
-                            do_action('woocommerce_checkout_after_customer_details'); 
+                         
                             ?>
                                       <?php do_action('woocommerce_after_checkout_billing_form', $checkout); ?>
                         </div> <!-- /.ovb-customer-details-container -->
@@ -235,24 +253,30 @@
                                     </tr>
                                 </table>
                             </div>
-
-                        <!-- Dummy WC tabela za gateway compatibility -->
-                        <!-- <div class="woocommerce-checkout-review-order-table" style="display:none"></div> -->
-
-                        <!-- Ovde IDE tvoj stari wc_get_template('checkout/review-order.php'), ali on sada ne prikazuje ništa korisniku! -->
-                        <?php  //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
                         </div>
                             <?php //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
 
                             <!-- PAYMENT METHODS - KLARNA TREBA OVO -->
                             <?php if (WC()->cart->needs_payment()) : ?>
-                                <div id="payment" class="woocommerce-checkout-payment">
+                                <div id="payment" class="woocommerce-checkout-payment"> 
                                     <?php 
                                     do_action('woocommerce_review_order_before_payment');
                                     
+                                    // $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+                                    // WC()->payment_gateways()->set_current_gateway($available_gateways);
+
                                     $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
-                                    WC()->payment_gateways()->set_current_gateway($available_gateways);
-                                    
+
+                                    /* OVB: ne preselektuj ništa */
+                                    if ( WC()->session ) {
+                                        WC()->session->set( 'chosen_payment_method', null ); // očisti sesiju
+                                    }
+                                    foreach ( $available_gateways as $gw ) {
+                                        if ( isset( $gw->chosen ) ) {
+                                            $gw->chosen = false; // osiguraj da template ne doda checked
+                                        }
+                                    }
+                                                                        
                                     if (!empty($available_gateways)) {
                                         ?>
                                         <ul class="wc_payment_methods payment_methods methods">
