@@ -154,10 +154,56 @@
     }
 
     /* checkout spinner  */
-     .woocommerce .blockUI.blockOverlay {
+     /* .woocommerce .blockUI.blockOverlay {
         display: none !important;
         background-color: #7C4DFF !important;
-    }
+    } */
+    /* test  */
+    /* Shell + overlay ponašanje */
+.ovb-payment-shell { position: relative; z-index: 9;}
+.ovb-payment-shell .form-row.place-order #place_order{
+  transition: opacity .15s ease;
+}
+
+.ovb-payment-shell.is-loading .form-row.place-order #place_order{
+  opacity: 0 !important;
+}
+/* Loader popunjava ceo payment box kao overlay (bez layout skoka) */
+#ovb-payment-loader {
+  position: absolute;
+  inset: 0;                /* top/right/bottom/left:0 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: opacity .18s ease;   /* glatka tranzicija */
+  background: #7C4DFF;             /* tvoja ljubičasta pozadina */
+  border-radius: 7px;               /* uskladi sa .woocommerce-checkout-payment */
+  .loader::before{
+    content: none !important;
+  }
+}
+
+/* Kada je loading: overlay iznad sadržaja, onemogućava klikove */
+.ovb-payment-shell.is-loading #ovb-payment-loader {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* (opciono) malo zatamni sadržaj ispod umesto hard hide-a */
+.ovb-payment-shell.is-loading #payment {
+  filter: none;    /* ili blur(1px) ako želiš */
+}
+.ovb-payment-shell.is-loading #payment { visibility: hidden; }
+/* Ako si ranije gasio Woo overlay globalno, da ne smeta ovde: */
+#payment .blockUI.blockOverlay { display: none !important; }
+    /* test  */
+     /* #payment .blockUI.blockOverlay { display: none !important; } */
+
+
+
     .woocommerce .loader::before{
         display: none !important;
     }
@@ -931,6 +977,7 @@ abbr[title] {
     border: none !important;
 }
   .woocommerce-checkout #payment div.payment_box{
+    display: none !important;
     background-color: unset !important;
     color: #fff !important;
     padding: 0 !important;
@@ -941,6 +988,10 @@ abbr[title] {
       border-color: #7C4DFF !important;
     }
   }
+  /* 2. Prikaži SAMO onaj payment box čiji je "brat" (input radio) štikliran */
+.woocommerce-checkout #payment input[name="payment_method"]:checked ~ .payment_box {
+    display: block !important;
+}
   .ovb-review-order-table{
     color: #fff;
     width: 100%;

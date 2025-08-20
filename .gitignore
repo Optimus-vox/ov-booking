@@ -60,3 +60,5 @@ php-errors.log
 *.tmp
 *.swp
 *.zip
+.git
+*.git

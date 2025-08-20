@@ -13,7 +13,17 @@
 
         <?php
         // KRUCIJALNO: Pozovi pre form-e
-        do_action('woocommerce_before_checkout_form', $checkout);
+        //do_action('woocommerce_before_checkout_form', $checkout);
+
+
+// 2. Očisti stored payment method iz sesije na početku checkout-a
+// add_action('wp', function() {
+//     if (is_checkout() && !is_order_received_page() && WC()->session) {
+//         WC()->session->set('chosen_payment_method', null);
+//     }
+// });
+
+
         ?>
 
         <!-- VAŽNO: Dodaj proper form attributes za Klarna -->
@@ -256,60 +266,83 @@
                         </div>
                             <?php //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
 
-                            <!-- PAYMENT METHODS - KLARNA TREBA OVO -->
-                            <?php if (WC()->cart->needs_payment()) : ?>
-                                <div id="payment" class="woocommerce-checkout-payment"> 
-                                    <?php 
-                                    do_action('woocommerce_review_order_before_payment');
-                                    
-                                    // $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
-                                    // WC()->payment_gateways()->set_current_gateway($available_gateways);
+                           <!-- PAYMENT METHODS - KLARNA TREBA OVO -->
+                  <?php if ( WC()->cart->needs_payment() ) : ?>
+  <div id="ovb-payment-shell" class="ovb-payment-shell" data-ovb-shell>
+    <!-- Loader koji će zameniti #payment dok traje update -->
+    <div id="ovb-payment-loader" class="ovb-mini-loader" aria-live="polite" hidden>
+      <div class="loader" aria-hidden="true"></div>
+      <span class="ovb-mini-loader__text" data-ovb-loader-text><?php
+        echo esc_html__( 'Učitavanje načina plaćanja...', 'ov-booking' );
+      ?></span>
+    </div>
 
-                                    $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+    <!-- ORIGINALNI PAYMENT BLOK (ostaje netaknut) -->
+    <div id="payment" class="woocommerce-checkout-payment" data-ovb-payment>
+      <?php
+      do_action( 'woocommerce_review_order_before_payment' );
 
-                                    /* OVB: ne preselektuj ništa */
-                                    if ( WC()->session ) {
-                                        WC()->session->set( 'chosen_payment_method', null ); // očisti sesiju
-                                    }
-                                    foreach ( $available_gateways as $gw ) {
-                                        if ( isset( $gw->chosen ) ) {
-                                            $gw->chosen = false; // osiguraj da template ne doda checked
-                                        }
-                                    }
-                                                                        
-                                    if (!empty($available_gateways)) {
-                                        ?>
-                                        <ul class="wc_payment_methods payment_methods methods">
-                                            <?php
-                                            foreach ($available_gateways as $gateway) {
-                                                wc_get_template('checkout/payment-method.php', array('gateway' => $gateway, 'checkout' => $checkout));
-                                            }
-                                            ?>
-                                        </ul>
-                                        <?php
-                                    } else {
-                                        echo '<p>' . __('Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements.', 'woocommerce') . '</p>';
-                                    }
-                                    
-                                    do_action('woocommerce_review_order_after_payment');
-                                    ?>
-                                    
-                                    <div class="form-row place-order">
-                                        <noscript>
-                                            <?php esc_html_e('Since your browser does not support JavaScript, or it is disabled, please ensure you click the <em>Update Totals</em> button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'woocommerce'); ?>
-                                            <br/><button type="submit" class="button alt" name="woocommerce_checkout_update_totals" value="<?php esc_attr_e('Update totals', 'woocommerce'); ?>"><?php esc_html_e('Update totals', 'woocommerce'); ?></button>
-                                        </noscript>
+      $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 
-                                        <?php wp_nonce_field('woocommerce-process_checkout', 'woocommerce-process-checkout-nonce'); ?>
-                                        <?php wp_nonce_field('woocommerce_update_order_review', '_wpnonce'); ?>
-                                        <input type="hidden" name="_wp_http_referer" value="<?php echo esc_attr(wp_unslash($_SERVER['REQUEST_URI'])); ?>" />
+      if ( ! empty( $available_gateways ) ) : ?>
+        <ul class="wc_payment_methods payment_methods methods">
+          <?php foreach ( $available_gateways as $gateway ) : ?>
+            <li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>">
+              <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>"
+                     type="radio"
+                     class="input-radio"
+                     name="payment_method"
+                     value="<?php echo esc_attr( $gateway->id ); ?>"
+                     data-order_button_text="<?php echo esc_attr( $gateway->order_button_text ); ?>" />
+              <label for="payment_method_<?php echo esc_attr( $gateway->id ); ?>">
+                <?php echo wp_kses_post( $gateway->get_title() ); ?>
+                <?php echo wp_kses_post( $gateway->get_icon() ); ?>
+              </label>
 
-                                        <button type="submit" class="button alt" name="woocommerce_checkout_place_order" id="place_order" value="<?php esc_attr_e('Place order', 'woocommerce'); ?>" data-value="<?php esc_attr_e('Place order', 'woocommerce'); ?>"><?php esc_html_e('Place order', 'woocommerce'); ?></button>
+              <?php if ( $gateway->has_fields() || $gateway->get_description() ) : ?>
+                <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" style="display:none;">
+                  <?php $gateway->payment_fields(); ?>
+                </div>
+              <?php endif; ?>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      <?php else :
+        echo '<p>' . esc_html__(
+          'Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements.',
+          'woocommerce'
+        ) . '</p>';
+      endif;
 
-                                        <?php do_action('woocommerce_review_order_after_submit'); ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
+      do_action( 'woocommerce_review_order_after_payment' );
+      ?>
+
+      <div class="form-row place-order">
+        <noscript>
+          <?php esc_html_e( 'Since your browser does not support JavaScript, or it is disabled, please ensure you click the Update Totals button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'woocommerce' ); ?>
+          <br/>
+          <button type="submit" class="button alt" name="woocommerce_checkout_update_totals" value="<?php esc_attr_e( 'Update totals', 'woocommerce' ); ?>"><?php esc_html_e( 'Update totals', 'woocommerce' ); ?></button>
+        </noscript>
+
+        <?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
+        <?php wp_nonce_field( 'woocommerce_update_order_review', '_wpnonce' ); ?>
+        <input type="hidden" name="_wp_http_referer" value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>" />
+
+        <button type="submit" class="button alt" name="woocommerce_checkout_place_order" id="place_order"
+                value="<?php esc_attr_e( 'Place order', 'woocommerce' ); ?>"
+                data-value="<?php esc_attr_e( 'Place order', 'woocommerce' ); ?>">
+          <?php esc_html_e( 'Place order', 'woocommerce' ); ?>
+        </button>
+
+        <?php do_action( 'woocommerce_review_order_after_submit' ); ?>
+      </div>
+    </div>
+  </div>
+<?php endif; ?>
+
+
+
+
                         </div>
                     </div>
                 </div> <!-- /.ov-checkout-summary -->
