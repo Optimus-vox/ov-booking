@@ -69,6 +69,7 @@ function ovb_check_woocommerce_dependency() {
 
 // Activation logic
 register_activation_hook(__FILE__, function () {
+    flush_rewrite_rules();
     ovb_check_woocommerce_dependency();
     if (function_exists('ovb_force_all_products_to_simple')) {
         ovb_force_all_products_to_simple();
@@ -81,6 +82,12 @@ register_activation_hook(__FILE__, function () {
     }
     if (function_exists('disable_woocommerce_shipping_on_activation')) {
         disable_woocommerce_shipping_on_activation();
+    }
+        // DEV reset – uključi samo ako definišeš konstantu
+    if (defined('OVB_DEV_WIPE_ON_ACTIVATE') && OVB_DEV_WIPE_ON_ACTIVATE) {
+        global $wpdb;
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_ovb_%' OR option_name LIKE '_site_transient_ovb_%'");
+        // Ne diramo _wc_session_* po defaultu – rizično za druge korisnike/site.
     }
 });
 

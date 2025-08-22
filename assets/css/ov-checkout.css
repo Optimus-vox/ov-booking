@@ -2,6 +2,7 @@
   --wc-form-color-background: #1B203A;
   --wc-form-border-color: #fff;
   --wc-form-border-color: #fff !important;
+  --wc-red: red;
 
   h3,h4{
     color: #fff;
@@ -153,11 +154,13 @@
       }
     }
 
-    /* checkout spinner  */
-     /* .woocommerce .blockUI.blockOverlay {
-        display: none !important;
-        background-color: #7C4DFF !important;
-    } */
+.woocommerce-checkout #payment{
+  border-radius: 0;
+  margin-top: 10px;
+}
+.woocommerce-privacy-policy-link{
+  color: #7C4DFF;
+}
     /* test  */
     /* Shell + overlay ponašanje */
 .ovb-payment-shell { position: relative; z-index: 9;}
@@ -180,7 +183,7 @@
   z-index: 3;
   transition: opacity .18s ease;   /* glatka tranzicija */
   background: #7C4DFF;             /* tvoja ljubičasta pozadina */
-  border-radius: 7px;               /* uskladi sa .woocommerce-checkout-payment */
+  border-radius: 0;               /* uskladi sa .woocommerce-checkout-payment */
   .loader::before{
     content: none !important;
   }
@@ -500,7 +503,7 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
         gap: 40px;
         @media(max-width:1100px){
           display: flex;
-          flex-direction: column-reverse;
+          flex-direction: column;
         }
 
         /* leva strana */
@@ -534,7 +537,8 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
          
             .ovb-customer-details-container{
               .woocommerce-billing-fields{
-                #billing_company_field{
+                #billing_company_field,
+                #billing_address_2_field{
                   display: none !important;
                 }
                 h3{
@@ -563,6 +567,17 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
                         border-color: #8B5DFF;
                         outline: none;
                         box-shadow: none;
+                      }
+                      input{
+                           &:-webkit-autofill,
+                          &:-webkit-autofill:hover,
+                          &:-webkit-autofill:focus,
+                          &:-webkit-autofill:active {
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: #ffffff;
+                              transition: background-color 5000s ease-in-out 0s;
+                              -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
+                          }
                       }
                     }
                   }
@@ -684,6 +699,7 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
                     h3{
                       color: #fff;
                     }
+
                   }
                 }
               }
@@ -742,13 +758,15 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
           
             
             .woocommerce-checkout-payment{
-                background: #23254a;
+              background: #23254a;
               border-radius: 7px;
               padding: 30px 24px 24px 24px;
               margin-bottom: 28px;
               border: 1px solid #ffffff22;
               box-shadow: 0 2px 8px 0 rgba(17,21,39,0.11);
               color: #fff;
+              border-radius: 0 !important;
+              margin-top: 10px;
               .wc_payment_methods{
                 margin-bottom: 0;
                 border-bottom: none;
@@ -756,7 +774,7 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
                   margin-bottom: 20px;
                   background: transparent;
                   padding: 0;
-                  border-radius: 5px;
+                  border-radius: 0;
                   border: none;
                   display: flex;
                   align-items: flex-start;
@@ -835,6 +853,9 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
             .ovb-trip-details-summary {
               margin-bottom: 20px;
               border-bottom: 1px solid #fff;
+              @media(max-width:420px){
+                margin-bottom: 5px;
+              }
               .ovb-trip-details-title {
                 font-size: 22px;
                 margin: 24px 0 12px;
@@ -848,6 +869,11 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
                   align-items: flex-start;
                   justify-content: space-between;
                   margin-bottom: 10px;
+                  @media(max-width:420px){
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                  }
                   .trip-details-stay{
                     display: flex;
                     align-items: center;
@@ -873,6 +899,7 @@ form.checkout_coupon.woocommerce-form-coupon button.button:focus {
                   }
                 }
               }
+
             }
             .ovb-order-review-container{
               width: 100% !important;
@@ -1064,6 +1091,15 @@ abbr[title] {
         border-color: #8B5DFF;
         outline: none;
         box-shadow: none;
+      }
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus,
+      &:-webkit-autofill:active {
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
       }
     }
 

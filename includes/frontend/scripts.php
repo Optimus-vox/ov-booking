@@ -21,51 +21,100 @@ if ( ! function_exists( 'ovb_safe_elementor_config' ) ) {
     function ovb_safe_elementor_config() {
         if ( ovb_is_woo_page() && ! ovb_is_elementor_disabled_page() ) {
             ?>
-            <script>
-            if (typeof window.elementorFrontendConfig === 'undefined') {
-                window.elementorFrontendConfig = {
-                    environmentMode: {
-                        edit: false,
-                        wpPreview: false,
-                        isScriptDebug: false
-                    },
-                    i18n: {
-                        shareOnFacebook: "Share on Facebook",
-                        shareOnTwitter: "Share on Twitter",
-                        pinIt: "Pin it",
-                        download: "Download",
-                        downloadImage: "Download image",
-                        fullscreen: "Fullscreen",
-                        zoom: "Zoom",
-                        share: "Share",
-                        playVideo: "Play Video",
-                        previous: "Previous",
-                        next: "Next",
-                        close: "Close"
-                    },
-                    is_rtl: false,
-                    breakpoints: { xs: 0, sm: 480, md: 768, lg: 1025, xl: 1440, xxl: 1600 },
-                    responsive: {
-                        breakpoints: {
-                            mobile: { label: "Mobile", value: 767, direction: "max", is_enabled: true },
-                            mobile_extra: { label: "Mobile Extra", value: 880, direction: "max", is_enabled: false },
-                            tablet: { label: "Tablet", value: 1024, direction: "max", is_enabled: true },
-                            tablet_extra: { label: "Tablet Extra", value: 1200, direction: "max", is_enabled: false },
-                            laptop: { label: "Laptop", value: 1366, direction: "max", is_enabled: false },
-                            widescreen: { label: "Widescreen", value: 2400, direction: "min", is_enabled: false }
-                        }
-                    },
-                    version: "3.30.3",
-                    is_static: false,
-                    experimentalFeatures: {},
-                    urls: { assets: "<?php echo esc_url( plugins_url( 'assets/', ELEMENTOR__FILE__ ) ); ?>" },
-                    settings: { page: [], editorPreferences: [] },
-                    kit: { active_breakpoints: ["viewport_mobile", "viewport_tablet"], global_image_lightbox: "yes" },
-                    post: { id: <?php echo get_the_ID() ?: 0; ?>, title: "<?php echo esc_js( get_the_title() ); ?>", excerpt: "" }
-                };
+<script>
+if (typeof window.elementorFrontendConfig === 'undefined') {
+    window.elementorFrontendConfig = {
+        environmentMode: {
+            edit: false,
+            wpPreview: false,
+            isScriptDebug: false
+        },
+        i18n: {
+            shareOnFacebook: "Share on Facebook",
+            shareOnTwitter: "Share on Twitter",
+            pinIt: "Pin it",
+            download: "Download",
+            downloadImage: "Download image",
+            fullscreen: "Fullscreen",
+            zoom: "Zoom",
+            share: "Share",
+            playVideo: "Play Video",
+            previous: "Previous",
+            next: "Next",
+            close: "Close"
+        },
+        is_rtl: false,
+        breakpoints: {
+            xs: 0,
+            sm: 480,
+            md: 768,
+            lg: 1025,
+            xl: 1440,
+            xxl: 1600
+        },
+        responsive: {
+            breakpoints: {
+                mobile: {
+                    label: "Mobile",
+                    value: 767,
+                    direction: "max",
+                    is_enabled: true
+                },
+                mobile_extra: {
+                    label: "Mobile Extra",
+                    value: 880,
+                    direction: "max",
+                    is_enabled: false
+                },
+                tablet: {
+                    label: "Tablet",
+                    value: 1024,
+                    direction: "max",
+                    is_enabled: true
+                },
+                tablet_extra: {
+                    label: "Tablet Extra",
+                    value: 1200,
+                    direction: "max",
+                    is_enabled: false
+                },
+                laptop: {
+                    label: "Laptop",
+                    value: 1366,
+                    direction: "max",
+                    is_enabled: false
+                },
+                widescreen: {
+                    label: "Widescreen",
+                    value: 2400,
+                    direction: "min",
+                    is_enabled: false
+                }
             }
-            </script>
-            <?php
+        },
+        version: "3.30.3",
+        is_static: false,
+        experimentalFeatures: {},
+        urls: {
+            assets: "<?php echo esc_url( plugins_url( 'assets/', ELEMENTOR__FILE__ ) ); ?>"
+        },
+        settings: {
+            page: [],
+            editorPreferences: []
+        },
+        kit: {
+            active_breakpoints: ["viewport_mobile", "viewport_tablet"],
+            global_image_lightbox: "yes"
+        },
+        post: {
+            id: <?php echo get_the_ID() ?: 0; ?>,
+            title: "<?php echo esc_js( get_the_title() ); ?>",
+            excerpt: ""
+        }
+    };
+}
+</script>
+<?php
         }
     }
 }
@@ -167,15 +216,15 @@ function ovb_enqueue_calendar_core() {
 }
 function ovb_moment_local_fallback() {
     ?>
-    <script>
-    if ( typeof moment === "undefined" ) {
-        var s = document.createElement('script');
-        s.src    = '<?php echo esc_js( OVB_BOOKING_URL . "assets/utils/js/moment-local.min.js" ); ?>';
-        s.async  = true;
-        document.head.appendChild(s);
-    }
-    </script>
-    <?php
+<script>
+if (typeof moment === "undefined") {
+    var s = document.createElement('script');
+    s.src = '<?php echo esc_js( OVB_BOOKING_URL . "assets/utils/js/moment-local.min.js" ); ?>';
+    s.async = true;
+    document.head.appendChild(s);
+}
+</script>
+<?php
 }
 
 /** Custom DateRange Picker */
@@ -327,6 +376,11 @@ function ov_enqueue_cart_assets() {
             'nonce'               => wp_create_nonce( 'ovb_nonce' ),
             'emptyCartConfirmMsg' => __( 'Are you sure you want to empty your cart?', 'ov-booking' ),
             'checkoutUrl'         => esc_url( wc_get_checkout_url() ),
+            'emptyCartTitle'       => __('Empty cart?', 'ov-booking'),
+            'emptyCartConfirmMsg'  => __('This will remove all items from your cart.', 'ov-booking'),
+            'confirmText'          => __('Yes, empty it', 'ov-booking'),
+            'cancelText'           => __('Cancel', 'ov-booking'),
+            'emptySuccess'         => __('Cart emptied.', 'ov-booking'),
         ]
     );
 
@@ -597,4 +651,3 @@ function ovb_get_clean_calendar_data( $product_id ) {
     }
     return is_array( $raw ) ? $raw : [];
 }
-

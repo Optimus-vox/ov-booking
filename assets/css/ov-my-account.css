@@ -527,6 +527,15 @@
                 outline: none;
                 border-color: #8B5DFF;
               }
+              &:-webkit-autofill,
+              &:-webkit-autofill:hover,
+              &:-webkit-autofill:focus,
+              &:-webkit-autofill:active {
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: #ffffff;
+                  transition: background-color 5000s ease-in-out 0s;
+                  -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
+              }
           }
           .select2{
             .selection{
@@ -593,6 +602,15 @@
         &:focus {
           outline: none;
           border-color: #8B5DFF;
+        }
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active {
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+            transition: background-color 5000s ease-in-out 0s;
+            -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
         }
       }
    }

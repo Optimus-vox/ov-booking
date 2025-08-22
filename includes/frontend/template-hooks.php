@@ -1,7 +1,15 @@
 <?php
 defined('ABSPATH') || exit;
 
-
+if (!function_exists('ovb_elementor_has_location')) {
+    function ovb_elementor_has_location(string $location): bool {
+        if (!did_action('elementor/loaded')) return false;
+        $plugin = \Elementor\Plugin::$instance ?? null;
+        if (!$plugin || !isset($plugin->theme_builder)) return false;
+        $docs = $plugin->theme_builder->get_conditions_manager()->get_documents_for_location($location);
+        return !empty($docs);
+    }
+}
 /**
  * UKLONI WOOCOMMERCE DEFAULT HOOKS
  */
@@ -20,7 +28,6 @@ remove_action( 'woocommerce_product_thumbnails', 'woocommerce_show_product_thumb
  */
 add_action('woocommerce_single_product_summary', 'customizing_single_product_summary_hooks', 2);
 function customizing_single_product_summary_hooks(){
-    remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
     remove_action('woocommerce_single_product_summary','woocommerce_template_single_price',10);
 }
 
@@ -37,24 +44,42 @@ function ovb_remove_short_description() {
  */
 add_filter('template_include', 'ovb_override_templates', 99);
 function ovb_override_templates($template) {
+
+    // Single Product → UVEK naš
     if ( is_singular('product') ) {
         $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-single-product.php';
         if ( file_exists($tpl) ) return $tpl;
+        return $template;
     }
 
+    // Shop / product archive → ako Elementor ima template, propusti ga
+    if ( function_exists('is_shop') && (is_shop() || is_product_taxonomy()) ) {
+        if ( ovb_elementor_has_location('product-archive') ) {
+            return $template; // Elementor controla arhive
+        }
+        // Nema Elementor arhive → koristi temu (ili ovde dodaš svoj shop template ako ga imaš)
+        return $template;
+    }
+
+    // Cart → naš
     if ( function_exists('is_cart') && is_cart() ) {
         $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
         if ( file_exists($tpl) ) return $tpl;
+        return $template;
     }
 
+    // Checkout (bez thank you) → naš
     if ( function_exists('is_checkout') && is_checkout() && ! is_order_received_page() ) {
         $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-checkout.php';
         if ( file_exists($tpl) ) return $tpl;
+        return $template;
     }
 
+    // Thank you → naš
     if ( function_exists('is_order_received_page') && is_order_received_page() ) {
         $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-thank-you.php';
         if ( file_exists($tpl) ) return $tpl;
+        return $template;
     }
 
     return $template;
@@ -153,9 +178,6 @@ function ovb_render_unified_checkout_sections() {
         }
     }
 }
-//test
-
-
 
 /**
  * DODATNA SHOP PAGE OPTIMIZACIJA
@@ -174,3 +196,48 @@ function ovb_optimize_shop_loop() {
         return $classes;
     }, 10, 3);
 }
+
+/**
+ * =========================
+ * OVB — SHOP GRID TWEAKS
+ * - Ukloni Add to Cart iz shop/cat/tag listinga
+ * - Sakrij standardnu Woo cenu u listingu
+ * - Prikaži "min / night" iz _ovb_calendar_data
+ * =========================
+ */
+
+// 1) Ukloni Add to Cart dugme u listingu (ne dira single)
+add_action('wp', function () {
+    if (is_admin()) return;
+    remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10);
+    // dodatne varijacije tema:
+    remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 15);
+    remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_add_to_cart', 10);
+}, 20);
+
+// 2) Sakrij standardni Woo price HTML samo na arhivama (shop/kategorije/tagovi)
+add_filter('woocommerce_get_price_html', function ($price, $product) {
+    if (is_admin() && !wp_doing_ajax()) return $price;
+    if (is_product()) return $price; // ne diramo single
+    if (is_shop() || is_product_taxonomy() || is_product_category() || is_product_tag()) {
+        return ''; // nema standardne cene u gridu
+    }
+    return $price;
+}, 20, 2);
+
+
+// 4) Ubaci "min / night" ispod naslova u gridu
+add_action('woocommerce_after_shop_loop_item_title', function () {
+    if (is_product()) return; // ne na single
+    $show_opt = get_option('ovb_shop_show_min_price', '1') === '1';
+    $show = (bool) apply_filters('ovb_show_min_price_on_shop', $show_opt);
+    if (!$show) return;
+
+    global $product;
+    if (!($product instanceof WC_Product)) return;
+
+    $days = absint(get_option('ovb_shop_min_price_window_days', 365));
+    if ($html !== '') {
+        echo '<div class="price ovb-price">'.$html.'</div>';
+    }
+}, 7);

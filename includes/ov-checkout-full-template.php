@@ -6,14 +6,15 @@
         <!-- HEADER -->
         <div class="ov-checkout-header">
             <a id="ov-back-btn" onclick="history.back()" class="ov-checkout-back">
-                <img src="<?php echo esc_url(plugins_url('../assets/images/arrow-left-white.png', __FILE__)); ?>" alt="arrow left white">
+                <img src="<?php echo esc_url(plugins_url('../assets/images/arrow-left-white.png', __FILE__)); ?>"
+                    alt="arrow left white">
             </a>
             <h1 class="ov-checkout-title"><?php esc_html_e('Request to book', 'ov-booking'); ?></h1>
         </div>
 
         <?php
         // KRUCIJALNO: Pozovi pre form-e
-        //do_action('woocommerce_before_checkout_form', $checkout);
+        do_action('woocommerce_before_checkout_form', $checkout);
 
 
 // 2. Očisti stored payment method iz sesije na početku checkout-a
@@ -27,9 +28,10 @@
         ?>
 
         <!-- VAŽNO: Dodaj proper form attributes za Klarna -->
-        <form name="checkout" id="checkout" method="post" class="checkout ovb-checkout-form woocommerce-checkout" action="<?php echo esc_url(wc_get_checkout_url()); ?>" enctype="multipart/form-data">
-            
-            
+        <form name="checkout" id="checkout" method="post" class="checkout ovb-checkout-form woocommerce-checkout"
+            action="<?php echo esc_url(wc_get_checkout_url()); ?>" enctype="multipart/form-data">
+
+
             <div class="ov-checkout-content">
 
                 <!-- LEVA STRANA -->
@@ -45,28 +47,28 @@
 
                     <div class="checkout-form">
                         <div id="customer_details" class="ovb-customer-details-container">
-                            
+
                             <?php
                                 // Prikaži loader i wrap samo ako neko zaista visi na HOOK-u
                                 $ovb_has_express_hook = has_action('woocommerce_checkout_before_customer_details');
                                 ?>
 
-                                <?php if ( $ovb_has_express_hook ): ?>
-                                    <div id="ovb-express-area" class="ovb-express-area">
+                            <?php if ( $ovb_has_express_hook ): ?>
+                            <div id="ovb-express-area" class="ovb-express-area">
 
-                                        <?php do_action('woocommerce_checkout_before_customer_details'); ?>
-                                    </div>
-                                <?php else: ?>
-                                    <?php // nema hook-a => nema ni loadera ?>
-                                    <?php do_action('woocommerce_checkout_before_customer_details'); ?>
-                                <?php endif; ?>
+                                <?php do_action('woocommerce_checkout_before_customer_details'); ?>
+                            </div>
+                            <?php else: ?>
+                            <?php // nema hook-a => nema ni loadera ?>
+                            <?php do_action('woocommerce_checkout_before_customer_details'); ?>
+                            <?php endif; ?>
 
                             <?php 
                             // BILLING FIELDS - VAŽNO za Klarna
                             
                             //do_action('woocommerce_checkout_before_customer_details'); 
                             ?>
-                            
+
                             <div class="woocommerce-billing-fields">
                                 <?php
                                 $fields = $checkout->get_checkout_fields('billing');
@@ -76,25 +78,26 @@
                                    do_action('woocommerce_checkout_after_customer_details'); 
                                 ?>
                             </div>
-                  
+
 
                             <?php if ($guests > 1): ?>
-                                <div id="ovb-guests-section" class="ovb-guests-section">
-                                    <h3>Podaci o gostima</h3>
-                                    <div id="ovb-guests-wrapper" class="ovb-guests-wrapper"></div>
-                                </div>
+                            <div id="ovb-guests-section" class="ovb-guests-section">
+                                <h3>Podaci o gostima</h3>
+                                <div id="ovb-guests-wrapper" class="ovb-guests-wrapper"></div>
+                            </div>
 
-                                <script>
-                                document.addEventListener("DOMContentLoaded", function () {
-                                    const guests = <?php echo intval($guests); ?>;
-                                    const wrapper = document.getElementById('ovb-guests-wrapper');
-                                    const payerCheckbox = document.getElementById('ovb-different-payer-checkbox');
+                            <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const guests = <?php echo intval($guests); ?>;
+                                const wrapper = document.getElementById('ovb-guests-wrapper');
+                                const payerCheckbox = document.getElementById('ovb-different-payer-checkbox');
 
                                 function renderGuestFields(count) {
                                     wrapper.innerHTML = '';
                                     for (let i = 1; i <= count; i++) {
                                         const isPhoneRequired = (i === 1);
-                                        const phoneAsterisk = isPhoneRequired ? ' <span class="required">*</span>' : '';
+                                        const phoneAsterisk = isPhoneRequired ?
+                                            ' <span class="required">*</span>' : '';
                                         const phoneRequiredAttr = isPhoneRequired ? 'required' : '';
 
                                         wrapper.innerHTML += `
@@ -143,41 +146,41 @@
                                 }
 
 
-                                    function updateGuests() {
-                                        const isDifferentPayer = payerCheckbox && payerCheckbox.checked;
-                                        renderGuestFields(isDifferentPayer ? guests : Math.max(guests - 1, 0));
-                                        
-                                        // VAŽNO: Trigger checkout update after guest changes
-                                        if (typeof jQuery !== 'undefined') {
-                                            jQuery('body').trigger('update_checkout');
-                                        }
-                                    }
+                                function updateGuests() {
+                                    const isDifferentPayer = payerCheckbox && payerCheckbox.checked;
+                                    renderGuestFields(isDifferentPayer ? guests : Math.max(guests - 1, 0));
 
-                                    if (payerCheckbox) {
-                                        payerCheckbox.addEventListener('change', updateGuests);
+                                    // VAŽNO: Trigger checkout update after guest changes
+                                    if (typeof jQuery !== 'undefined') {
+                                        jQuery('body').trigger('update_checkout');
                                     }
-                                    updateGuests();
-                                });
-                                </script>
+                                }
+
+                                if (payerCheckbox) {
+                                    payerCheckbox.addEventListener('change', updateGuests);
+                                }
+                                updateGuests();
+                            });
+                            </script>
                             <?php endif; ?>
 
                             <?php 
                             // SHIPPING FIELDS (ako su potrebni)
                             if (WC()->cart->needs_shipping_address()) {
                                 ?>
-                                <div class="woocommerce-shipping-fields">
-                                    <?php
+                            <div class="woocommerce-shipping-fields">
+                                <?php
                                     $fields = $checkout->get_checkout_fields('shipping');
                                     foreach ($fields as $key => $field) {
                                         woocommerce_form_field($key, $field, $checkout->get_value($key));
                                     }
                                     ?>
-                                </div>
-                                <?php
+                            </div>
+                            <?php
                             }
                          
                             ?>
-                                      <?php do_action('woocommerce_after_checkout_billing_form', $checkout); ?>
+                            <?php do_action('woocommerce_after_checkout_billing_form', $checkout); ?>
                         </div> <!-- /.ovb-customer-details-container -->
                     </div> <!-- /.checkout-form -->
                 </div> <!-- /.ov-checkout-steps -->
@@ -185,7 +188,7 @@
                 <!-- DESNA STRANA: Order Summary -->
                 <div class="ov-checkout-summary">
                     <div class="ov-summary-card">
-                        
+
                         <?php
                         if (isset($product) && $product) {
                             $image_id = $product->get_image_id();
@@ -196,7 +199,7 @@
                             }
                         }
                         ?>
-                        
+
                         <?php if (isset($start_label, $end_label, $nights, $guests)): ?>
                         <div class="ovb-trip-details-summary">
                             <h4 class="ovb-trip-details-title"><?php esc_html_e('Trip details', 'ov-booking'); ?></h4>
@@ -232,129 +235,145 @@
                         // KRUCIJALNO: Ovo mora biti pre order review tabele
                         do_action('woocommerce_checkout_before_order_review'); 
                         ?>
-                        
+
                         <div id="order_review" class="woocommerce-checkout-review-order">
                             <!-- ORDER SUMMARY TABELA -->
-                               <!-- Tvoj custom summary -->
+                            <!-- Tvoj custom summary -->
                             <div class="ovb-summary-custom">
                                 <table class="ovb-review-order-table">
                                     <tr>
-                                        <td colspan="2" class="ovb-table-section-title"><?php esc_html_e('Trip Details', 'ov-booking'); ?></td>
+                                        <td colspan="2" class="ovb-table-section-title">
+                                            <?php esc_html_e('Trip Details', 'ov-booking'); ?></td>
                                     </tr>
                                     <tr>
-                                        <td class="ovb-label"><?php echo esc_html($start_label . ' – ' . $end_label); ?></td>
+                                        <td class="ovb-label"><?php echo esc_html($start_label . ' – ' . $end_label); ?>
+                                        </td>
                                         <td class="ovb-value" style="text-align:right;">
                                             <?php echo esc_html($nights . ' ' . _n('night', 'nights', $nights, 'ov-booking')); ?>
                                         </td>
                                     </tr>
                                     <?php echo $dates_output; ?>
-                            
+
                                     <tr class="ovb-subtotal-row">
                                         <td class="ovb-label"><?php esc_html_e('Subtotal', 'ov-booking'); ?></td>
-                                        <td class="ovb-value" style="text-align:right;"><?php echo wc_price($subtotal); ?></td>
+                                        <td class="ovb-value" style="text-align:right;">
+                                            <?php echo wc_price($subtotal); ?></td>
                                     </tr>
                                     <tr class="ovb-vat-row">
                                         <td class="ovb-label"><?php esc_html_e('VAT', 'ov-booking'); ?></td>
-                                        <td class="ovb-value" style="text-align:right;"><?php echo wc_price(WC()->cart->get_taxes_total()); ?></td>
+                                        <td class="ovb-value" style="text-align:right;">
+                                            <?php echo wc_price(WC()->cart->get_taxes_total()); ?></td>
                                     </tr>
                                     <tr class="ovb-total-row">
                                         <td class="ovb-label"><?php esc_html_e('Total', 'ov-booking'); ?></td>
-                                        <td class="ovb-value" style="text-align:right; font-weight:700;"><?php echo wc_price(WC()->cart->get_total('edit')); ?></td>
+                                        <td class="ovb-value" style="text-align:right; font-weight:700;">
+                                            <?php echo wc_price(WC()->cart->get_total('edit')); ?></td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
-                            <?php //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
+                        <?php //wc_get_template('checkout/review-order.php', array('checkout' => $checkout)); ?>
 
-                           <!-- PAYMENT METHODS - KLARNA TREBA OVO -->
-                  <?php if ( WC()->cart->needs_payment() ) : ?>
-  <div id="ovb-payment-shell" class="ovb-payment-shell" data-ovb-shell>
-    <!-- Loader koji će zameniti #payment dok traje update -->
-    <div id="ovb-payment-loader" class="ovb-mini-loader" aria-live="polite" hidden>
-      <div class="loader" aria-hidden="true"></div>
-      <span class="ovb-mini-loader__text" data-ovb-loader-text><?php
+                        <!-- PAYMENT METHODS - KLARNA TREBA OVO -->
+                        <?php if ( WC()->cart->needs_payment() ) : ?>
+                        <div id="ovb-payment-shell" class="ovb-payment-shell" data-ovb-shell>
+                            <!-- Loader koji će zameniti #payment dok traje update -->
+                            <div id="ovb-payment-loader" class="ovb-mini-loader" aria-live="polite" hidden>
+                                <div class="loader" aria-hidden="true"></div>
+                                <span class="ovb-mini-loader__text" data-ovb-loader-text><?php
         echo esc_html__( 'Učitavanje načina plaćanja...', 'ov-booking' );
       ?></span>
-    </div>
+                            </div>
 
-    <!-- ORIGINALNI PAYMENT BLOK (ostaje netaknut) -->
-    <div id="payment" class="woocommerce-checkout-payment" data-ovb-payment>
-      <?php
-      do_action( 'woocommerce_review_order_before_payment' );
+                            <!-- ORIGINALNI PAYMENT BLOK (ostaje netaknut) -->
+                            <div id="payment" class="woocommerce-checkout-payment" data-ovb-payment>
+                                <?php
+do_action( 'woocommerce_review_order_before_payment' );
 
-      $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 
-      if ( ! empty( $available_gateways ) ) : ?>
-        <ul class="wc_payment_methods payment_methods methods">
-          <?php foreach ( $available_gateways as $gateway ) : ?>
-            <li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>">
-              <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>"
-                     type="radio"
-                     class="input-radio"
-                     name="payment_method"
-                     value="<?php echo esc_attr( $gateway->id ); ?>"
-                     data-order_button_text="<?php echo esc_attr( $gateway->order_button_text ); ?>" />
-              <label for="payment_method_<?php echo esc_attr( $gateway->id ); ?>">
-                <?php echo wp_kses_post( $gateway->get_title() ); ?>
-                <?php echo wp_kses_post( $gateway->get_icon() ); ?>
-              </label>
+// Chosen iz sesije ili prvi dostupni (stabilnije pre JS guarda)
+$chosen_method = ( WC()->session ) ? WC()->session->get( 'chosen_payment_method' ) : '';
+if ( empty( $chosen_method ) && ! empty( $available_gateways ) ) {
+    $ids = array_keys( $available_gateways );
+    $chosen_method = reset( $ids );
+}
 
-              <?php if ( $gateway->has_fields() || $gateway->get_description() ) : ?>
-                <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" style="display:none;">
-                  <?php $gateway->payment_fields(); ?>
-                </div>
-              <?php endif; ?>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-      <?php else :
-        echo '<p>' . esc_html__(
-          'Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements.',
-          'woocommerce'
-        ) . '</p>';
-      endif;
+if ( ! empty( $available_gateways ) ) : ?>
+                                <ul class="wc_payment_methods payment_methods methods">
+                                    <?php foreach ( $available_gateways as $gateway ) : ?>
+                                    <li
+                                        class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>">
+                                        <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio"
+                                            class="input-radio" name="payment_method"
+                                            value="<?php echo esc_attr( $gateway->id ); ?>"
+                                            <?php checked( $gateway->id, $chosen_method ); ?>
+                                            data-order_button_text="<?php echo esc_attr( $gateway->order_button_text ); ?>" />
+                                        <label for="payment_method_<?php echo esc_attr( $gateway->id ); ?>">
+                                            <?php echo wp_kses_post( $gateway->get_title() ); ?>
+                                            <?php echo wp_kses_post( $gateway->get_icon() ); ?>
+                                        </label>
 
-      do_action( 'woocommerce_review_order_after_payment' );
-      ?>
+                                        <?php if ( $gateway->has_fields() || $gateway->get_description() ) : ?>
+                                        <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>"
+                                            style="<?php echo ( $gateway->id === $chosen_method ) ? '' : 'display:none;'; ?>">
+                                            <?php $gateway->payment_fields(); ?>
+                                        </div>
+                                        <?php endif; ?>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <?php else :
+  echo '<p>' . esc_html__(
+    'Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements.',
+    'woocommerce'
+  ) . '</p>';
+endif;
 
-      <div class="form-row place-order">
-        <noscript>
-          <?php esc_html_e( 'Since your browser does not support JavaScript, or it is disabled, please ensure you click the Update Totals button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'woocommerce' ); ?>
-          <br/>
-          <button type="submit" class="button alt" name="woocommerce_checkout_update_totals" value="<?php esc_attr_e( 'Update totals', 'woocommerce' ); ?>"><?php esc_html_e( 'Update totals', 'woocommerce' ); ?></button>
-        </noscript>
+do_action( 'woocommerce_review_order_after_payment' );
+?>
 
-        <?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
-        <?php wp_nonce_field( 'woocommerce_update_order_review', '_wpnonce' ); ?>
-        <input type="hidden" name="_wp_http_referer" value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>" />
+                                <div class="form-row place-order">
+                                    <noscript>
+                                        <?php esc_html_e( 'Since your browser does not support JavaScript, or it is disabled, please ensure you click the Update Totals button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'woocommerce' ); ?>
+                                        <br />
+                                        <button type="submit" class="button alt"
+                                            name="woocommerce_checkout_update_totals"
+                                            value="<?php esc_attr_e( 'Update totals', 'woocommerce' ); ?>"><?php esc_html_e( 'Update totals', 'woocommerce' ); ?></button>
+                                    </noscript>
 
-        <button type="submit" class="button alt" name="woocommerce_checkout_place_order" id="place_order"
-                value="<?php esc_attr_e( 'Place order', 'woocommerce' ); ?>"
-                data-value="<?php esc_attr_e( 'Place order', 'woocommerce' ); ?>">
-          <?php esc_html_e( 'Place order', 'woocommerce' ); ?>
-        </button>
+                                    <?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
 
-        <?php do_action( 'woocommerce_review_order_after_submit' ); ?>
-      </div>
-    </div>
-  </div>
-<?php endif; ?>
+                                    <input type="hidden" name="_wp_http_referer"
+                                        value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ); ?>" />
 
+                                    <button type="submit" class="button alt" name="woocommerce_checkout_place_order"
+                                        id="place_order" value="<?php esc_attr_e( 'Place order', 'woocommerce' ); ?>"
+                                        data-value="<?php esc_attr_e( 'Place order', 'woocommerce' ); ?>">
+                                        <?php esc_html_e( 'Place order', 'woocommerce' ); ?>
+                                    </button>
 
-
-
+                                    <?php do_action( 'woocommerce_review_order_after_submit' ); ?>
+                                </div>
+                            </div>
                         </div>
+                        <?php endif; ?>
+
+
+
+
                     </div>
-                </div> <!-- /.ov-checkout-summary -->
+                </div>
+            </div> <!-- /.ov-checkout-summary -->
 
-            </div> <!-- /.ov-checkout-content -->
+    </div> <!-- /.ov-checkout-content -->
 
-        </form>
-        
-        <?php
+    </form>
+
+    <?php
         // KRUCIJALNO: Pozovi posle form-e - OVO INICIJALIZUJE CHECKOUT JS
         do_action('woocommerce_after_checkout_form', $checkout);
         ?>
 
-    </div> <!-- /.ov-checkout-container -->
+</div> <!-- /.ov-checkout-container -->
 </div>

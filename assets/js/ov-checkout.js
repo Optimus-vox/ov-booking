@@ -65,3 +65,52 @@
     if (pending > 0) scheduleHide();
   }, 10000);
 })(jQuery);
+
+
+(function ($) {
+  function ensureValidPaymentSelected() {
+    var $methods = $('input[name="payment_method"]');
+    if (!$methods.length) return;
+
+    var $checked = $methods.filter(":checked");
+    if (!$checked.length || !$checked.is(":visible") || $checked.is(":disabled")) {
+      var $first = $methods.filter(":visible:enabled").first();
+      if ($first.length) {
+        $first.prop("checked", true).trigger("change");
+        $(document.body).trigger("payment_method_selected", [$first.val()]);
+      }
+    }
+    togglePlaceOrder();
+  }
+
+  function togglePlaceOrder() {
+    var ok = $('input[name="payment_method"]:checked').length > 0;
+    $("#place_order").prop("disabled", !ok).toggleClass("disabled-button", !ok);
+  }
+
+  $(function () {
+    ensureValidPaymentSelected();
+    $(document.body).on("updated_checkout", ensureValidPaymentSelected);
+    $(document).on("change", 'input[name="payment_method"]', togglePlaceOrder);
+
+    // Zaključaj dugme tokom update_order_review AJAX-a
+    $(document).on("ajaxSend", function (_, __, s) {
+      if (s && s.url && s.url.indexOf("wc-ajax=update_order_review") !== -1) {
+        $("#place_order").prop("disabled", true).addClass("disabled-button");
+      }
+    });
+    $(document.body).on("updated_checkout", function () {
+      togglePlaceOrder();
+    });
+  });
+})(jQuery);
+
+(function ($) {
+  // Fail-safe toggle za .payment_box ako neka tema ne poveže Woo skriptu
+  $(document).on("change", 'input[name="payment_method"]', function () {
+    var val = $(this).val();
+    $(".payment_box").hide();
+    $(".payment_box.payment_method_" + val).show();
+  });
+})(jQuery);
+

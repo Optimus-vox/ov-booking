@@ -87,7 +87,14 @@ if (!is_admin() || wp_doing_ajax()) {
         OVB_BOOKING_PATH . 'includes/frontend/myaccount-template-override.php',
         OVB_BOOKING_PATH . 'includes/frontend/excerpt.php', 
         OVB_BOOKING_PATH . 'includes/ovb-woocommerce-optimizations.php', 
+
         // OVB_BOOKING_PATH . 'includes/frontend/ovb-woocommerce-optimizations.php',
+
+        // Emails and shortcodes
+        OVB_BOOKING_PATH . '/includes/frontend/emails.php',
+        OVB_BOOKING_PATH . '/includes/frontend/shortcodes-apartments.php',
+        OVB_BOOKING_PATH . '/includes/frontend/filters-catalog.php',
+        OVB_BOOKING_PATH . '/includes/frontend/elementor-widgets.php',
     ];
     
     // Load Elementor manager FIRST if Elementor exists
@@ -167,8 +174,24 @@ function ovb_enqueue_checkout_scripts() {
  * Performance optimization hooks
  */
 add_action('init', 'ovb_performance_optimizations', 1);
+// function ovb_performance_optimizations() {
+//     if (!is_admin()) {
+//         add_filter('pre_site_transient_update_core', '__return_null');
+//         add_filter('pre_site_transient_update_plugins', '__return_null');
+//         add_filter('pre_site_transient_update_themes', '__return_null');
+//         remove_action('init', 'wp_version_check');
+//         remove_action('init', 'wp_update_plugins');
+//         remove_action('init', 'wp_update_themes');
+//     }
+//     add_filter('woocommerce_available_payment_gateways', function($gateways) {
+//         static $cached_gateways = null;
+//         if ($cached_gateways !== null) return $cached_gateways;
+//         return $cached_gateways = $gateways;
+//     }, 99);
+// }
 function ovb_performance_optimizations() {
-    if (!is_admin()) {
+    // Opciono: gasenje update checkova samo kada je definisano (npr. na stagingu)
+    if (defined('OVB_DISABLE_UPDATES') && OVB_DISABLE_UPDATES && !is_admin()) {
         add_filter('pre_site_transient_update_core', '__return_null');
         add_filter('pre_site_transient_update_plugins', '__return_null');
         add_filter('pre_site_transient_update_themes', '__return_null');
@@ -176,6 +199,8 @@ function ovb_performance_optimizations() {
         remove_action('init', 'wp_update_plugins');
         remove_action('init', 'wp_update_themes');
     }
+
+    // Primer realne optimizacije: keširaj dostupne gateway-e u okviru request-a
     add_filter('woocommerce_available_payment_gateways', function($gateways) {
         static $cached_gateways = null;
         if ($cached_gateways !== null) return $cached_gateways;
@@ -213,3 +238,56 @@ function ovb_deactivation_handler() {
     flush_rewrite_rules();
     ovb_handle_error('OV Booking plugin deactivated');
 }
+
+// === AJAX: filter apartments ===
+add_action('wp_ajax_ovb_filter_apartments', 'ovb_filter_apartments_callback');
+add_action('wp_ajax_nopriv_ovb_filter_apartments', 'ovb_filter_apartments_callback');
+
+function ovb_filter_apartments_callback() {
+    check_ajax_referer('ovb_filter_nonce', 'nonce');
+
+    $p = [
+        'date'     => sanitize_text_field($_POST['ovb_date'] ?? ''),
+        'guests'   => absint($_POST['ovb_guests'] ?? 0),
+        'rooms'    => absint($_POST['ovb_rooms'] ?? 0),
+        'city'     => sanitize_text_field($_POST['ovb_city'] ?? ''),
+        'country'  => sanitize_text_field($_POST['ovb_country'] ?? ''),
+        'category' => sanitize_text_field($_POST['product_cat'] ?? ''),
+        'per_page' => absint($_POST['per_page'] ?? 12),
+        'orderby'  => sanitize_text_field($_POST['orderby'] ?? 'menu_order'),
+        'order'    => sanitize_text_field($_POST['order'] ?? 'ASC'),
+    ];
+
+    // Render kroz postojeći shortcode da ne dupliramo template
+    $sc = sprintf(
+        '[ovb_apartments per_page="%d" columns="%d" show_min_price="%d" window_days="%d" category="%s" city="%s" country="%s" guests="%d" rooms="%d" orderby="%s" order="%s" date="%s"]',
+        max(1,$p['per_page']),  // columns uzmi iz teme ili prosledi posebno
+        3,
+        0,
+        365,
+        esc_attr($p['category']),
+        esc_attr($p['city']),
+        esc_attr($p['country']),
+        $p['guests'],
+        $p['rooms'],
+        esc_attr($p['orderby']),
+        esc_attr($p['order']),
+        esc_attr($p['date'])
+    );
+
+    $html = do_shortcode($sc);
+    wp_send_json_success(['html' => $html], 200);
+}
+
+add_action('wp_enqueue_scripts', function () {
+    if (function_exists('is_shop') && (is_shop() || is_product_taxonomy())) {
+        $h = 'ovb-catalog';
+        $src = plugins_url('assets/js/ovb-catalog.js', dirname(__FILE__)); // prilagodi putanju ako drugačije
+        wp_register_script($h, $src, ['jquery'], filemtime(OVB_BOOKING_PATH.'assets/js/ovb-catalog.js'), true);
+        wp_localize_script($h, 'ovbCatalog', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('ovb_filter_nonce'),
+        ]);
+        wp_enqueue_script($h);
+    }
+}, 20);

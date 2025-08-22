@@ -8,19 +8,6 @@ require_once __DIR__ . '/logger.php';
  * =========================
  */
 
-/**
- * LOGGING
- * Enhanced logging function (with WP_DEBUG fallback)
- */
-if (!function_exists('ovb_log')) {
-    function ovb_log($message, $context = 'general') {
-        if (function_exists('ovb_log_error')) {
-            ovb_log_error($message, $context);
-        } elseif (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("OVB [{$context}]: {$message}");
-        }
-    }
-}
 
 /**
  * DEFAULTS & UTILITIES
@@ -487,10 +474,18 @@ function ovb_reset_woocommerce_pages() {
  * Debug funkcija za praćenje meta podataka
  */
 function ovb_debug_product_meta($product_id) {
-    if (!defined('WP_DEBUG') || !WP_DEBUG) return;
+    if (!defined('OVB_DEBUG') || !OVB_DEBUG) return;
     
     $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
     $price_types = get_post_meta($product_id, '_ovb_price_types', true);
+
+    if (defined('OVB_DEBUG') && OVB_DEBUG) {
+    add_action('load-post.php', function() {
+        if (isset($_GET['post']) && get_post_type($_GET['post']) === 'product') {
+            ovb_debug_product_meta((int) $_GET['post']);
+        }
+    });
+}
     
     error_log("=== OVB DEBUG PRODUCT {$product_id} ===");
     error_log("Calendar data type: " . gettype($calendar_data));
@@ -529,3 +524,212 @@ add_action('admin_head', function() {
         echo '<style>#woocommerce-product-data { display: none !important; }</style>';
     }
 });
+
+
+// ===== OVB: canonical helpers =====
+
+// 0) Bezbedan log: aktivan samo ako eksplicitno uključiš OVB_DEBUG
+if ( ! function_exists('ovb_log') ) {
+    function ovb_log($msg) {
+        if (!defined('OVB_DEBUG') || !OVB_DEBUG) return;
+        if (is_array($msg) || is_object($msg)) $msg = print_r($msg, true);
+        error_log($msg);
+    }
+}
+
+// 1) Čitanje kalendara (JSON/array tolerant)
+if ( ! function_exists('ovb_get_calendar_data') ) {
+    function ovb_get_calendar_data($product_id) {
+        $raw = get_post_meta($product_id, '_ovb_calendar_data', true);
+        if (is_string($raw)) {
+            $d = json_decode($raw, true);
+            return is_array($d) ? $d : [];
+        }
+        return is_array($raw) ? $raw : [];
+    }
+}
+
+// 2) Numerički minimum / night (bez HTML-a)
+if ( ! function_exists('ovb_get_min_price_per_night') ) {
+    function ovb_get_min_price_per_night($product_id, $window_days = 365) {
+        static $mem = [];
+        $mkey = $product_id . ':' . (int)$window_days;
+        if (isset($mem[$mkey])) return $mem[$mkey];
+
+        $cal   = ovb_get_calendar_data($product_id);
+        $min   = null;
+        $now   = current_time('timestamp');
+        $today = date('Y-m-d', $now);
+        $limit = date('Y-m-d', strtotime('+' . (int)$window_days . ' days', $now));
+
+        if ($cal && is_array($cal)) {
+            foreach ($cal as $date => $data) {
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$date)) continue;
+                if ($date < $today || $date > $limit) continue;
+                if (isset($data['status']) && $data['status'] !== 'available') continue;
+                if (!isset($data['price'])) continue;
+                $price = (float) $data['price'];
+                if ($price < 0) continue;
+                if ($min === null || $price < $min) $min = $price;
+            }
+        }
+
+        return $mem[$mkey] = $min; // float|null
+    }
+}
+
+// 3) HTML “od XX,XX / night” (transient + in-request memo)
+if ( ! function_exists('ovb_min_price_per_night_html') ) {
+    function ovb_min_price_per_night_html($product_id, $window_days = 365) {
+        static $mem = [];
+        $mkey = $product_id . ':' . (int)$window_days . ':html';
+        if (isset($mem[$mkey])) return $mem[$mkey];
+
+        $cache_key = 'ovb_minpn_' . $product_id . '_' . (int)$window_days;
+        $cached = get_transient($cache_key);
+        if ($cached !== false) { $mem[$mkey] = $cached; return $cached; }
+
+        $min = ovb_get_min_price_per_night($product_id, $window_days);
+        $html = ($min === null) ? '' : sprintf(
+            '<span class="ovb-min-price">%s <small>%s</small></span>',
+            wc_price($min),
+            esc_html__('/ night', 'ov-booking')
+        );
+
+        set_transient($cache_key, $html, HOUR_IN_SECONDS);
+        return $mem[$mkey] = $html;
+    }
+}
+
+// 4) Standardizovan booking meta iz porudžbine
+if ( ! function_exists('ovb_get_order_booking_meta') ) {
+    function ovb_get_order_booking_meta($order_or_id) {
+        $order = ($order_or_id instanceof WC_Order) ? $order_or_id : wc_get_order($order_or_id);
+        if (!$order) return ['check_in' => '', 'check_out' => '', 'guests' => null];
+
+        $check_in  = $order->get_meta('ovb_check_in_date') ?: $order->get_meta('_ovb_start_date') ?: $order->get_meta('start_date');
+        $check_out = $order->get_meta('ovb_check_out_date') ?: $order->get_meta('_ovb_end_date')   ?: $order->get_meta('end_date');
+        $guests    = $order->get_meta('_ovb_guests_num')     ?: $order->get_meta('guests');
+
+        return [
+            'check_in'  => $check_in  ?: '',
+            'check_out' => $check_out ?: '',
+            'guests'    => ($guests === '' || $guests === null) ? null : (int) $guests,
+        ];
+    }
+}
+// =======================
+// Query helpers (catalog/shortcode)
+// =======================
+
+if (!function_exists('ovb_get_apartments_query_args')) {
+    /**
+     * Normalizuje ulazne parametre i vraća WP_Query args za 'product'.
+     * $params: category (CSV slugs), city, country, guests, rooms, orderby, order, per_page, date (Y-m-d)
+     * $context: 'shortcode' | 'catalog'
+     */
+    function ovb_get_apartments_query_args(array $params, string $context = 'catalog'): array {
+        $p = wp_parse_args($params, [
+            'category'  => '',
+            'city'      => '',
+            'country'   => '',
+            'guests'    => 0,
+            'rooms'     => 0,
+            'orderby'   => 'menu_order',
+            'order'     => 'ASC',
+            'per_page'  => 12,
+            'date'      => '',
+        ]);
+
+        // Map GET → canonical keys (ako stižu kao ovb_* iz forme)
+        foreach (['ovb_city'=>'city','ovb_country'=>'country','ovb_guests'=>'guests','ovb_rooms'=>'rooms','ovb_date'=>'date','product_cat'=>'category'] as $src=>$dst) {
+            if (isset($params[$src]) && $params[$src] !== '') $p[$dst] = $params[$src];
+        }
+
+        // Sanitize
+        foreach (['category','city','country','orderby','order','date'] as $k) { $p[$k] = sanitize_text_field((string)$p[$k]); }
+        $p['guests']   = (int) max(0, (int)$p['guests']);
+        $p['rooms']    = (int) max(0, (int)$p['rooms']);
+        $p['per_page'] = (int) max(1, min(48, (int)$p['per_page']));
+        $p['order']    = (strtoupper($p['order']) === 'DESC') ? 'DESC' : 'ASC';
+
+        $args = [
+            'post_type'           => 'product',
+            'post_status'         => 'publish',
+            'ignore_sticky_posts' => 1,
+            'posts_per_page'      => $p['per_page'],
+            'orderby'             => $p['orderby'],
+            'order'               => $p['order'],
+            'meta_query'          => [],
+            'tax_query'           => [],
+            'no_found_rows'       => true,
+        ];
+
+        // product_cat (CSV slugs)
+        if ($p['category'] !== '') {
+            $terms = array_filter(array_map('trim', explode(',', $p['category'])));
+            if ($terms) {
+                $args['tax_query'][] = [
+                    'taxonomy' => 'product_cat',
+                    'field'    => 'slug',
+                    'terms'    => array_map('sanitize_title', $terms),
+                ];
+            }
+        }
+
+        // Meta prefilter (koristiš _ovb_city / _ovb_country / _ovb_max_guests / _ovb_rooms u svom kodu)
+        if ($p['city'] !== '')    $args['meta_query'][] = ['key' => '_ovb_city',    'value' => $p['city']];
+        if ($p['country'] !== '') $args['meta_query'][] = ['key' => '_ovb_country', 'value' => $p['country']];
+        if ($p['guests'] > 0)     $args['meta_query'][] = ['key' => '_ovb_max_guests', 'value' => $p['guests'], 'type'=>'NUMERIC', 'compare'=>'>='];
+        if ($p['rooms']  > 0)     $args['meta_query'][] = ['key' => '_ovb_rooms',      'value' => $p['rooms'],  'type'=>'NUMERIC', 'compare'=>'>='];
+        if (!empty($args['meta_query']) && count($args['meta_query']) > 1) {
+            $args['meta_query']['relation'] = 'AND';
+        }
+
+        // Availability po konkretnom danu → post__in
+        if ($p['date'] !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $p['date'])) {
+            $ids = ovb_get_available_product_ids_for_date($p['date'], $args['meta_query']);
+            $args['post__in'] = $ids ? array_map('absint', $ids) : [0]; // prazno
+        }
+
+        return $args;
+    }
+}
+
+if (!function_exists('ovb_get_available_product_ids_for_date')) {
+    /**
+     * Vrati product ID-eve dostupne za tačan dan (YYYY-mm-dd), uz opcioni meta prefilter.
+     * Keš: 10 min transient po kombinaciji filtera.
+     */
+    function ovb_get_available_product_ids_for_date(string $date, array $meta_prefilter = []): array {
+        $date = sanitize_text_field($date);
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) return [];
+
+        $cache_key = 'ovb_avail_' . md5($date . '|' . maybe_serialize($meta_prefilter));
+        $cached = get_transient($cache_key);
+        if ($cached !== false) return (array)$cached;
+
+        // Kandidati po metama
+        $ids = get_posts([
+            'post_type'      => 'product',
+            'post_status'    => 'publish',
+            'fields'         => 'ids',
+            'posts_per_page' => 1000,
+            'meta_query'     => $meta_prefilter ?: [],
+            'no_found_rows'  => true,
+        ]);
+        if (empty($ids)) { set_transient($cache_key, [], MINUTE_IN_SECONDS * 10); return []; }
+
+        $available = [];
+        foreach ($ids as $pid) {
+            $cal = function_exists('ovb_get_calendar_data') ? ovb_get_calendar_data($pid) : [];
+            if (isset($cal[$date]) && is_array($cal[$date])) {
+                $st = $cal[$date]['status'] ?? '';
+                if ($st === 'available') $available[] = (int)$pid;
+            }
+        }
+
+        set_transient($cache_key, $available, MINUTE_IN_SECONDS * 10);
+        return $available;
+    }
+}

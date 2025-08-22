@@ -16,6 +16,7 @@ const showToast = (msg) =>
     timerProgressBar: true,
     background: "#f8d7da",
     color: "#842029",
+    scrollbarPadding: false,
   });
 
 const parseDMY = (s) => {
@@ -105,7 +106,7 @@ jQuery(document).ready(function () {
       dataType: "json",
       success: function (res) {
         if (successMessage) {
-          Swal.fire("Success!", successMessage, "success");
+          Swal.fire("Success!", successMessage, "success", );
         }
       },
       error: function (err) {
@@ -317,6 +318,7 @@ jQuery(document).ready(function () {
           showCancelButton: true,
           confirmButtonText: "Yes",
           cancelButtonText: "No",
+          scrollbarPadding: false,
         }).then((result) => {
           if (!result.isConfirmed) {
             // Vrati na prethodni status bez dodatnog pitanja
@@ -611,6 +613,8 @@ jQuery(document).ready(function () {
         showCancelButton: true,
         confirmButtonText: "Yes, apply",
         cancelButtonText: "Cancel",
+        scrollbarPadding: false,
+        scrollbarPadding: false,
       }).then((result) => {
         if (!result.isConfirmed) return;
 
@@ -714,6 +718,7 @@ jQuery(document).ready(function () {
       showCancelButton: true,
       confirmButtonText: "Yes, save",
       cancelButtonText: "Cancel",
+      scrollbarPadding: false,
     }).then((result) => {
       if (!result.isConfirmed) return;
 
@@ -981,6 +986,7 @@ jQuery(document).ready(function () {
                  <strong>Client:</strong> ${response.data.client.firstName} ${response.data.client.lastName}`,
               timer: 4000,
               timerProgressBar: true,
+              scrollbarPadding: false,
             });
           } else {
             const errorMsg = response.data?.message || "Server error creating booking.";

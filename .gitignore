@@ -62,3 +62,4 @@ php-errors.log
 *.zip
 .git
 *.git
+.prettierrc

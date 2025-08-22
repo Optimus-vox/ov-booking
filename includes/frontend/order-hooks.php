@@ -2,6 +2,14 @@
 defined('ABSPATH') || exit;
 
 
+add_action('template_redirect', function () {
+    if (function_exists('is_checkout') && is_checkout() && ! is_wc_endpoint_url('order-received')) {
+        if (!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE', true);
+        if (function_exists('wc_nocache_headers')) wc_nocache_headers();
+        nocache_headers();
+    }
+}, 0);
+
 
 /**
  * =========================
@@ -909,24 +917,6 @@ function ovb_generate_date_range_safe($start, $end) {
 }
 
 /**
- * Gets calendar data for a product (handles both array and JSON formats)
- */
-function ovb_get_calendar_data($product_id) {
-    $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
-    
-    if (is_string($calendar_data)) {
-        $decoded = json_decode($calendar_data, true);
-        $calendar_data = is_array($decoded) ? $decoded : [];
-    }
-    
-    if (!is_array($calendar_data)) {
-        $calendar_data = [];
-    }
-    
-    return $calendar_data;
-}
-
-/**
  * Gets booking dates from order and item
  */
 function ovb_get_booking_dates_from_order($order, $item) {
@@ -948,20 +938,6 @@ function ovb_get_booking_dates_from_order($order, $item) {
     return [];
 }
 
-/**
- * Gets booking metadata from order in a standardized format
- */
-function ovb_get_order_booking_meta($order) {
-    $check_in = $order->get_meta('ovb_check_in_date') ?: $order->get_meta('_ovb_start_date') ?: $order->get_meta('start_date');
-    $check_out = $order->get_meta('ovb_check_out_date') ?: $order->get_meta('_ovb_end_date') ?: $order->get_meta('end_date');
-    $guests = $order->get_meta('guests') ?: $order->get_meta('_ovb_guests_num');
-    
-    return [
-        'check_in' => $check_in,
-        'check_out' => $check_out,
-        'guests' => $guests
-    ];
-}
 
 /**
  * Formats date for display (returns dash if empty)
@@ -1016,144 +992,6 @@ function ovb_display_payer_info($order) {
     
     echo '</ul></div>';
 }
-
-/**
- * Displays guest information in order details
- */
-// function ovb_display_guest_info($order) {
-//     if (!$order instanceof WC_Order) return;
-
-//     // ukupno gostiju (fallbackovi)
-//     $total = (int) (
-//         $order->get_meta('_ovb_guests_total')
-//         ?: $order->get_meta('guests')
-//         ?: $order->get_meta('_ovb_guests_num')
-//         ?: 1
-//     );
-
-//     $is_other = ($order->get_meta('_ovb_paid_by_other') === 'yes') || ovb_truthy($order->get_meta('_ovb_is_other'));
-
-//     // dodatni gosti iz JSON-a
-//     $extra = [];
-//     $extra_json = $order->get_meta('_ovb_guests_json');
-//     if (is_string($extra_json) && $extra_json !== '') {
-//         $tmp = json_decode($extra_json, true);
-//         if (is_array($tmp)) {
-//             foreach ($tmp as $g) {
-//                 $fn = trim((string)($g['first_name'] ?? ''));
-//                 $ln = trim((string)($g['last_name']  ?? ''));
-//                 $gd = trim((string)($g['gender']     ?? ''));
-//                 $db = trim((string)($g['dob']        ?? ''));
-//                 $ph = trim((string)($g['phone']      ?? ''));
-//                 $pp = trim((string)($g['passport']   ?? ''));
-//                 $all_empty = ($fn==='' && $ln==='' && $gd==='' && $db==='' && $ph==='' && $pp==='');
-//                 if (!$all_empty) {
-//                     $extra[] = compact('fn','ln','gd','db','ph','pp');
-//                 }
-//             }
-//         }
-//     }
-
-//     // Ako nema “druge osobe”, ukupno je 1 i nema dodatnih — ne prikazuj ništa
-//     if (!$is_other && $total <= 1 && empty($extra)) return;
-
-//     echo '<div class="ovb-guests" style="display:flex; flex-wrap:wrap; gap:16px; margin:12px 0;">';
-
-//     // helpers
-//     $card_open = function($title, $badge = '', $subtitle = '') {
-//         echo '<div style="flex:1 1 300px; background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:12px 14px;">';
-//         echo '<strong style="display:block; margin-bottom:8px;">' . esc_html($title)
-//            . ($subtitle ? ' <em style="font-weight:500; font-style:italic; opacity:.8;">'.esc_html($subtitle).'</em>' : '')
-//            . '</strong>';
-//         if ($badge) {
-//             echo '<span style="font-size:12px; color:#7c3aed; display:block; margin:-4px 0 6px;">(' . esc_html($badge) . ')</span>';
-//         }
-//         echo '<ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:4px;">';
-//     };
-//     $card_close = function(){ echo '</ul></div>'; };
-//     $fmt_gender = function($v){
-//         $v = strtolower(trim((string)$v));
-//         if (in_array($v, ['m','male','muški','muski'], true)) return __('muški','ov-booking');
-//         if (in_array($v, ['f','female','ženski','zenski'], true)) return __('ženski','ov-booking');
-//         return $v !== '' ? $v : '';
-//     };
-
-//     // 1) Ako postoji "druga osoba" – prikaži kao GOST #1 (Other person) sa svim poljima
-//     if ($is_other) {
-//         $card_open(
-//             sprintf(esc_html__('Gost #%d','ov-booking'), 1),
-//             esc_html__('Različit od platioca','ov-booking'),
-//             esc_html__('Other person','ov-booking')
-//         );
-
-//         $first = trim((string)$order->get_meta('_ovb_other_first_name'));
-//         $last  = trim((string)$order->get_meta('_ovb_other_last_name'));
-//         $name  = trim($first . ' ' . $last);
-//         if ($name) echo '<li><strong>'.esc_html__('Ime i prezime','ov-booking').':</strong> '.esc_html($name).'</li>';
-
-//         $email = trim((string)$order->get_meta('_ovb_other_email'));
-//         if ($email) echo '<li><strong>Email:</strong> <a href="mailto:'.esc_attr(sanitize_email($email)).'">'.esc_html($email).'</a></li>';
-
-//         $phone = trim((string)$order->get_meta('_ovb_other_phone'));
-//         if ($phone) {
-//             $tel = preg_replace('/[^0-9+]/','',$phone);
-//             echo '<li><strong>'.esc_html__('Telefon','ov-booking').':</strong> <a href="tel:'.esc_attr($tel).'">'.esc_html($phone).'</a></li>';
-//         }
-
-//         $dob = trim((string)$order->get_meta('_ovb_other_dob'));
-//         if ($dob) echo '<li><strong>'.esc_html__('Datum rođenja','ov-booking').':</strong> '.esc_html($dob).'</li>';
-
-//         $idn = trim((string)$order->get_meta('_ovb_other_id_number'));
-//         if ($idn) echo '<li><strong>'.esc_html__('Broj pasoša/lične karte','ov-booking').':</strong> '.esc_html($idn).'</li>';
-
-//         // adresa (ako je popunjena)
-//         $addr = trim((string)$order->get_meta('_ovb_other_address1'));
-//         $city = trim((string)$order->get_meta('_ovb_other_city'));
-//         $zip  = trim((string)$order->get_meta('_ovb_other_postcode'));
-//         $cty  = trim((string)$order->get_meta('_ovb_other_country'));
-//         if ($addr) echo '<li><strong>'.esc_html__('Adresa','ov-booking').':</strong> '.esc_html($addr).'</li>';
-//         if ($city) echo '<li><strong>'.esc_html__('Grad','ov-booking').':</strong> '.esc_html($city).'</li>';
-//         if ($zip)  echo '<li><strong>'.esc_html__('Poštanski broj','ov-booking').':</strong> '.esc_html($zip).'</li>';
-//         if ($cty)  echo '<li><strong>'.esc_html__('Država','ov-booking').':</strong> '.esc_html($cty).'</li>';
-
-//         $card_close();
-//     }
-
-//     // 2) Dodatni gosti (iz JSON-a) — sa datumom rođenja i pasošem/ličnom
-//     if (!empty($extra)) {
-//         $start_num = $is_other ? 2 : 1;
-//         foreach ($extra as $i => $g) {
-//             $card_open( sprintf(esc_html__('Gost #%d','ov-booking'), $start_num + $i) );
-
-//             $full = trim($g['fn'].' '.$g['ln']);
-//             if ($full) {
-//                 echo '<li><strong>'.esc_html__('Ime i prezime','ov-booking').':</strong> '.esc_html($full).'</li>';
-//             }
-
-//             $gender = $fmt_gender($g['gd']);
-//             if ($gender !== '') {
-//                 echo '<li><strong>'.esc_html__('Pol','ov-booking').':</strong> '.esc_html($gender).'</li>';
-//             }
-
-//             if ($g['db']!=='') {
-//                 echo '<li><strong>'.esc_html__('Datum rođenja','ov-booking').':</strong> '.esc_html($g['db']).'</li>';
-//             }
-
-//             if ($g['ph']!=='') {
-//                 $tel = preg_replace('/[^0-9+]/','',$g['ph']);
-//                 echo '<li><strong>'.esc_html__('Telefon','ov-booking').':</strong> <a href="tel:'.esc_attr($tel).'">'.esc_html($g['ph']).'</a></li>';
-//             }
-
-//             if ($g['pp']!=='') {
-//                 echo '<li><strong>'.esc_html__('Broj pasoša/lične karte','ov-booking').':</strong> '.esc_html($g['pp']).'</li>';
-//             }
-
-//             $card_close();
-//         }
-//     }
-
-//     echo '</div>';
-// }
 
 function ovb_display_guest_info($order) {
     if (!$order instanceof WC_Order) return;
@@ -1285,3 +1123,79 @@ add_action('woocommerce_order_action_ovb_send_ics_again', function($order){
         }
     }
 }, 10, 1);
+
+
+// 3.1 Omogući COD i kad je korpa virtual-only (često za booking)
+add_filter('woocommerce_cod_is_available', function ($available) {
+    if (is_admin() && !defined('DOING_AJAX')) return $available;
+    if (!WC()->cart) return $available;
+
+    $needs_shipping = WC()->cart->needs_shipping();
+    if (!$needs_shipping) return true; // sve virtuelno → dozvoli COD
+
+    return $available;
+}, 10, 1);
+
+// 3.2 Ako su svi gateway-i filtrirani/ispali u toku update-a, vrati barem COD
+add_filter('woocommerce_available_payment_gateways', function ($gateways) {
+    if (is_admin() && !defined('DOING_AJAX')) return $gateways;
+
+    if (empty($gateways)) {
+        $pm = WC()->payment_gateways() ? WC()->payment_gateways()->payment_gateways() : [];
+        if (isset($pm['cod']) && $pm['cod']->is_available()) {
+            $gateways['cod'] = $pm['cod'];
+        }
+    }
+    return $gateways;
+}, 20);
+
+
+// 3.3 Default gateway (fallback) = COD, ako nijedan nije izabran
+add_filter('woocommerce_default_gateway', function ($default) {
+    return $default ?: 'cod';
+});
+
+add_filter('woocommerce_checkout_posted_data', function ($data) {
+    if (is_admin() && !defined('DOING_AJAX')) return $data;
+
+    $gateways = WC()->payment_gateways()->get_available_payment_gateways();
+    if (empty($gateways) || !is_array($gateways)) return $data;
+
+    $chosen = isset($data['payment_method']) ? sanitize_text_field($data['payment_method']) : '';
+    if ($chosen === '' || !isset($gateways[$chosen])) {
+        $fallback = isset($gateways['cod']) ? 'cod' : array_key_first($gateways);
+        if ($fallback) {
+            $data['payment_method'] = $fallback;
+            if (WC()->session) {
+                WC()->session->set('chosen_payment_method', $fallback);
+            }
+        }
+    }
+    return $data;
+}, 9);
+
+// 2.5 (Opc.) Activation minimal — bez diranja tuđih sesija
+if (defined('OVB_BOOKING_FILE')) {
+    register_activation_hook(OVB_BOOKING_FILE, function () {
+        flush_rewrite_rules();
+    });
+}
+
+//test nonce 
+// === AJAX: Empty cart (za ovb_empty_cart) ===
+add_action('wp_ajax_ovb_empty_cart', 'ovb_ajax_empty_cart');
+add_action('wp_ajax_nopriv_ovb_empty_cart', 'ovb_ajax_empty_cart');
+function ovb_ajax_empty_cart() {
+    if ( ! isset($_POST['nonce']) || ! wp_verify_nonce( $_POST['nonce'], 'ovb_nonce' ) ) {
+        wp_send_json_error( __('Invalid nonce.', 'ov-booking') );
+    }
+    if ( ! function_exists('WC') || ! WC()->cart ) {
+        wp_send_json_error( __('Cart unavailable.', 'ov-booking') );
+    }
+
+    // Isprazni korpu
+    WC()->cart->empty_cart();
+
+    // Po želji: očisti kupon(e), shipping, fees (ostavljeno osnovno)
+    wp_send_json_success( ['message' => __('Cart emptied.', 'ov-booking')] );
+}
