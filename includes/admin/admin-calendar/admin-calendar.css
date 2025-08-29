@@ -1,0 +1,629 @@
+/* Reset osnovnih margina i paddinga za sve elemente */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+input {
+  border: 0;
+}
+
+.admin-calendar-container {
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: auto;
+  margin-bottom: 30px;
+  width: fit-content;
+}
+
+.calendar-nav i {
+  cursor: pointer;
+  transform: rotate(270deg);
+}
+
+.calendar-nav .month-year {
+  margin-inline: auto;
+}
+
+.calendar-nav .month-year h3 {
+  margin-inline: 16px;
+}
+
+.admin-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  overflow-x: scroll;
+}
+
+.admin-table thead tr th {
+  background-color: #8b5dff1a;
+  color: #8b5dff;
+  padding: 6px;
+  border: 1px solid #8b5dff1a;
+}
+
+.admin-table tbody tr {
+  height: 150px;
+}
+
+.admin-table tbody tr td {
+  background-color: #fff;
+  vertical-align: top;
+  text-align: left;
+  padding: 1em;
+  position: relative;
+}
+
+.ov-booking-day-info .ov-booking-price-row .ov-booking-day-price {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  color: #1b203a;
+  background-color: #8b5dff4d;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.ov-booking-day-info .ov-booking-price-row .ov-booking-day-price .ov-booking-day-price-icon {
+  width: auto;
+  height: 16px;
+}
+
+.ov-booking-day-info .ov-booking-price-row .ov-booking-day-price .ov-booking-day-price-value {
+  margin-left: 5px;
+  margin-right: 2px;
+}
+
+.ov-booking-day-info .ov-booking-client-row .client-name {
+  background-color: #8b5dff;
+  color: white;
+  border-radius: 10px;
+  width: 100%;
+  border: 0;
+  padding: 1em 2em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ov-booking-day-info .ov-booking-actions-row {
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select {
+  background-color: #34a8534d;
+  color: #1b203a;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select .ov-booking-status-available {
+  background-color: green;
+  color: white;
+}
+
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select .ov-booking-status-unavailable {
+  background-color: red;
+  color: white;
+}
+
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select .ov-booking-status-booked {
+  background-color: purple;
+  color: white;
+}
+
+.ov-booking-day-info .ov-booking-actions-row .ov-booking-status-select:focus {
+  outline: none;
+  border: none;
+  box-shadow: none !important;
+}
+
+.ov-booking-day-info .ov-booking-actions-row .add-client {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px;
+  border: none;
+  outline: none;
+  background-color: #3b3b3b0d;
+  color: #8b5dff;
+  cursor: pointer;
+}
+
+td.empty {
+  background-color: #f5f5f5;
+  color: #aaa;
+  pointer-events: none;
+}
+
+.day-number {
+  font-weight: bold;
+}
+
+.day-number.today-number {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #8b5dff;
+  color: white;
+  line-height: 1;
+}
+
+.price-row {
+  display: flex;
+  gap: 5px;
+}
+
+.price-row .day-price,
+.price-row .past-badge {
+  font-size: 0.85em;
+  color: #333;
+  border-radius: 5px;
+  padding: 12px 18px;
+}
+
+.price-row .past-badge {
+  background-color: #e5e7eb;
+}
+
+.day-price {
+  position: relative;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  width: 160px;
+  background: #a88bee;
+  color: #fff;
+  text-align: left;
+  border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  margin-right: 8px;
+  z-index: 1000;
+  padding: 8px;
+}
+
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-left: 15px solid #a88bee;
+}
+
+.day-price:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+td {
+  border: 1px solid #8b5dff1a;
+}
+
+.admin-table td:not([data-title]) {
+  background-color: #f9fafb;
+}
+
+td .day-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+  box-sizing: border-box;
+  padding: 12px 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-actions {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.day-client {
+  background-color: #8b5dff;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: auto;
+}
+
+.day-price.editable-price {
+  background-color: #e6dbff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.add-client-button {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: #f9fafb;
+  border: none;
+  border-radius: 5px;
+}
+
+.ov-status-select {
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 6px 12px;
+  background-color: #d1e7dd !important;
+  border: none;
+  border-radius: 5px;
+}
+
+.wp-core-ui select:hover {
+  color: #2c3338;
+}
+
+.wp-core-ui select:focus {
+  color: #2c3338;
+}
+
+.status-available {
+  background-color: #d1e7dd !important;
+}
+
+.status-unavailable {
+  background-color: #fef3c7 !important;
+}
+
+.status-booked {
+  background-color: rgb(255, 98, 98) !important;
+}
+
+.ov-status-select:hover,
+.ov-status-select:active,
+.ov-status-select:focus {
+  color: #000;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.admin-table td.past-day {
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.admin-table td.past-day .day-wrapper .day-header .day-number {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.price-settings-container {
+  display: flex;
+  gap: 20px;
+}
+
+/* Tabs */
+.price-settings-tabs {
+  display: flex;
+  border: 1px solid #ccd0d4;
+}
+
+.price-settings-tabs .content {
+  padding: 10px;
+  width: 70%;
+}
+
+.price-settings-tabs table {
+  margin-top: -10px;
+}
+
+.price-settings-tabs .tab-content {
+  padding: 0;
+  background: #fff;
+}
+
+.subsubsub {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  border-right: 1px solid #eee;
+}
+
+.subsubsub li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  color: #2271b1;
+}
+
+.subsubsub li.current {
+  background-color: #eee;
+  color: #555;
+}
+
+.price-settings-tabs label {
+  display: inline-block;
+  width: 150px;
+}
+
+.price-settings-tabs input[type="text"],
+.price-settings-tabs input[type="url"],
+.price-settings-tabs input[type="number"],
+.price-settings-tabs select {
+  width: 300px;
+  padding: 5px;
+}
+
+/* Modal styles */
+#client_action_modal_wrapper #client_action_modal,
+#client_modal_wrapper #client_modal,
+#price_modal_wrapper #price_modal {
+  background-color: #1b203a;
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  padding: 30px;
+
+  h3 {
+    color: #fff;
+  }
+}
+.input-error {
+  border: 1px solid #dc3545 !important;
+  background-color: #fff5f5;
+}
+#client_action_modal {
+  h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    font-size: 20px;
+    color: #fff;
+    margin: 0;
+
+    span {
+      width: 50%;
+      font-size: 14px;
+      margin-left: auto;
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 5px;
+  font-size: 16px;
+  margin-top: 10px;
+
+  button {
+    width: 100%;
+    color: #fff;
+    background-color:#8B5DFF;
+    border: 0;
+    outline: none;
+    padding: 10px;
+    cursor: pointer;
+  }
+}
+
+.add-information {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+}
+
+.add-information input,
+#price_modal input {
+  border: 1px solid #fff;
+  background: transparent;
+  color: white;
+  padding: 10px;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  width: 100%;
+  height: 45px;
+}
+
+.add-information select#client_guests {
+  border: 1px solid #fff;
+  background: #23243a;
+  color: #fff;
+  padding: 10px;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  width: 100%;
+  height: 45px;
+  font-size: 16px;
+  margin-bottom: 8px;
+  appearance: none;  
+  line-height: 1;
+
+  &:focus {
+    border-color: #8B5DFF;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+#price_modal input:focus,
+.add-information input:focus {
+  border-color: #8B5DFF;
+  outline: none;
+  box-shadow: none;
+}
+
+.add-information input::placeholder,
+#price_modal input::placeholder {
+  color: #ffffff66;
+}
+
+.close_modal {
+  width: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  svg{
+    color: #fff;
+  }
+  &:hover{
+    svg{
+      color: #8B5DFF;
+    }
+  }
+}
+
+.time-input {
+  padding: 10px !important;
+}
+.ovb-booking-dates{
+  height: 16px;
+  position: relative;
+}
+.ovb-booking-dates:hover .tooltip-text {
+  visibility: visible;
+  width: 190px;
+  top: 50%;
+  left: -210px;
+  /* transform: translateY(-50%); */
+  opacity: 1;
+  z-index: 99999;
+}
+
+.ovb-client-info {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  &.has-icon {
+    justify-content: space-between;
+  }
+
+  .icon-spacer {
+    width: 32px;
+    display: inline-block;
+  }
+}
+
+@media screen and (max-width: 1600px) {
+  .price-row {
+
+    .past-badge,
+    .day-price {
+      padding: 6px 9px;
+    }
+  }
+
+  .day-client {
+    font-size: 10px;
+  }
+
+  .day-actions {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 1400px) {
+  .day-header {
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 5px;
+    width: 100%;
+   
+  }
+
+  .price-row {
+    width: 100%;
+    flex: 1;
+
+    .past-badge,
+    .day-price {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}
+
+.admin-table-wrapper {
+  width: 100%;
+}
+
+#wp-content-media-buttons {
+
+  #insert-media-button,
+  .woocommerce-help-tip {
+    display: none;
+  }
+}
+
+body.ovb-modal-open {
+    overflow: hidden !important;
+}
+
+@media (max-width: 1000px) {
+  .admin-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .admin-table {
+    min-width: 1000px;
+    width: max-content;
+  }
+}

@@ -1,0 +1,29 @@
+html,body{
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+.ob-booking-active{
+    .ast-container{
+        all: revert !important;
+    }
+}
+
+.ob-booking-active.ovb-cart-page{
+    .ov-cart-notices{
+        display: none !important;
+    }
+}
+
+#order_data  h3 {
+    display: none !important;
+}
+
+body.hidden {
+  overflow: hidden !important;
+}
+
+/* Disable WooCommerce product data */
+#woocommerce-product-data{
+    display: none !important;
+}

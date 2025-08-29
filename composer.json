@@ -1,0 +1,7 @@
+{
+  "name": "optimusvox.com/ov-booking",
+  "description": "Booking plugin",
+  "require": {
+    "sabre/vobject": "^4.4"
+  }
+}

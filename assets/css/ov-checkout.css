@@ -1,0 +1,1184 @@
+:root{
+  --wc-form-color-background: #1B203A;
+  --wc-form-border-color: #fff;
+  --wc-form-border-color: #fff !important;
+  --wc-red: red;
+
+  h3,h4{
+    color: #fff;
+  }
+
+  .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected]{
+    background-color: #7C4DFF !important;
+    color: white !important;
+    outline: none !important;
+  }
+  .select2-container--default .select2-results__option[data-selected=true] {
+    background-color: #7C4DFF !important;
+    color: white !important;
+    outline: none !important;
+  }
+  .select2-dropdown{
+    color: #fff !important;
+  }
+  .select2-search__field{
+    padding: 12px 15px !important;
+    background-color: #1B203A !important;
+    color: white !important;
+    outline: none !important;
+    border: 1px solid #fff !important;
+    border-radius: 5px !important;
+  }
+  span.select2-dropdown.select2-dropdown--below{
+    border-bottom: none;
+  }
+  /* test */
+  /* --- SELECT2 STYLING --- */
+.select2-container--default .select2-selection--single {
+  background-color: #1B203A !important;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  height: 48px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  transition: border 0.2s ease;
+  border-radius: 0;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #ffffff;
+  line-height: normal;
+  font-size: inherit;
+  padding: 0;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
+  right: 10px;
+  color: #fff !important;
+  b{
+      filter: invert(1);
+  }
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border-color: #8B5DFF;
+}
+
+.select2-dropdown {
+  background-color: #2A2E4A;
+  border: 1px solid #7C4DFF;
+  color: #fff;
+}
+
+.select2-container--default .select2-results__option {
+  padding: 10px 15px;
+  font-size: 16px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted[data-selected] {
+  background-color: #7C4DFF !important;
+  color: #fff;
+}
+.select2-container .select2-selection[aria-expanded="true"],
+.select2-container--open .select2-selection {
+  border-color: var(--ov-accent, #8b5cf6);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.25);
+}
+
+/* Rotiraj „strelicu“ */
+.select2-container .select2-selection[aria-expanded="true"] .select2-selection__arrow b,
+.select2-container--open .select2-selection__arrow b {
+  transform: rotate(180deg);
+}
+
+/* Glatka tranzicija */
+.select2-container .select2-selection,
+.select2-container .select2-selection__arrow b {
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.select2-container--default .select2-results__option[aria-selected="true"] {
+  background-color: #8B5DFF;
+  color: white;
+}
+
+.select2-search__field {
+  background-color: #1B203A;
+  border: 1px solid #fff;
+  color: white;
+  padding: 10px 12px;
+  font-size: 16px;
+}
+
+/* --- SCROLLBAR CUSTOM --- */
+.select2-results__options::-webkit-scrollbar {
+  width: 8px;
+}
+
+.select2-results__options::-webkit-scrollbar-track {
+  background: #1B203A;
+}
+
+.select2-results__options::-webkit-scrollbar-thumb {
+  background-color: #7C4DFF;
+  border-radius: 4px;
+  border: 2px solid #1B203A;
+}
+.p-ThirdPartyButtonContainer{
+  border: none !important;
+}
+  input#Field-numberInput {
+        border-radius: 0;
+    background: transparent;
+    color: #fff !important;
+    &:placeholder{
+      color: #fff !important;
+    }
+  }
+  button#place_order{
+      background-color: #7C4DFF;
+      color: #fff;
+      padding: 15px 30px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.28s ease;
+      font-size: 16px;
+      &:hover{
+        background-color: #8B5DFF;
+      }
+    }
+
+.woocommerce-checkout #payment{
+  border-radius: 0;
+  margin-top: 10px;
+}
+.woocommerce-privacy-policy-link{
+  color: #7C4DFF;
+}
+    /* test  */
+    /* Shell + overlay ponašanje */
+.ovb-payment-shell { position: relative; z-index: 9;}
+.ovb-payment-shell .form-row.place-order #place_order{
+  transition: opacity .15s ease;
+}
+
+.ovb-payment-shell.is-loading .form-row.place-order #place_order{
+  opacity: 0 !important;
+}
+/* Loader popunjava ceo payment box kao overlay (bez layout skoka) */
+#ovb-payment-loader {
+  position: absolute;
+  inset: 0;                /* top/right/bottom/left:0 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: opacity .18s ease;   /* glatka tranzicija */
+  background: #7C4DFF;             /* tvoja ljubičasta pozadina */
+  border-radius: 0;               /* uskladi sa .woocommerce-checkout-payment */
+  .loader::before{
+    content: none !important;
+  }
+}
+
+/* Kada je loading: overlay iznad sadržaja, onemogućava klikove */
+.ovb-payment-shell.is-loading #ovb-payment-loader {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* (opciono) malo zatamni sadržaj ispod umesto hard hide-a */
+.ovb-payment-shell.is-loading #payment {
+  filter: none;    /* ili blur(1px) ako želiš */
+}
+.ovb-payment-shell.is-loading #payment { visibility: hidden; }
+/* Ako si ranije gasio Woo overlay globalno, da ne smeta ovde: */
+#payment .blockUI.blockOverlay { display: none !important; }
+    /* test  */
+     /* #payment .blockUI.blockOverlay { display: none !important; } */
+
+
+
+    .woocommerce .loader::before{
+        display: none !important;
+    }
+    .wcpay-express-checkout-wrapper{
+      .loader::before{
+        display: none !important;
+      }
+      .loader:before{
+        display: none !important;
+      }
+      .loader:bafter{
+        display: none !important;
+      }
+    }
+
+    .woocommerce-checkout.processing .blockUI.blockOverlay {
+    background-color: #7C4DFF !important; /* Poluprozirna crna pozadina */
+}
+/* Prilagođavanje celog loader overlay-a */
+.woocommerce-checkout.processing .blockUI.blockOverlay {
+    /* background-image: url('URL_VAŠE_SLIKE_OVDE') !important; Zameni sa URL-om vaše slike */
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-size: 50px auto !important; /* Prilagodi veličinu */
+    background-color: #7C4DFF !important; /* Boja i prozirnost pozadine */
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+}
+
+/* Skrivanje originalne WooCommerce animacije */
+.woocommerce .blockUI.blockOverlay:before, 
+.woocommerce .loader:before {
+    display: none !important;
+}
+}
+
+/* loader */
+
+/* coupon */
+/* Style coupon notice */
+.woocommerce-form-coupon-toggle {
+    margin-bottom: 20px;
+    transition: border 0.2s;
+}
+
+.woocommerce-form-coupon-toggle .woocommerce-info {
+    background-color: #7C4DFF;
+    color: #fff;
+    border-top: 3px solid #fff;
+}
+.woocommerce-form-coupon-toggle .woocommerce-info::before,
+.woocommerce-form-coupon-toggle .woocommerce-info::after {
+    color: #fff;
+}
+
+.woocommerce-form-coupon-toggle input[type="checkbox"] {
+    accent-color: #FFF;
+    width: 20px;
+    height: 20px;
+    margin-right: 14px;
+    vertical-align: middle;
+}
+
+.woocommerce-form-coupon-toggle a {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: 600;
+    margin-left: 6px;
+    transition: color 0.2s;
+}
+.woocommerce-form-coupon-toggle a:hover {
+    color: #2A2E4A;
+}
+
+@media (max-width: 600px) {
+    .woocommerce-form-coupon-toggle {
+        padding: 12px;
+        font-size: 0.98em;
+    }
+}
+
+/* Kupon input (forma gde se unosi kod) */
+form.checkout_coupon.woocommerce-form-coupon {
+    margin-top: 16px;
+    background: transparent;
+    padding: 0;
+    border: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+    
+    p{
+      width: 100% !important;
+      &.form-row-last{
+        .button{
+          background-color: #7C4DFF;
+          color: #FFFFFF;
+          text-decoration: none;
+          padding: 15px 30px;
+          border-radius: 4px;
+          font-weight: 600;
+          white-space: nowrap;
+          outline: none;
+          border: none;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          &:hover{
+            background-color: #8B5DFF;
+          }
+        }
+      }
+    }
+}
+
+/* Stilizacija input polja za kupon kod */
+form.checkout_coupon.woocommerce-form-coupon input.input-text, 
+form.checkout_coupon.woocommerce-form-coupon input[type="text"] {
+    border: 1px solid #fff;
+    background: #1B203A;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    /* width: 260px; */
+    width: 100%;
+    max-width: 100%;
+    height: 45px;
+    font-size: 16px;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    transition: border 0.18s;
+}
+
+/* Placeholder stil */
+form.checkout_coupon.woocommerce-form-coupon input.input-text::placeholder,
+form.checkout_coupon.woocommerce-form-coupon input[type="text"]::placeholder {
+    color: #ffffff99;
+    opacity: 1;
+}
+
+/* Fokus efekat fix - NEMA VIŠE TACKASTOG! */
+form.checkout_coupon.woocommerce-form-coupon input.input-text:focus,
+form.checkout_coupon.woocommerce-form-coupon input[type="text"]:focus {
+    border-color: #8B5DFF !important;
+    border-style: solid !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+form.checkout_coupon.woocommerce-form-coupon button.button:hover,
+form.checkout_coupon.woocommerce-form-coupon button.button:focus {
+    background: #8B5DFF;
+    color: #fff;
+}
+
+  input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+
+@media (max-width:600px) {
+    form.checkout_coupon.woocommerce-form-coupon {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    form.checkout_coupon.woocommerce-form-coupon input.input-text {
+        width: 100%;
+        min-width: 0;
+    }
+    form.checkout_coupon.woocommerce-form-coupon button.button {
+        width: 100%;
+    }
+}
+
+/* coupon */
+
+/* Modern mini loader for payment methods */
+.ovb-mini-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 0 10px 0;
+    background: #7C4DFF;
+    /* background: #eaecf3; */
+    /* box-shadow: 0 2px 8px 0 rgba(17,21,39,0.09); */
+    font-size: 1.08em;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 20px;
+    gap: 10px;
+    letter-spacing: 0.01em;
+    border: 0;
+}
+
+.ovb-mini-loader .loader {
+  width: 34px;
+  aspect-ratio: .75;
+  --c: no-repeat linear-gradient(#fff 0 0); /* promeni boju po potrebi */
+  background: 
+    var(--c) 0%   50%,
+    var(--c) 50%  50%,
+    var(--c) 100% 50%;
+  animation: l7 1s infinite linear alternate;
+}
+
+@keyframes l7 {
+  0%  {background-size: 20% 50% ,20% 50% ,20% 50% }
+  20% {background-size: 20% 20% ,20% 50% ,20% 50% }
+  40% {background-size: 20% 100%,20% 20% ,20% 50% }
+  60% {background-size: 20% 50% ,20% 100%,20% 20% }
+  80% {background-size: 20% 50% ,20% 50% ,20% 100%}
+  100%{background-size: 20% 50% ,20% 50% ,20% 50% }
+}
+
+/* loader */
+/* Placeholder stilovi za payment buttons */
+.payment-request-button { min-height: 44px; }
+.paypal-buttons { min-height: 44px; }
+.klarna-payments-container { min-height: 60px; }
+
+.required_field{
+  .required{
+    color: red;
+  }
+}
+.ast-container{
+  /* all: revert !important; */
+  }
+.ov-checkout.page-checkout{
+    background-color: #1b203a;
+    color: #ffffff;
+    min-height: calc(100vh - 100px);
+    box-sizing: border-box;
+    padding: 100px 0 100px;
+    .ov-checkout-container {
+      width: 100%;
+        max-width: 1200px;
+        margin-inline: auto;
+        @media(max-width:1200px){
+          max-width: calc(100% - 64px);
+        }
+        @media(max-width:550px){
+          max-width: calc(100% - 32px);
+        }
+
+      .ov-checkout-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        position: relative;
+        @media(max-width:1100px){
+           /* max-width: 650px; */
+           margin-inline: auto;
+        }
+        .ov-checkout-back {
+          background-color: rgba(255, 255, 255, 0.2);
+          border-radius: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #FFFFFF;
+          text-decoration: none;
+          font-size: 24px;
+          margin-right: 20px;
+          width: 56px;
+          height: 56px;
+          position: absolute;
+          left: -76px;
+          @media(max-width:1400px){
+            position: static;
+          }
+        }
+        .ov-checkout-title {
+          font-size: 32px;
+          font-weight: 600;
+          margin: 0;
+          color: #fff;
+        }
+      }
+
+      .ov-checkout-content{
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        margin-inline: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        @media(max-width:1100px){
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* leva strana */
+        .ov-checkout-steps {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+
+          .ov-step {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 16px 20px;
+            .ov-step-number {
+              font-weight: 600;
+              margin-right: 12px;
+            }
+            .ov-step-label {
+              flex: 1;
+              font-size: 16px;
+            }
+          }
+          .ov-step-active {
+            border-color: #7C4DFF;
+            background-color: rgba(124,77,255,0.1);
+          }
+        } 
+        .checkout-form{
+         
+            .ovb-customer-details-container{
+              .woocommerce-billing-fields{
+                #billing_company_field,
+                #billing_address_2_field{
+                  display: none !important;
+                }
+                h3{
+                  color: #fff;
+                }
+                p{
+                  label{
+                    color: #fff;
+                  }
+                    span{
+                      input {
+                        border: 1px solid #fff;
+                        background: transparent;
+                        color: white;
+                        padding: 10px;
+                        border-radius: 0;
+                        outline: none;
+                        box-shadow: none;
+                        width: 100%;
+                        height: 45px;
+                      }
+                      input::placeholder{
+                        color: #ffffff66;
+                      }
+                      input:focus{
+                        border-color: #8B5DFF;
+                        outline: none;
+                        box-shadow: none;
+                      }
+                      input{
+                           &:-webkit-autofill,
+                          &:-webkit-autofill:hover,
+                          &:-webkit-autofill:focus,
+                          &:-webkit-autofill:active {
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: #ffffff;
+                              transition: background-color 5000s ease-in-out 0s;
+                              -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
+                          }
+                      }
+                    }
+                  }
+                .woocommerce-billing-fields__field-wrapper{
+                  p{
+                    label{
+                      color: #fff;
+                    }
+                    span{
+                      input {
+                        border: 1px solid #fff;
+                        background: transparent;
+                        color: white;
+                        padding: 10px;
+                        border-radius: 0;
+                        outline: none;
+                        box-shadow: none;
+                        width: 100%;
+                        height: 45px;
+                     
+                      }
+                      input::placeholder{
+                        color: #ffffff66;
+                      }
+                      input:focus{
+                        border-color: #8B5DFF;
+                        outline: none;
+                        box-shadow: none;
+                      }
+                      input::-webkit-calendar-picker-indicator {
+                        filter: invert(1);
+                      }
+                    }
+                  }
+                }
+              }
+              #ovb-unified-checkout{
+             
+                /* gap: 20px; */
+                .ovb-company-fields-wrap,
+                .ovb-other-fields-wrap{
+                  .company-fields-grid,
+                  .other-fields-grid{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    grid-column-gap: 35px;
+                    /* grid-row-gap:20px; */
+                    p.form-row{
+                      float:none !important; 
+                      width: 100%;
+                      margin-top: 0;
+                      .woocommerce-input-wrapper{
+                        color: white;
+                        input{
+                          /* width: 100%; */
+                          border: 1px solid #fff;
+                          background: transparent;
+                          color: white;
+                          padding: 10px;
+                          border-radius: 0;
+                          outline: none;
+                          box-shadow: none;
+                          width: 100%;
+                          height: 45px;
+                          &:focus{
+                            border-color: #8B5DFF;
+                            outline: none;
+                            box-shadow: none;
+                          }
+                          &::placeholder{
+                            color: white;
+                          }
+                          &::-webkit-calendar-picker-indicator {
+                           filter: invert(1);
+                          }
+                        }
+                        .select{
+                            /* ovde  */
+                          background-color: #1B203A !important;
+                          border: 1px solid #ffffff;
+                          color: #ffffff;
+                          height: 48px;
+                          border-radius: 4px;
+                          display: flex;
+                          align-items: center;
+                          padding: 0 12px;
+                          transition: border 0.2s ease;
+                          border-radius: 0;
+                          outline: none;
+                        }
+                        &.ovb-invalid{
+                          input{
+                            border-color: red !important;
+                          }
+                          .select{
+                            border-color: red !important;
+                          }
+                        }
+                      }
+                    }
+                    #ovb_company_name_field{
+                      grid-column: span 2;
+                    }
+                  }
+                }
+       
+              }
+              .ovb-guests-section{
+                h4{
+                  color: #fff;
+                }
+                p{
+                  label{
+                    color: #fff;
+                  }
+                }
+                .ovb-guests-wrapper{
+                  .ov-guest-row{
+                    margin-top: 20px;
+                    h3,h4{
+                      color: #fff;
+                    }
+                    .ov-form-group{
+                      .ov-input-regular{
+                        border: 1px solid #fff;
+                        background: transparent;
+                        color: white;
+                        padding: 10px;
+                        border-radius: 0;
+                        outline: none;
+                        box-shadow: none;
+                        width: 100%;
+                        height: 45px;
+                        
+                        &:placeholder{
+                          color: #ffffff66;
+                        }
+                        &:focus{
+                          border-color: #8B5DFF;
+                          outline: none;
+                          box-shadow: none;
+                        }
+                        &:-webkit-autofill,
+                        &:-webkit-autofill:hover,
+                        &:-webkit-autofill:focus,
+                        &:-webkit-autofill:active {
+                          -webkit-background-clip: text;
+                          -webkit-text-fill-color: #ffffff;
+                            transition: background-color 5000s ease-in-out 0s;
+                            -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              /* Stilizacija Order Notes polja */
+                #order_comments_field {
+                  margin-top: 30px;
+
+                  label {
+                    color: #fff;
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin-bottom: 8px;
+                    display: block;
+                  }
+
+                  textarea#order_comments {
+                    width: 100%;
+                    background-color: #1B203A;
+                    border: 1px solid #ffffff;
+                    color: #ffffff;
+                    border-radius: 4px;
+                    padding: 12px 16px;
+                    font-size: 16px;
+                    resize: vertical;
+                    min-height: 100px;
+                    box-sizing: border-box;
+
+                    &::placeholder {
+                      color: #FFFFFF99;
+                      font-size: 14px;
+                    }
+
+                    &:focus {
+                      border-color: #8B5DFF;
+                      outline: none;
+                    }
+
+                    &::-webkit-scrollbar {
+                      width: 8px;
+                    }
+                    &::-webkit-scrollbar-thumb {
+                      background-color: #7C4DFF;
+                      border-radius: 4px;
+                    }
+                    &::-webkit-scrollbar-track {
+                      background: #1B203A;
+                    }
+                  }
+                }
+            }
+            .woocommerce-additional-fields{
+              h3{
+                color:#fff;
+              }
+            }
+          
+            
+            .woocommerce-checkout-payment{
+              background: #23254a;
+              border-radius: 7px;
+              padding: 30px 24px 24px 24px;
+              margin-bottom: 28px;
+              border: 1px solid #ffffff22;
+              box-shadow: 0 2px 8px 0 rgba(17,21,39,0.11);
+              color: #fff;
+              border-radius: 0 !important;
+              margin-top: 10px;
+              .wc_payment_methods{
+                margin-bottom: 0;
+                border-bottom: none;
+                .wc_payment_method{
+                  margin-bottom: 20px;
+                  background: transparent;
+                  padding: 0;
+                  border-radius: 0;
+                  border: none;
+                  display: flex;
+                  align-items: flex-start;
+                  gap: 14px;
+                  position: relative;
+                  label{
+                    color: #fff !important;
+                    font-size: 16px;
+                  }
+                }
+              }
+             .form-row.place-order{
+                .woocommerce-terms-and-conditions-wrapper{
+                  font-size: 16px;
+                  letter-spacing: 1;
+                  font-family: inherit;
+                  .woocommerce-privacy-policy-text{
+                    p{
+                      a{
+                        color: #7C4DFF;
+                        text-decoration: none;
+                        transition: all 0.28s ease;
+                        &:hover{
+                          text-decoration: underline;
+                          color: #8B5DFF;
+                        }
+                      }
+                    }
+                  }
+                }
+             } 
+            }
+        }
+        
+        /* desna strana */
+        .ov-checkout-summary {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          height: fit-content;
+          border: 1px solid #fff;   
+          border-radius: 1px;
+          padding: 24px;
+          color: #ffffff;
+          max-width: 100%;
+          box-sizing: border-box;
+          background-color: transparent;
+          @media(max-width:450px){
+            padding: 16px;
+          }
+
+          .ov-summary-card{
+            display: flex;
+            flex-direction: column;
+            #order_review{
+              border: none !important;
+              width: 100% !important;
+              padding: 0 !important;
+              .ovb-table-section-title{
+                text-align: left;
+              }
+            }
+            /* #order_review_heading{
+
+            } */
+            .ovb-product-image {
+              width: 100%;
+              overflow: hidden;
+              img {
+                display: block;
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+              }
+            }
+            .ovb-trip-details-summary {
+              margin-bottom: 20px;
+              border-bottom: 1px solid #fff;
+              @media(max-width:420px){
+                margin-bottom: 5px;
+              }
+              .ovb-trip-details-title {
+                font-size: 22px;
+                margin: 24px 0 12px;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+                color: #ffffff;
+              }
+              .ovb-trip-details {
+                .ovb-trip-detail-item {
+                  display: flex;
+                  align-items: flex-start;
+                  justify-content: space-between;
+                  margin-bottom: 10px;
+                  @media(max-width:420px){
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                  }
+                  .trip-details-stay{
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
+
+                    .ovb-trip-detail-text{
+                      margin-top: 5px;
+                    }
+                  }
+                  .trip-details-accommodation-details{
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    .ovb-trip-detail-nights,
+                    .ovb-trip-detail-guests{
+                      display: flex;
+                      align-items: center;
+                      gap: 3px;
+                      .ovb-trip-detail-text{
+                        margin-top: 5px;
+                      }
+                    }
+                  }
+                }
+              }
+
+            }
+            .ovb-order-review-container{
+              width: 100% !important;
+              padding: 0 !important;
+              border: none !important;
+              .shop_table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 1.5rem;
+                background: transparent;
+                color: #fff;
+                font-family: sans-serif;
+              
+                thead {
+                  th {
+                    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+                    text-align: left;
+                    padding: 12px 16px !important;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    font-size: 14px;
+                    background: rgba(255, 255, 255, 0.05);
+                  }
+                  th.product-subtotal{
+                    text-align: right;
+                  }
+                }
+              
+                tbody {
+                  tr.cart_item{
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+                    td{
+                      border-bottom: none !important;
+                    }
+                  }
+                  td {
+                    padding: 12px 16px !important;
+                    font-size: 14px;
+                  }
+                  td.product-name{
+                    border: none;
+                  }
+                  td.product-subtotal{
+                    text-align: right;
+                  }
+                }
+              
+                .ovb-details-label {
+                  td {
+                    background: rgba(255, 255, 255, 0.05);
+                    font-style: italic;
+                    color: #ddd;
+                    font-size: 14px !important;
+                    padding-top: 16px !important;
+                    padding-bottom: 16px !important;
+                    text-align: left !important;
+                  }
+                }
+              
+                .ovb-detail-line {
+                  td {
+                    padding: 12px 16px !important;
+                    font-size: 0.85rem;
+                    color: #ccc;
+                  }
+                  td.ovb-detail-price{
+                    text-align: right;
+                  }
+                }
+              
+                tfoot {
+                  th,
+                  td {
+                    border-top: 2px solid rgba(255, 255, 255, 0.6);
+                    padding: 12px 16px !important;
+                    font-weight: 700;
+                    font-size: 16px;
+                  }
+                  th{
+                    text-align: left;
+                    text-transform: uppercase;
+                  }
+                  td.product-total {
+                    text-align: right;
+                  }
+              
+                  .order-total {
+                    font-weight: 900;
+                    background-color: rgba(255, 255, 255, 0.2) !important;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+abbr[title] {
+    text-decoration: none !important;
+    border: none !important;
+}
+  .woocommerce-checkout #payment div.payment_box{
+    display: none !important;
+    background-color: unset !important;
+    color: #fff !important;
+    padding: 0 !important;
+    &:before{
+      content: none !important;
+    }
+    fieldset{
+      border-color: #7C4DFF !important;
+    }
+  }
+  /* 2. Prikaži SAMO onaj payment box čiji je "brat" (input radio) štikliran */
+.woocommerce-checkout #payment input[name="payment_method"]:checked ~ .payment_box {
+    display: block !important;
+}
+  .ovb-review-order-table{
+    color: #fff;
+    width: 100%;
+    border-collapse: collapse;
+    tbody{
+      tr{
+        &:nth-of-type(2){
+          display: none;
+        }
+        /* &.ovb-checkout-row{
+         
+        } */
+        &.ovb-subtotal-row{
+          border-top: 2px solid white !important;
+          border-color: #fff;
+          td{
+            padding-top: 8px;
+          }
+        }
+        &.ovb-total-row{
+          padding-bottom: 10px;
+        }
+        td{
+          padding:5px 0;
+        }
+      }
+      
+    }
+  }
+  /* .ovb-subtotal-row{
+    border-top: 2px solid white !important;
+    border-color: #fff;
+    td{
+    }
+  } */
+  .ovb-date-value{
+    text-align: right;
+    &.checkout{
+      color: #7C4DFF;
+    }
+  }
+  .ovb-checkout{
+    color: #7C4DFF;
+  }
+  .ov-form-group{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 16px;
+
+     &:last-of-type{
+      margin-bottom: 0;
+    }
+
+    .ov-input-regular{
+      border: 1px solid #fff;
+      background: transparent;
+      color: white;
+      padding: 10px;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
+      width: 100%;
+      height: 45px;
+      
+      &:placeholder{
+        color: #ffffff66;
+      }
+      &:focus{
+        border-color: #8B5DFF;
+        outline: none;
+        box-shadow: none;
+      }
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus,
+      &:-webkit-autofill:active {
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          -webkit-box-shadow: 0 0 0px 1000px #1B203A inset;
+      }
+    }
+
+    label{
+      .required{
+        color: red;
+      }
+    }
+
+    .ov-select-regular{
+      border: 1px solid #fff;
+      background: transparent;
+      color: white;
+      padding: 10px;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
+      width: 100%;
+      height: 45px;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      
+      &:placeholder{
+        color: #ffffff66;
+      }
+      &:focus{
+        border-color: #8B5DFF;
+        outline: none;
+        box-shadow: none;
+      }
+    }
+
+    .ovb-date-picker-wrap {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+
+      .ovb-date-input {
+        padding-right: 12 px;
+      }
+
+      .ovb-date-input::-webkit-calendar-picker-indicator {
+         filter: invert(1);
+      }
+
+    }
+
+  }

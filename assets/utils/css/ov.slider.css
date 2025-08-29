@@ -1,0 +1,214 @@
+/* -----------------------------------
+   Modal & lightgallery (originalni)
+   ----------------------------------- */
+   .lightgallery {
+    height: 100%;
+  }
+  .lightgallery a .gallery-main-img {
+    display: block;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+  
+  #lightgallery-all {
+    display: none;
+  }
+  
+  /* Modal pozadina i layout */
+  #custom-slider-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  #custom-slider-modal.hidden {
+    display: none;
+  }
+  
+  .custom-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: #fff;
+    font-size: 36px;
+    cursor: pointer;
+    z-index: 10001;
+  }
+  
+  .custom-slider-main {
+    flex: 1;
+    max-width: 1240px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  #custom-slider-image {
+    max-height: 80vh;
+    max-width: 100%;
+    object-fit: contain;
+    transition: opacity 0.4s ease-in-out;
+  }
+  #custom-slider-image.fade-out {
+    opacity: 0;
+  }
+  
+  .custom-slider-arrow {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10001;
+    transition: background-color 0.2s ease-in-out;
+  }
+  .custom-slider-arrow:hover{
+    background-color: rgba(0, 0, 0, 0.55);
+  }
+  .custom-slider-arrow.left-arrow  { left: 10px; }
+  .custom-slider-arrow.right-arrow { right: 10px; }
+  
+  .custom-slider-thumbnails {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 15px 10px 0;
+    /* background: rgba(0, 0, 0, 0.85); */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    z-index: 10000;
+    scrollbar-width: none;
+  }
+  .custom-slider-thumbnails::-webkit-scrollbar {
+    display: none;
+  }
+  .custom-slider-thumbnails img {
+    width: 150px;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: 2px solid transparent;
+    /* transition: transform 0.2s; */
+    object-fit: cover;
+    filter: brightness(70%);
+  }
+  .custom-slider-thumbnails img.active {
+    border-color: #fff;
+    filter: brightness(100%);
+    border-radius: 5px;
+  }
+  .custom-slider-thumbnails img:first-child {
+    margin-left: 15px;
+  }
+  .custom-slider-thumbnails.dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+  
+  /* Responsive sakrivanje desktop galerije */
+  @media (max-width: 996px) {
+    .product-gallery { display: none; }
+  }
+  @media (max-width: 768px) {
+    .custom-slider-arrow { font-size: 32px; }
+    .custom-modal-close { font-size: 30px; }
+  }
+  
+  
+  /* -----------------------------------
+     Galerija (.product-gallery) —
+     dinamički grid za 2–6 slika
+     ----------------------------------- */
+  .product-gallery {
+    width: 50%;
+    height: 100%;
+  
+    .product-gallery-grid {
+      display: grid;
+      gap: 20px;
+      min-width: 0;
+      min-height: 0;
+      height: 100%; /* Dodano - grid mora imati definisanu visinu */
+      
+      /* 2 slike */
+      &.images-2 {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+  
+      /* 3 slike */
+      &.images-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: 1fr 1fr; /* Promenjeno sa auto auto na 1fr 1fr */
+        .hreff-wrap {
+          &:nth-of-type(1),
+          &:nth-of-type(2) { grid-row: 1; }
+          &:nth-of-type(3) {
+            grid-row: 2;
+            grid-column: 1 / -1;
+          }
+        }
+      }
+  
+      /* 4 slike */
+      &.images-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+      }
+  
+      /* 5 slika */
+      &.images-5 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: 1fr 1fr; /* Promenjeno sa auto auto na 1fr 1fr */
+        .hreff-wrap {
+          &:nth-of-type(-n+3) { grid-row: 1; }
+          &:nth-of-type(n+4)  { grid-row: 2; }
+          &:last-of-type      { grid-column: 2 / -1; }
+        }
+      }
+  
+      /* 6 ili više */
+      &.images-6 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(3, minmax(0, 1fr));
+        .hreff-wrap {
+          &:nth-of-type(1),
+          &:nth-of-type(3) { grid-row: 1 / span 2; }
+          &:nth-of-type(2)  { grid-row: 1 / span 1; }
+          &:nth-of-type(4)  { grid-row: 2 / span 2; }
+        }
+      }
+  
+      /* Default stavke */
+      .hreff-wrap {
+        height: 100%;
+        min-height: 0; /* Dodano za bolje ponašanje u grid-u */
+        .gallery-product-img {
+          min-width: 0;
+          min-height: 0;
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          aspect-ratio: 1/1;
+        }
+      }
+    }
+  }
