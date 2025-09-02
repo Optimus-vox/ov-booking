@@ -529,3 +529,53 @@ add_action('admin_head', function() {
         echo '<style>#woocommerce-product-data { display: none !important; }</style>';
     }
 });
+/** Taksonomija postoji i ima makar 1 termin? */
+function ovb_tax_has_terms(string $tax): bool {
+    if (!taxonomy_exists($tax)) return false;
+    $terms = get_terms(['taxonomy'=>$tax, 'hide_empty'=>false, 'number'=>1, 'fields'=>'ids']);
+    return !is_wp_error($terms) && !empty($terms);
+}
+
+unction ovb_detect_type_taxonomy(): string {
+    // 1) eksplicitni preferirani slugovi
+    $prefs = [
+        'accommodation_type',
+        'accommodation-type',
+        'accommodation_types',
+        'pa_accommodation_type',
+        'pa_type',
+        'pa-type',
+    ];
+    foreach ($prefs as $tx) {
+        if (ovb_tax_has_terms($tx)) return $tx;
+    }
+
+    // 2) heuristika: nađi product taksonomiju koja u nazivu/labeli sadrži "type" ili "accommodation"
+    //    ALI preskoči Woo core: product_type, product_visibility, product_cat, product_tag, product_shipping_class
+    $skip = ['product_type','product_visibility','product_cat','product_tag','product_shipping_class'];
+    $objs = get_object_taxonomies('product', 'objects');
+    foreach ($objs as $key => $o) {
+        if (in_array($key, $skip, true)) continue;
+        $n = strtolower($o->name . ' ' . ($o->label ?? ''));
+        if ((strpos($n,'type') !== false || strpos($n,'accommodation') !== false) && ovb_tax_has_terms($key)) {
+            return $key;
+        }
+    }
+
+    // 3) nema ništa validno → vrati '', pa će shortcode prikazati statičnu listu (apartment/house/…)
+    return '';
+}
+
+/** Opciona detekcija City/Country kao taksonomija (ako koristiš attributes) */
+function ovb_detect_city_taxonomy(): string {
+    foreach (['pa_city','city','product_city'] as $tx) {
+        if (ovb_tax_has_terms($tx)) return $tx;
+    }
+    return '';
+}
+function ovb_detect_country_taxonomy(): string {
+    foreach (['pa_country','country','product_country'] as $tx) {
+        if (ovb_tax_has_terms($tx)) return $tx;
+    }
+    return '';
+}

@@ -1127,7 +1127,8 @@ if ( ! function_exists('ovb_order_nightly_prices') ) {
             '_ovb_nightly_rates',
         ];
 
-        $extract_simple_list = function ($val): array {
+        $extract_simple_list = null;
+        $extract_simple_list = function ($val) use (&$extract_simple_list): array {
             $out = [];
             if (is_array($val)) {
                 foreach ($val as $v) {
@@ -1135,11 +1136,26 @@ if ( ! function_exists('ovb_order_nightly_prices') ) {
                         $out[] = (float)$v;
                     } elseif (is_string($v) && preg_match('/^\d+(?:[.,]\d+)?$/', trim($v))) {
                         $out[] = (float) str_replace(',', '.', trim($v));
+                    } elseif (is_array($v)) {
+                        // dozvoli i ugnježdene liste (robusnije)
+                        $out = array_merge($out, $extract_simple_list($v));
                     }
                 }
-            } elseif (is_string($val) && ($val[0] ?? '') === '[') {
-                $json = json_decode($val, true);
-                if (is_array($json)) return $extract_simple_list($json);
+            } elseif (is_string($val)) {
+                $s = trim($val);
+                if ($s !== '' && ($s[0] ?? '') === '[') {
+                    $json = json_decode($s, true);
+                    if (is_array($json)) {
+                        return $extract_simple_list($json);
+                    }
+                }
+                // dozvoli i CSV kao "12, 13.5, 14"
+                if ($s !== '' && strpos($s, ',') !== false) {
+                    return $extract_simple_list(array_map('trim', explode(',', $s)));
+                }
+                if ($s !== '' && preg_match('/^\d+(?:[.,]\d+)?$/', $s)) {
+                    $out[] = (float) str_replace(',', '.', $s);
+                }
             }
             return $out;
         };

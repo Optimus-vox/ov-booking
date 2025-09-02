@@ -32,6 +32,30 @@ function ovb_enqueue_global_assets() {
     }
 }
 
+/** PRODUCT PAGE ASSETS */
+function ovb_enqueue_product_assets() {
+    global $post;
+
+    if ( empty( $post ) || empty( $post->ID ) ) {
+        return;
+    }
+    $product_id = (int) $post->ID;
+    // $product_id = $post->ID;
+
+    // 1) Calendar core (Moment + Daterangepicker)
+    ovb_enqueue_calendar_core();
+
+    // 2) Custom daterange picker
+    ovb_enqueue_daterange_picker();
+
+    // 3) Slider assets
+    ovb_enqueue_slider_assets();
+
+    // 4) Single-product scripts & styles
+    ovb_enqueue_product_scripts( $product_id );
+}
+
+
 /** MAIN PLUGIN ASSETS */
 add_action( 'wp_enqueue_scripts', 'ovb_enqueue_main_assets', 20 );
 function ovb_enqueue_main_assets() {
@@ -60,23 +84,6 @@ function ovb_enqueue_main_assets() {
     }
 }
 
-/** PRODUCT PAGE ASSETS */
-function ovb_enqueue_product_assets() {
-    global $post;
-    $product_id = $post->ID;
-
-    // 1) Calendar core (Moment + Daterangepicker)
-    ovb_enqueue_calendar_core();
-
-    // 2) Custom daterange picker
-    ovb_enqueue_daterange_picker();
-
-    // 3) Slider assets
-    ovb_enqueue_slider_assets();
-
-    // 4) Single-product scripts & styles
-    ovb_enqueue_product_scripts( $product_id );
-}
 
 /** Calendar core (Moment.js + Daterangepicker) */
 function ovb_enqueue_calendar_core() {
@@ -267,13 +274,13 @@ function ov_enqueue_cart_assets() {
         [
             'ajax_url'            => esc_url( admin_url( 'admin-ajax.php' ) ),
             'nonce'               => wp_create_nonce( 'ovb_nonce' ),
-            'emptyCartConfirmMsg' => __( 'Are you sure you want to empty your cart?', 'ov-booking' ),
             'checkoutUrl'         => esc_url( wc_get_checkout_url() ),
-            'emptyCartTitle'       => __('Empty cart?', 'ov-booking'),
-            'emptyCartConfirmMsg'  => __('This will remove all items from your cart.', 'ov-booking'),
-            'confirmText'          => __('Yes, empty it', 'ov-booking'),
-            'cancelText'           => __('Cancel', 'ov-booking'),
-            'emptySuccess'         => __('Cart emptied.', 'ov-booking'),
+       
+            'emptyCartTitle'    => __( 'Empty cart?', 'ov-booking' ),
+            'emptyCartMessage'  => __( 'This will remove all items from your cart.', 'ov-booking' ),
+            'confirmText'       => __( 'Yes, empty it', 'ov-booking' ),
+            'cancelText'        => __( 'Cancel', 'ov-booking' ),
+            'emptySuccess'      => __( 'Cart emptied.', 'ov-booking' ),
         ]
     );
 
@@ -544,3 +551,126 @@ function ovb_get_clean_calendar_data( $product_id ) {
     }
     return is_array( $raw ) ? $raw : [];
 }
+
+// AJAX osvežavanje Shop filtera (Elementor/Woo archive)
+add_action('wp_enqueue_scripts', function () {
+    if (!function_exists('is_shop')) return;
+    if (!is_shop() && !is_product_taxonomy() && !is_post_type_archive('product')) return;
+    if (is_admin()) return;
+
+    wp_register_script('ovb-shop-filters', '', [], '1.3.0', true);
+
+    $inline = <<<'JS'
+(function(){
+  if (document.body.classList.contains('elementor-editor-active')) return;
+  var form = document.querySelector('form.ovb-shop-filters');
+  if (!form) return;
+
+  var rootSel    = '.elementor-widget-wc-archive-products, .woocommerce';
+  var listSel    = 'ul.products, .products';
+  var resultSel  = '.woocommerce-result-count';
+  var orderingSel= 'form.woocommerce-ordering, .woocommerce-ordering';
+  var pagSel     = '.woocommerce-pagination';
+  var FILTER_FIELDS = ['ci','co','type','street_name','city','country','capacity','bedrooms','beds','bathrooms','min_price','max_price'];
+
+  function setLoading(on){
+    var root = document.querySelector(rootSel) || document.querySelector('main') || document.body;
+    root.classList.toggle('ovb-loading', !!on);
+  }
+  function buildUrl(base, params){
+    try{
+      var u = new URL(base, window.location.origin);
+      params.delete('paged');
+      FILTER_FIELDS.forEach(function(k){ if(!params.get(k)) params.delete(k); });
+      u.search = params.toString();
+      return u.toString();
+    }catch(e){ return base; }
+  }
+  function hasAnyFilter(params){
+    return FILTER_FIELDS.some(function(k){
+      var v = params.get(k); return v && String(v).trim() !== '';
+    });
+  }
+  async function updateFrom(url, pushHistory=true){
+    setLoading(true);
+    try{
+      var res = await fetch(url, {headers:{'X-Requested-With':'fetch'}});
+      if(!res.ok) throw new Error(res.status);
+      var html = await res.text();
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+
+      var curList = document.querySelector(listSel);
+      var newList = doc.querySelector(listSel);
+      if (curList && newList) curList.replaceWith(newList);
+
+      var curRes = document.querySelector(resultSel);
+      var newRes = doc.querySelector(resultSel);
+      if (curRes && newRes) curRes.replaceWith(newRes);
+
+      var curOrd = document.querySelector(orderingSel);
+      var newOrd = doc.querySelector(orderingSel);
+      if (curOrd && newOrd) curOrd.replaceWith(newOrd);
+
+      var curPag = document.querySelector(pagSel);
+      var newPag = doc.querySelector(pagSel);
+      if (curPag && newPag) curPag.replaceWith(newPag);
+
+      if (pushHistory) history.pushState({ovbFilter:true}, '', url);
+    } catch(e){
+      window.location.href = url;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form);
+    var params = new URLSearchParams(fd);
+    var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+    var target = hasAnyFilter(params) ? buildUrl(base, params) : base;
+    updateFrom(target);
+  });
+
+  document.addEventListener('click', function(ev){
+    var btn = ev.target.closest('#ovb-filter-reset');
+    if (!btn) return;
+    ev.preventDefault();
+    if (form) form.reset();
+    var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+    updateFrom(base);
+  });
+
+  document.addEventListener('change', function(ev){
+    var sel = ev.target;
+    if (sel && sel.closest(orderingSel)) {
+      var params = new URLSearchParams(window.location.search);
+      params.set('orderby', sel.value);
+      var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+      var url = buildUrl(base, params);
+      updateFrom(url);
+    }
+  });
+
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest(pagSel + ' a.page-numbers');
+    if (!a || a.classList.contains('current')) return;
+    ev.preventDefault();
+    updateFrom(a.getAttribute('href'));
+  });
+
+  window.addEventListener('popstate', function(e){
+    if (e.state && e.state.ovbFilter) {
+      updateFrom(window.location.href, false);
+    }
+  });
+})();
+JS;
+
+    wp_add_inline_script('ovb-shop-filters', $inline);
+    wp_enqueue_script('ovb-shop-filters');
+
+    add_action('wp_head', function () {
+        echo '<style>.ovb-loading{opacity:.5;pointer-events:none;transition:opacity .2s}</style>';
+    });
+}, 50);
