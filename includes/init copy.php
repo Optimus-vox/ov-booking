@@ -3,12 +3,20 @@ declare(strict_types=1);
 
 defined('ABSPATH') || exit;
 
-// Define plugin path if not already set
+/**
+ * Fallback konstante (primarno ih definiši u glavnom fajlu).
+ */
 if (!defined('OVB_BOOKING_PATH')) {
     define('OVB_BOOKING_PATH', plugin_dir_path(__FILE__));
 }
+if (!defined('OVB_BOOKING_FILE')) {
+    // fallback: pretpostavi da je glavni fajl u korenu plugina
+    define('OVB_BOOKING_FILE', dirname(__DIR__) . '/ov-booking.php');
+}
 
-// Require PHP 7.4+
+/**
+ * PHP verzija
+ */
 if (version_compare(PHP_VERSION, '7.4', '<')) {
     add_action('admin_notices', function () {
         echo '<div class="notice notice-error"><p><strong>OV Booking:</strong> Requires PHP 7.4 or higher.</p></div>';
@@ -16,18 +24,22 @@ if (version_compare(PHP_VERSION, '7.4', '<')) {
     return;
 }
 
-// I18n: Load plugin textdomain
-add_action('init', function() {
-    if (!defined('OVB_BOOKING_FILE')) {
-        // definiši u glavnom fajlu: define('OVB_BOOKING_FILE', __FILE__);
-        // ako ne postoji, fallback na trenutni
-        define('OVB_BOOKING_FILE', dirname(__DIR__) . '/ov-booking.php');
-    }
-    load_plugin_textdomain('ov-booking', false, dirname(plugin_basename(OVB_BOOKING_FILE)) . '/languages');
+/**
+ * I18n
+ * (koristi root /languages, ne includes/languages)
+ */
+add_action('init', function () {
+    load_plugin_textdomain(
+        'ov-booking',
+        false,
+        dirname(plugin_basename(OVB_BOOKING_FILE)) . '/languages'
+    );
 });
 
-// Check if WooCommerce is active
-add_action('plugins_loaded', function() {
+/**
+ * WooCommerce dependency
+ */
+add_action('plugins_loaded', function () {
     if (!class_exists('WooCommerce')) {
         add_action('admin_notices', function () {
             echo '<div class="notice notice-error"><p><strong>OV Booking:</strong> WooCommerce plugin must be active.</p></div>';
@@ -36,36 +48,40 @@ add_action('plugins_loaded', function() {
     }
 }, 1);
 
-// pre učitavanja $core_files / $frontend_files / $admin_files
-if (defined('OVB_WC_MISSING') && OVB_WC_MISSING) {
-    return;
-}
-
 /**
- * Enhanced error logging for development
+ * WP_DEBUG logging
  */
 if (defined('WP_DEBUG') && WP_DEBUG) {
     error_reporting(E_ALL);
-    ini_set('log_errors', 1);
-    ini_set('error_log', OVB_BOOKING_PATH . '../logs/php-errors.log');
+    ini_set('log_errors', '1');
+    // Ako želiš custom fajl, obezbedi da folder postoji; u suprotnom koristi WP default debug.log
+    // ini_set('error_log', OVB_BOOKING_PATH . '../logs/php-errors.log');
 }
 
 /**
- * Autoloader with proper error handling
+ * Composer autoload
  */
 $autoload_path = OVB_BOOKING_PATH . 'vendor/autoload.php';
 if (file_exists($autoload_path)) {
     require_once $autoload_path;
 } else {
     add_action('admin_notices', function () {
-        echo '<div class="notice notice-error"><p><strong>OV Booking:</strong> Missing dependencies. Please install via <code>composer install</code> before uploading plugin.</p></div>';
+        echo '<div class="notice notice-error"><p><strong>OV Booking:</strong> Missing dependencies. Run <code>composer install</code>.</p></div>';
     });
 }
 
 /**
- * Load core files in dependency order
+ * Ako nema WooCommerce-a, prekini dalje učitavanje modula
+ */
+if (defined('OVB_WC_MISSING') && OVB_WC_MISSING) {
+    return;
+}
+
+/**
+ * Core moduli (redosled: helpers → services → admin notice utili)
  */
 $core_files = [
+    OVB_BOOKING_PATH . 'includes/helpers/flat-metas-sync.php',
     OVB_BOOKING_PATH . 'includes/helpers/helpers.php',
     OVB_BOOKING_PATH . 'includes/helpers/logger.php',
     OVB_BOOKING_PATH . 'includes/class-ical-service.php',
@@ -80,13 +96,15 @@ foreach ($core_files as $file) {
     }
 }
 
-// Frontend components
+/**
+ * Frontend moduli
+ */
 if (!is_admin() || wp_doing_ajax()) {
-    // Initialize frontend files array
     $frontend_files = [
         OVB_BOOKING_PATH . 'includes/frontend/scripts.php',
         OVB_BOOKING_PATH . 'includes/frontend/template-hooks.php',
         // OVB_BOOKING_PATH . 'includes/frontend/standalone-templates.php',
+
         OVB_BOOKING_PATH . 'includes/frontend/checkout-mods.php',
         OVB_BOOKING_PATH . 'includes/frontend/cart-hooks.php',
         OVB_BOOKING_PATH . 'includes/frontend/order-hooks.php',
@@ -95,24 +113,24 @@ if (!is_admin() || wp_doing_ajax()) {
         OVB_BOOKING_PATH . 'includes/frontend/account-hooks.php',
         OVB_BOOKING_PATH . 'includes/frontend/body-classes.php',
         OVB_BOOKING_PATH . 'includes/frontend/myaccount-template-override.php',
-        OVB_BOOKING_PATH . 'includes/frontend/excerpt.php', 
-        OVB_BOOKING_PATH . 'includes/ovb-woocommerce-optimizations.php', 
-        // OVB_BOOKING_PATH . 'includes/frontend/ovb-woocommerce-optimizations.php',
-        
-        // Emails and shortcodes
+        OVB_BOOKING_PATH . 'includes/frontend/excerpt.php',
+
+        // Woo optimizacije (trenutno ovde)
+        OVB_BOOKING_PATH . 'includes/ovb-woocommerce-optimizations.php',
+
+        // Emails i shortcodes
         OVB_BOOKING_PATH . 'includes/frontend/emails.php',
         OVB_BOOKING_PATH . 'includes/frontend/shortcodes-apartments.php',
+
+        // Shop filteri (uskladiti sa stvarnom putanjom)
         OVB_BOOKING_PATH . 'includes/frontend/filters-catalog.php',
     ];
-    
-    // Load Elementor manager FIRST if Elementor exists
+
+    // Ako želiš Elementor Manager:
     // if (class_exists('\Elementor\Plugin')) {
     //     require_once OVB_BOOKING_PATH . 'includes/frontend/ovb-unified-elementor-manager.php';
     // }
 
-    
-    
-    // Load all other frontend files
     foreach ($frontend_files as $file) {
         if (file_exists($file)) {
             require_once $file;
@@ -120,9 +138,11 @@ if (!is_admin() || wp_doing_ajax()) {
     }
 }
 
-// Admin components
+/**
+ * Admin moduli
+ */
 if (is_admin()) {
-    $admin_files = [ 
+    $admin_files = [
         OVB_BOOKING_PATH . 'includes/admin/admin-scripts.php',
         OVB_BOOKING_PATH . 'includes/admin/custom-admin-dash.php',
         OVB_BOOKING_PATH . 'includes/admin/product-hooks.php',
@@ -135,6 +155,8 @@ if (is_admin()) {
         OVB_BOOKING_PATH . 'includes/admin/testimonials.php',
         OVB_BOOKING_PATH . 'includes/admin/admin-calendar/admin-calendar-ajax.php',
         OVB_BOOKING_PATH . 'includes/admin/admin-calendar/admin-calendar.php',
+
+        // (ostavljeno kao u tvojoj verziji; duplikat nije štetan zbog require_once)
         OVB_BOOKING_PATH . 'includes/frontend/order-hooks.php',
         OVB_BOOKING_PATH . 'includes/frontend/order-meta-display.php',
     ];
@@ -145,72 +167,74 @@ if (is_admin()) {
     }
 }
 
-// iCal module
-require_once OVB_BOOKING_PATH . 'includes/ical/ical-init.php';
+/**
+ * iCal init (ako modul postoji)
+ */
+if (file_exists(OVB_BOOKING_PATH . 'includes/ical/ical-init.php')) {
+    require_once OVB_BOOKING_PATH . 'includes/ical/ical-init.php';
+}
 
 /**
- * Enhanced checkout script handling
+ * Checkout skriptovi + lokalizacija
  */
 add_action('wp_enqueue_scripts', 'ovb_enqueue_checkout_scripts', 20);
-function ovb_enqueue_checkout_scripts() {
-    if (!is_checkout()) return;
+function ovb_enqueue_checkout_scripts(): void {
+    if (!function_exists('is_checkout') || !is_checkout()) return;
+
     $checkout_scripts = [
         'wc-checkout',
         'wc-stripe',
         'wc-payment-form',
-        'wc-cart-fragments'
+        'wc-cart-fragments',
     ];
-    foreach ($checkout_scripts as $script) {
-        wp_enqueue_script($script);
+    foreach ($checkout_scripts as $handle) {
+        wp_enqueue_script($handle);
     }
-    wp_localize_script('wc-checkout', 'ovb_wc_checkout_params', array_merge(
-        [
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'wc_ajax_url' => WC_AJAX::get_endpoint('%%endpoint%%'),
-            'checkout_url' => wc_get_checkout_url(),
-            'is_checkout' => 1,
-            'debug_mode' => defined('WP_DEBUG') && WP_DEBUG,
-        ],
-        [
-            'update_order_review_nonce' => wp_create_nonce('update-order-review'),
-            'apply_coupon_nonce' => wp_create_nonce('apply-coupon'),
-            'remove_coupon_nonce' => wp_create_nonce('remove-coupon'),
-            'option_guest_checkout' => get_option('woocommerce_enable_guest_checkout'),
-        ]
-    ));
+
+    if (wp_script_is('wc-checkout', 'enqueued')) {
+        wp_localize_script('wc-checkout', 'ovb_wc_checkout_params', array_merge(
+            [
+                'ajax_url'     => admin_url('admin-ajax.php'),
+                'wc_ajax_url'  => WC_AJAX::get_endpoint('%%endpoint%%'),
+                'checkout_url' => wc_get_checkout_url(),
+                'is_checkout'  => 1,
+                'debug_mode'   => (int) (defined('WP_DEBUG') && WP_DEBUG),
+            ],
+            [
+                'update_order_review_nonce' => wp_create_nonce('update-order-review'),
+                'apply_coupon_nonce'        => wp_create_nonce('apply-coupon'),
+                'remove_coupon_nonce'       => wp_create_nonce('remove-coupon'),
+                'option_guest_checkout'     => get_option('woocommerce_enable_guest_checkout'),
+            ]
+        ));
+    }
 }
 
 /**
- * Performance optimization hooks
+ * VARIJANTA A: samo cache za gateways (nema gašenja WP update checkova)
  */
-add_action('init', 'ovb_performance_optimizations', 1);
-function ovb_performance_optimizations() {
-    if (!is_admin()) {
-        add_filter('pre_site_transient_update_core', '__return_null');
-        add_filter('pre_site_transient_update_plugins', '__return_null');
-        add_filter('pre_site_transient_update_themes', '__return_null');
-        remove_action('init', 'wp_version_check');
-        remove_action('init', 'wp_update_plugins');
-        remove_action('init', 'wp_update_themes');
-    }
-    add_filter('woocommerce_available_payment_gateways', function($gateways) {
-        static $cached_gateways = null;
-        if ($cached_gateways !== null) return $cached_gateways;
-        return $cached_gateways = $gateways;
+add_action('init', function () {
+    add_filter('woocommerce_available_payment_gateways', function ($gateways) {
+        static $cached = null;
+        if ($cached !== null) return $cached;
+        return $cached = $gateways;
     }, 99);
-}
+}, 1);
 
 /**
- * Global error handler for OV Booking
+ * Globalni error handler helper
  */
-function ovb_handle_error($message, $context = 'general') {
+function ovb_handle_error($message, $context = 'general'): void {
     if (function_exists('ovb_log_error')) {
         ovb_log_error($message, $context);
     } elseif (defined('WP_DEBUG') && WP_DEBUG) {
         error_log("OVB Error [{$context}]: {$message}");
     }
 }
-// Sakrij "Edit with Elementor" link na product post type
+
+/**
+ * Sakrij "Edit with Elementor" link na product post type (admin)
+ */
 if (is_admin()) {
     add_filter('elementor/utils/show_edit_link', function ($show) {
         $screen = function_exists('get_current_screen') ? get_current_screen() : null;
@@ -220,22 +244,9 @@ if (is_admin()) {
         return $show;
     }, 20);
 }
-/**
- * Plugin activation/deactivation hooks
- */
-// register_activation_hook(__FILE__, 'ovb_activation_handler');
-// function ovb_activation_handler() {
-//     flush_rewrite_rules();
-//     $upload_dir = wp_upload_dir();
-//     $ovb_dir = $upload_dir['basedir'] . '/ovb-booking/';
-//     if (!file_exists($ovb_dir)) {
-//         wp_mkdir_p($ovb_dir);
-//     }
-//     ovb_handle_error('OV Booking plugin activated successfully');
-// }
 
-// register_deactivation_hook(__FILE__, 'ovb_deactivation_handler');
-// function ovb_deactivation_handler() {
-//     flush_rewrite_rules();
-//     ovb_handle_error('OV Booking plugin deactivated');
-// }
+
+
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    require_once OVB_BOOKING_PATH  . '/ovb-debug-inspector/ovb-debug-inspector.php';
+}

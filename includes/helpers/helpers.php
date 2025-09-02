@@ -536,34 +536,35 @@ function ovb_tax_has_terms(string $tax): bool {
     return !is_wp_error($terms) && !empty($terms);
 }
 
-unction ovb_detect_type_taxonomy(): string {
-    // 1) eksplicitni preferirani slugovi
-    $prefs = [
-        'accommodation_type',
-        'accommodation-type',
-        'accommodation_types',
-        'pa_accommodation_type',
-        'pa_type',
-        'pa-type',
-    ];
-    foreach ($prefs as $tx) {
-        if (ovb_tax_has_terms($tx)) return $tx;
-    }
-
-    // 2) heuristika: nađi product taksonomiju koja u nazivu/labeli sadrži "type" ili "accommodation"
-    //    ALI preskoči Woo core: product_type, product_visibility, product_cat, product_tag, product_shipping_class
-    $skip = ['product_type','product_visibility','product_cat','product_tag','product_shipping_class'];
-    $objs = get_object_taxonomies('product', 'objects');
-    foreach ($objs as $key => $o) {
-        if (in_array($key, $skip, true)) continue;
-        $n = strtolower($o->name . ' ' . ($o->label ?? ''));
-        if ((strpos($n,'type') !== false || strpos($n,'accommodation') !== false) && ovb_tax_has_terms($key)) {
-            return $key;
+if (!function_exists('ovb_detect_type_taxonomy')) {
+    function ovb_detect_type_taxonomy(): string {
+        // 1) preferirani slugovi
+        $prefs = [
+            'accommodation_type',
+            'accommodation-type',
+            'accommodation_types',
+            'pa_accommodation_type',
+            'pa_type',
+            'pa-type',
+        ];
+        foreach ($prefs as $tx) {
+            if (ovb_tax_has_terms($tx)) return $tx;
         }
-    }
 
-    // 3) nema ništa validno → vrati '', pa će shortcode prikazati statičnu listu (apartment/house/…)
-    return '';
+        // 2) heuristika, ali preskoči core Woo takse
+        $skip = ['product_type','product_visibility','product_cat','product_tag','product_shipping_class'];
+        $objs = get_object_taxonomies('product', 'objects');
+        foreach ($objs as $key => $o) {
+            if (in_array($key, $skip, true)) continue;
+            $n = strtolower($o->name . ' ' . ($o->label ?? ''));
+            if ((strpos($n,'type') !== false || strpos($n,'accommodation') !== false) && ovb_tax_has_terms($key)) {
+                return $key;
+            }
+        }
+
+        // 3) fallback: ništa
+        return '';
+    }
 }
 
 /** Opciona detekcija City/Country kao taksonomija (ako koristiš attributes) */

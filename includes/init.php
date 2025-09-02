@@ -81,6 +81,7 @@ if (defined('OVB_WC_MISSING') && OVB_WC_MISSING) {
  * Core moduli (redosled: helpers → services → admin notice utili)
  */
 $core_files = [
+    OVB_BOOKING_PATH . 'includes/helpers/flat-metas-sync.php',
     OVB_BOOKING_PATH . 'includes/helpers/helpers.php',
     OVB_BOOKING_PATH . 'includes/helpers/logger.php',
     OVB_BOOKING_PATH . 'includes/class-ical-service.php',
@@ -242,4 +243,10 @@ if (is_admin()) {
         }
         return $show;
     }, 20);
+}
+
+
+
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    require_once OVB_BOOKING_PATH  . '/ovb-debug-inspector/ovb-debug-inspector.php';
 }
