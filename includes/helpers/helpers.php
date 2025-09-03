@@ -46,11 +46,21 @@ function ovb_get_product_price_types($product_id) {
 
 // Get calendar data with fallback (always returns array)
 function ovb_get_product_calendar_data($product_id) {
-    $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
-    return is_array($calendar_data) ? $calendar_data : [];
+    $keys = ['_ovb_calendar_data', '_ov_calendar_data'];
+    foreach ($keys as $meta_key) {
+        $raw = get_post_meta($product_id, $meta_key, true);
+        if (empty($raw)) continue;
+
+        if (is_array($raw)) return $raw;
+
+        $maybe = @maybe_unserialize($raw);
+        if (is_array($maybe)) return $maybe;
+
+        $maybe = json_decode((string)$raw, true);
+        if (is_array($maybe)) return $maybe;
+    }
+    return [];
 }
-
-
 
 
 // === Booking meta helpers (centralizovano) ===

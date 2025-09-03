@@ -309,60 +309,49 @@ function ovb_runtime_post_matches(WP_Post $post, array $filters, WP_Query $q): b
         return $ok;
     };
 
-    // PRICE (samo proizvodi sa bar jednom cenom; bez CI/CO dozvoljen "bar jedan dan u opsegu", sa CI/CO – svaki dan)
+    // ISPRAVLJENA PRICE PROVERA
     $check_price = function ($min_price, $max_price, $start_date, $end_date) use ($post_id): bool {
-        $has_price_filter = ($min_price !== '' && is_numeric($min_price)) || ($max_price !== '' && is_numeric($max_price));
-        if (!$has_price_filter) return true;
+        $has_min_filter = ($min_price !== '' && is_numeric($min_price));
+        $has_max_filter = ($max_price !== '' && is_numeric($max_price));
+
+        if (!$has_min_filter && !$has_max_filter) {
+            return true; // Nema filtera za cenu, preskoči proveru
+        }
 
         $data = ovb_get_calendar_data($post_id);
         if (empty($data)) {
             ovb_log_error("{$post_id} rejected: no calendar data but price filter present", 'price');
-            return false;
+            return false; // Ima filter za cenu, ali proizvod nema kalendar
         }
-
+        
         $allPrices = [];
         foreach ($data as $day => $entry) {
-            if (is_array($entry) && isset($entry['price']) && $entry['price'] !== '' && $entry['price'] !== null) {
+            if (is_array($entry) && isset($entry['price']) && is_numeric($entry['price'])) {
                 $allPrices[$day] = (float)$entry['price'];
             }
         }
+
         if (empty($allPrices)) {
-            ovb_log_error("{$post_id} rejected: calendar has no 'price' entries", 'price');
-            return false;
+            ovb_log_error("{$post_id} rejected: calendar has no valid 'price' entries", 'price');
+            return false; // Ima filter za cenu, ali kalendar nema cene
         }
+        
+        $min = $has_min_filter ? (float)$min_price : null;
+        $max = $has_max_filter ? (float)$max_price : null;
 
-        $min = is_numeric($min_price) ? (float)$min_price : 0.0;
-        $max = is_numeric($max_price) ? (float)$max_price : INF;
-
-        if ($start_date !== '' && $end_date !== '') {
-            try {
-                $period = new DatePeriod(new DateTime($start_date), new DateInterval('P1D'), new DateTime($end_date));
-            } catch (Exception $e) {
-                ovb_log_error("{$post_id} rejected: DatePeriod error {$e->getMessage()}", 'price');
-                return false;
-            }
-            foreach ($period as $d) {
-                $day = $d->format('Y-m-d');
-                if (!array_key_exists($day, $allPrices)) {
-                    ovb_log_error("{$post_id} rejected: price missing for day {$day} in date-range mode", 'price');
-                    return false;
-                }
-                $p = $allPrices[$day];
-                if ($p < $min || $p > $max) {
-                    ovb_log_error("{$post_id} rejected: price {$p} out of [{$min},{$max}] on {$day}", 'price');
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        foreach ($allPrices as $day => $p) {
-            if ($p >= $min && $p <= $max) {
-                return true;
+        // Provera da li bilo koja cena u kalendaru zadovoljava uslov
+        foreach ($allPrices as $p) {
+            $passes = true;
+            if ($min !== null && $p < $min) $passes = false;
+            if ($max !== null && $p > $max) $passes = false;
+            
+            if ($passes) {
+                return true; // Pronađena je bar jedna cena koja odgovara, proizvod je validan
             }
         }
-        ovb_log_error("{$post_id} rejected: no day price in [{$min},{$max}] (no-date mode)", 'price');
-        return false;
+        
+        ovb_log_error("{$post_id} rejected: no day price found in range [{$min_price}, {$max_price}]", 'price');
+        return false; // Nijedna cena ne odgovara
     };
 
     // TYPE (case-insensitive exact)

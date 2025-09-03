@@ -571,7 +571,8 @@ $inline = <<<'JS'
   var resultSel  = '.woocommerce-result-count';
   var orderingSel= 'form.woocommerce-ordering, .woocommerce-ordering';
   var pagSel     = '.woocommerce-pagination';
-  var FILTER_FIELDS = ['ci','co','type','street_name','city','country','capacity','bedrooms','beds','bathrooms','min_price','max_price','city_name'];
+  var FILTER_FIELDS = ['ci','co','type','street_name','city','country','capacity','bedrooms','beds','bathrooms','min_price','max_price'];
+  var DYNAMIC_FILTERS = ['type', 'capacity', 'bedrooms', 'beds', 'bathrooms', 'city']; // Fields that use buttons/selects
 
   function setLoading(on){
     var root = document.querySelector(rootSel) || document.querySelector('main') || document.body;
@@ -599,7 +600,6 @@ $inline = <<<'JS'
       var html = await res.text();
       var doc = new DOMParser().parseFromString(html, 'text/html');
 
-      // --- MODIFIED LOGIC HERE ---
       var curList = document.querySelector(listSel);
       var newList = doc.querySelector(listSel);
       var curRes = document.querySelector(resultSel);
@@ -609,7 +609,7 @@ $inline = <<<'JS'
       var curPag = document.querySelector(pagSel);
       var newPag = doc.querySelector(pagSel);
       var curRoot = document.querySelector(rootSel);
-      var newInfo = doc.querySelector('.ovb-no-results'); // Assuming this is your "no results" message
+      var newInfo = doc.querySelector('.ovb-no-results');
 
       // Clear previous state
       if (curRoot) {
@@ -626,16 +626,14 @@ $inline = <<<'JS'
       }
       // Case 2: No product list found. This means no results.
       else {
-        if (curList) curList.innerHTML = ''; // Clear the current list
+        if (curList) curList.innerHTML = '';
         if (newInfo && curRoot) {
-          curRoot.prepend(newInfo); // Add the "no results" message
+          curRoot.prepend(newInfo);
         }
-        // Clear result count, ordering, and pagination
         if (curRes) curRes.innerHTML = '';
         if (curOrd) curOrd.innerHTML = '';
         if (curPag) curPag.innerHTML = '';
       }
-      // --- END MODIFIED LOGIC ---
 
       if (pushHistory) history.pushState({ovbFilter:true}, '', url);
     } catch(e){
@@ -645,10 +643,24 @@ $inline = <<<'JS'
     }
   }
 
+  function getFilterParamsFromForm() {
+      var params = new URLSearchParams(window.location.search);
+      FILTER_FIELDS.forEach(function(key) {
+          var el = form.querySelector('[name="' + key + '"]');
+          if (el) {
+              if (el.value) {
+                  params.set(key, el.value);
+              } else {
+                  params.delete(key);
+              }
+          }
+      });
+      return params;
+  }
+
   form.addEventListener('submit', function(ev){
     ev.preventDefault();
-    var fd = new FormData(form);
-    var params = new URLSearchParams(fd);
+    var params = getFilterParamsFromForm();
     var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
     var target = hasAnyFilter(params) ? buildUrl(base, params) : base;
     updateFrom(target);
@@ -658,19 +670,56 @@ $inline = <<<'JS'
     var btn = ev.target.closest('#ovb-filter-reset');
     if (!btn) return;
     ev.preventDefault();
-         // Dodatni red za eksplicitno resetovanje polja za datume
-    var ci = form.querySelector('[name="ci"]');
-    var co = form.querySelector('[name="co"]');
-    if (ci) ci.value = '';
-    if (co) co.value = '';
-    if (form) form.reset();
     var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
     updateFrom(base);
+    form.reset();
   });
 
+//   document.addEventListener('click', function(ev) {
+//     var filterBtn = ev.target.closest('.ovb-filter-buttons a.ovb-filter-button');
+//     if (!filterBtn) return;
+//     ev.preventDefault();
+
+//     var url = new URL(filterBtn.href);
+//     var params = new URLSearchParams(url.search);
+//     var key = params.get('key');
+//     var value = params.get('value');
+
+//     var currentParams = new URLSearchParams(window.location.search);
+    
+//     // Toggle logic for filters
+//     if (currentParams.get(key) === value) {
+//         currentParams.delete(key);
+//     } else {
+//         currentParams.set(key, value);
+//     }
+    
+//     // Update date fields from form
+//     var ci = form.querySelector('[name="ci"]').value;
+//     var co = form.querySelector('[name="co"]').value;
+//     if (ci) currentParams.set('ci', ci); else currentParams.delete('ci');
+//     if (co) currentParams.set('co', co); else currentParams.delete('co');
+
+//     var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+//     var newUrl = buildUrl(base, currentParams);
+
+//     updateFrom(newUrl);
+//   });
+  
   document.addEventListener('change', function(ev){
     var sel = ev.target;
-    if (sel && sel.closest(orderingSel)) {
+    if (sel.tagName === 'SELECT' && sel.closest('.ovb-filter-group') && sel.name === 'city') {
+        ev.preventDefault();
+        var currentParams = new URLSearchParams(window.location.search);
+        if (sel.value) {
+            currentParams.set('city', sel.value);
+        } else {
+            currentParams.delete('city');
+        }
+        var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+        var newUrl = buildUrl(base, currentParams);
+        updateFrom(newUrl);
+    } else if (sel.closest(orderingSel)) {
       var params = new URLSearchParams(window.location.search);
       params.set('orderby', sel.value);
       var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
@@ -678,6 +727,7 @@ $inline = <<<'JS'
       updateFrom(url);
     }
   });
+
 
   document.addEventListener('click', function(ev){
     var a = ev.target.closest(pagSel + ' a.page-numbers');
@@ -691,6 +741,7 @@ $inline = <<<'JS'
       updateFrom(window.location.href, false);
     }
   });
+
 })();
 JS;
 

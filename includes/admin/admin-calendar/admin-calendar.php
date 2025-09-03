@@ -339,7 +339,7 @@ function render_calendar_meta_box($post)
                 <label for="payer_gender">Pol</label>
                 <select id="payer_gender" name="payer_gender">
                     <option value="male">Muški</option>
-                    <option value="male">Ženski</option>
+                    <option value="female">Ženski</option>
                     <option value="diverse">Drugo</option>
                 </select>
 
@@ -419,7 +419,8 @@ function closeClientModal() {
 
     // očisti inpute
     jQuery(
-            "#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin")
+            "#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin"
+            )
         .val("");
 
     // koristi helper za zatvaranje
