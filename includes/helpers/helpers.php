@@ -492,11 +492,11 @@ function ovb_debug_product_meta($product_id) {
     $calendar_data = get_post_meta($product_id, '_ovb_calendar_data', true);
     $price_types = get_post_meta($product_id, '_ovb_price_types', true);
     
-    error_log("=== OVB DEBUG PRODUCT {$product_id} ===");
-    error_log("Calendar data type: " . gettype($calendar_data));
-    error_log("Calendar data count: " . (is_array($calendar_data) ? count($calendar_data) : 'not array'));
-    error_log("Price types: " . print_r($price_types, true));
-    error_log("=== END DEBUG ===");
+    ovb_log_error("=== OVB DEBUG PRODUCT {$product_id} ===");
+    ovb_log_error("Calendar data type: " . gettype($calendar_data));
+    ovb_log_error("Calendar data count: " . (is_array($calendar_data) ? count($calendar_data) : 'not array'));
+    ovb_log_error("Price types: " . print_r($price_types, true));
+    ovb_log_error("=== END DEBUG ===");
 }
 
 // Hook za praćenje kada se product učitava

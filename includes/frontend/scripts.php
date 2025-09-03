@@ -560,7 +560,7 @@ add_action('wp_enqueue_scripts', function () {
 
     wp_register_script('ovb-shop-filters', '', [], '1.3.0', true);
 
-    $inline = <<<'JS'
+$inline = <<<'JS'
 (function(){
   if (document.body.classList.contains('elementor-editor-active')) return;
   var form = document.querySelector('form.ovb-shop-filters');
@@ -571,7 +571,7 @@ add_action('wp_enqueue_scripts', function () {
   var resultSel  = '.woocommerce-result-count';
   var orderingSel= 'form.woocommerce-ordering, .woocommerce-ordering';
   var pagSel     = '.woocommerce-pagination';
-  var FILTER_FIELDS = ['ci','co','type','street_name','city','country','capacity','bedrooms','beds','bathrooms','min_price','max_price'];
+  var FILTER_FIELDS = ['ci','co','type','street_name','city','country','capacity','bedrooms','beds','bathrooms','min_price','max_price','city_name'];
 
   function setLoading(on){
     var root = document.querySelector(rootSel) || document.querySelector('main') || document.body;
@@ -599,21 +599,43 @@ add_action('wp_enqueue_scripts', function () {
       var html = await res.text();
       var doc = new DOMParser().parseFromString(html, 'text/html');
 
+      // --- MODIFIED LOGIC HERE ---
       var curList = document.querySelector(listSel);
       var newList = doc.querySelector(listSel);
-      if (curList && newList) curList.replaceWith(newList);
-
       var curRes = document.querySelector(resultSel);
       var newRes = doc.querySelector(resultSel);
-      if (curRes && newRes) curRes.replaceWith(newRes);
-
       var curOrd = document.querySelector(orderingSel);
       var newOrd = doc.querySelector(orderingSel);
-      if (curOrd && newOrd) curOrd.replaceWith(newOrd);
-
       var curPag = document.querySelector(pagSel);
       var newPag = doc.querySelector(pagSel);
-      if (curPag && newPag) curPag.replaceWith(newPag);
+      var curRoot = document.querySelector(rootSel);
+      var newInfo = doc.querySelector('.ovb-no-results'); // Assuming this is your "no results" message
+
+      // Clear previous state
+      if (curRoot) {
+        var oldInfo = curRoot.querySelector('.ovb-no-results');
+        if (oldInfo) oldInfo.remove();
+      }
+
+      // Case 1: New product list found. Replace all elements.
+      if (newList) {
+        if (curList) curList.replaceWith(newList);
+        if (curRes && newRes) curRes.replaceWith(newRes);
+        if (curOrd && newOrd) curOrd.replaceWith(newOrd);
+        if (curPag && newPag) curPag.replaceWith(newPag);
+      }
+      // Case 2: No product list found. This means no results.
+      else {
+        if (curList) curList.innerHTML = ''; // Clear the current list
+        if (newInfo && curRoot) {
+          curRoot.prepend(newInfo); // Add the "no results" message
+        }
+        // Clear result count, ordering, and pagination
+        if (curRes) curRes.innerHTML = '';
+        if (curOrd) curOrd.innerHTML = '';
+        if (curPag) curPag.innerHTML = '';
+      }
+      // --- END MODIFIED LOGIC ---
 
       if (pushHistory) history.pushState({ovbFilter:true}, '', url);
     } catch(e){
@@ -636,6 +658,11 @@ add_action('wp_enqueue_scripts', function () {
     var btn = ev.target.closest('#ovb-filter-reset');
     if (!btn) return;
     ev.preventDefault();
+         // Dodatni red za eksplicitno resetovanje polja za datume
+    var ci = form.querySelector('[name="ci"]');
+    var co = form.querySelector('[name="co"]');
+    if (ci) ci.value = '';
+    if (co) co.value = '';
     if (form) form.reset();
     var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
     updateFrom(base);
@@ -667,10 +694,10 @@ add_action('wp_enqueue_scripts', function () {
 })();
 JS;
 
-    wp_add_inline_script('ovb-shop-filters', $inline);
-    wp_enqueue_script('ovb-shop-filters');
+wp_add_inline_script('ovb-shop-filters', $inline);
+wp_enqueue_script('ovb-shop-filters');
 
-    add_action('wp_head', function () {
-        echo '<style>.ovb-loading{opacity:.5;pointer-events:none;transition:opacity .2s}</style>';
-    });
+add_action('wp_head', function () {
+    echo '<style>.ovb-loading{opacity:.5;pointer-events:none;transition:opacity .2s}</style>';
+});
 }, 50);
