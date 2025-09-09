@@ -78,3 +78,25 @@ button.ovb-filter-button {
     color: white;
     border-color: #4f46e5;
 }
+
+
+
+/* astra fix  */
+
+.entry-content{
+    min-height: 750px !important;
+    .woocommerce{
+      padding-top: 290px !important;
+      .wc-empty-cart-message{
+        .cart-empty.woocommerce-info{
+          border-top-color: #7C4DFF !important;
+          background: transparent !important;
+          color: white !important;
+        }
+      }
+    }
+}
+
+.ast-404-layout-1 {
+        margin: 16.5em auto !important;
+}

@@ -679,3 +679,12 @@
     }
   }
 }
+
+body.woocommerce-view-order{
+ p.order-again{
+  display: none !important;
+} 
+}
+p.order-again{
+  display: none !important;
+}
