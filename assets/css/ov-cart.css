@@ -27,9 +27,10 @@
         }
 
         &.empty{
-          max-width: 400px;
+          max-width: 550px;
           text-align: center;
           padding: 0;
+          padding-top: 10%;
           .ov-cart-empty{
             font-size: 44px;
           }

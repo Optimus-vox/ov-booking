@@ -1,0 +1,772 @@
+<?php
+defined('ABSPATH') || exit;
+
+/**
+ * ======================================
+ *  OV Booking Frontend Scripts & Assets
+ * ======================================
+ */
+
+/** OPTIONAL LOGGER LOADER */
+if ( file_exists( dirname( __DIR__ ) . '/helpers/logger.php' ) ) {
+    require_once dirname( __DIR__ ) . '/helpers/logger.php';
+}
+
+/** HELPER - check if Elementor should be disabled on this page */
+// function ovb_is_elementor_disabled_page() {
+//     return is_singular('product')
+//         || ( function_exists('is_cart') && is_cart() )
+//         || ( function_exists('is_checkout') && is_checkout() )
+//         || ( function_exists('is_account_page') && is_account_page() )
+//         || ( function_exists('is_order_received_page') && is_order_received_page() );
+// }
+
+/** GLOBAL WP ASSETS & CONFIG */
+add_action( 'wp_enqueue_scripts', 'ovb_enqueue_global_assets', 1 );
+function ovb_enqueue_global_assets() {
+    wp_enqueue_style( 'dashicons' );
+    if ( ovb_is_woo_page() ) {
+        wp_enqueue_script( 'jquery' );
+        // ensure admin-ajax is available
+        wp_enqueue_script( 'wp-util' );
+    }
+}
+
+/** PRODUCT PAGE ASSETS */
+function ovb_enqueue_product_assets() {
+    static $done = false;
+    if ($done) return;
+    if ( ! is_product() ) return;
+
+    // Uzmemo ID iz glavnog upita (radi i kada $post nije setovan)
+    $product_id = (int) get_queried_object_id();
+    if ( ! $product_id ) {
+        global $post;
+        if ( isset($post->ID) ) {
+            $product_id = (int) $post->ID;
+        }
+    }
+
+    // 1) Core biblioteke
+    ovb_enqueue_calendar_core();
+
+    // 2) DateRange picker
+    ovb_enqueue_daterange_picker();
+
+    // 3) Slider (Owl + tvoj JS/CSS)
+    ovb_enqueue_slider_assets();
+
+    // 4) Single product skripte + localize (ako imamo ID)
+    if ( $product_id ) {
+        ovb_enqueue_product_scripts( $product_id );
+    }
+
+    $done = true;
+}
+
+
+/** MAIN PLUGIN ASSETS */
+add_action( 'wp_enqueue_scripts', 'ovb_enqueue_main_assets', 20 );
+add_action('woocommerce_before_single_product', 'ovb_enqueue_product_assets', 1);
+
+function ovb_enqueue_main_assets() {
+    $main_css = OVB_BOOKING_PATH . 'assets/css/main.css';
+    $main_js  = OVB_BOOKING_PATH . 'assets/js/main.js';
+
+    if ( file_exists( $main_css ) ) {
+        wp_enqueue_style( 'ovb-main-style',
+            OVB_BOOKING_URL . 'assets/css/main.css',
+            [],
+            filemtime( $main_css )
+        );
+    }
+    if ( file_exists( $main_js ) ) {
+        wp_enqueue_script( 'ovb-main-js',
+            OVB_BOOKING_URL . 'assets/js/main.js',
+            [ 'jquery', 'wp-util' ],
+            filemtime( $main_js ),
+            true
+        );
+        wp_script_add_data( 'ovb-main-js', 'type', 'module' );
+    }
+
+    if ( is_product() ) {
+        ovb_enqueue_product_assets();
+    }
+}
+
+
+/** Calendar core (Moment.js + Daterangepicker) */
+function ovb_enqueue_calendar_core() {
+    if ( ! wp_script_is( 'moment-js', 'enqueued' ) ) {
+        wp_enqueue_script(
+            'moment-js',
+            'https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js',
+            [],
+            '2.29.4',
+            true
+        );
+    }
+    add_action( 'wp_footer', 'ovb_moment_local_fallback', 1000 );
+
+    if ( ! wp_script_is( 'daterangepicker-js', 'enqueued' ) ) {
+        wp_enqueue_style(
+            'daterangepicker-css',
+            'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css',
+            [],
+            '3.1.0'
+        );
+        wp_enqueue_script(
+            'daterangepicker-js',
+            'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js',
+            [ 'jquery', 'moment-js' ],
+            '3.1.0',
+            true
+        );
+    }
+}
+function ovb_moment_local_fallback() {
+    ?>
+<script>
+if (typeof moment === "undefined") {
+    var s = document.createElement('script');
+    s.src = '<?php echo esc_js( OVB_BOOKING_URL . "assets/utils/js/moment-local.min.js" ); ?>';
+    s.async = true;
+    document.head.appendChild(s);
+}
+</script>
+<?php
+}
+
+/** Custom DateRange Picker */
+function ovb_enqueue_daterange_picker() {
+    $css = OVB_BOOKING_PATH . 'assets/utils/css/ov-date.range.css';
+    $js  = OVB_BOOKING_PATH . 'assets/utils/js/ov-date.range.js';
+
+    if ( file_exists( $css ) && ! wp_style_is( 'ovb-daterange-css', 'enqueued' ) ) {
+        wp_enqueue_style(
+            'ovb-daterange-css',
+            OVB_BOOKING_URL . 'assets/utils/css/ov-date.range.css',
+            [ 'daterangepicker-css' ],
+            filemtime( $css )
+        );
+    }
+    if ( file_exists( $js ) && ! wp_script_is( 'ovb-daterange-js', 'enqueued' ) ) {
+        wp_enqueue_script(
+            'ovb-daterange-js',
+            OVB_BOOKING_URL . 'assets/utils/js/ov-date.range.js',
+            [ 'jquery', 'moment-js', 'daterangepicker-js' ],
+            filemtime( $js ),
+            true
+        );
+    }
+}
+
+/** Slider Assets */
+function ovb_enqueue_slider_assets() {
+    $owl_css    = OVB_BOOKING_PATH . 'assets/utils/css/owl.carousel.min.css';
+    $owl_theme  = OVB_BOOKING_PATH . 'assets/utils/css/owl.theme.default.min.css';
+    $slider_css = OVB_BOOKING_PATH . 'assets/utils/css/ov.slider.css';
+    $owl_js     = OVB_BOOKING_PATH . 'assets/utils/js/owl.carousel.min.js';
+    $slider_js  = OVB_BOOKING_PATH . 'assets/utils/js/ov.slider.js';
+
+    if ( file_exists( $owl_css ) && ! wp_style_is( 'owl-carousel', 'enqueued' ) ) {
+        wp_enqueue_style( 'owl-carousel', OVB_BOOKING_URL . 'assets/utils/css/owl.carousel.min.css' );
+    }
+    if ( file_exists( $owl_theme ) && ! wp_style_is( 'owl-theme', 'enqueued' ) ) {
+        wp_enqueue_style( 'owl-theme', OVB_BOOKING_URL . 'assets/utils/css/owl.theme.default.min.css' );
+    }
+    if ( file_exists( $slider_css ) && ! wp_style_is( 'ovb-slider', 'enqueued' ) ) {
+        wp_enqueue_style( 'ovb-slider', OVB_BOOKING_URL . 'assets/utils/css/ov.slider.css' );
+    }
+    if ( file_exists( $owl_js ) && ! wp_script_is( 'owl-carousel-js', 'enqueued' ) ) {
+        wp_enqueue_script( 'owl-carousel-js', OVB_BOOKING_URL . 'assets/utils/js/owl.carousel.min.js', [ 'jquery' ], '', true );
+    }
+    if ( file_exists( $slider_js ) && ! wp_script_is( 'ovb-slider-js', 'enqueued' ) ) {
+        wp_enqueue_script( 'ovb-slider-js', OVB_BOOKING_URL . 'assets/utils/js/ov.slider.js', [], '', true );
+        wp_script_add_data('ovb-slider-js','defer', true);
+        
+      }
+      if ( ! file_exists( $slider_js ) && function_exists('error_log') ) {
+        error_log('OVB: slider JS not found at ' . $slider_js);
+    }
+      wp_add_inline_script('ovb-slider-js','console.log("OVB slider loaded");','after');
+
+}
+
+/** Single-Product Scripts & Styles */
+function ovb_enqueue_product_scripts( $product_id ) {
+    $single_css = OVB_BOOKING_PATH . 'assets/css/ov-single.css';
+    $single_js  = OVB_BOOKING_PATH . 'assets/js/ov-single.js';
+
+    if ( file_exists( $single_css ) && ! wp_style_is( 'ovb-single-style', 'enqueued' ) ) {
+        wp_enqueue_style(
+            'ovb-single-style',
+            OVB_BOOKING_URL . 'assets/css/ov-single.css',
+            [],
+            filemtime( $single_css )
+        );
+    }
+    if ( file_exists( $single_js ) && ! wp_script_is( 'ovb-single-script', 'enqueued' ) ) {
+        wp_enqueue_script(
+            'ovb-single-script',
+            OVB_BOOKING_URL . 'assets/js/ov-single.js',
+            [ 'jquery', 'owl-carousel-js', 'ovb-slider-js', 'daterangepicker-js', 'wc-add-to-cart' ],
+            filemtime( $single_js ),
+            true
+        );
+    }
+    
+    // Safely enqueue WooCommerce scripts
+    $wc_scripts = [ 'wc-add-to-cart', 'woocommerce', 'wc-single-product', 'wc-cart-fragments' ];
+    foreach ( $wc_scripts as $handle ) {
+        if ( ! wp_script_is( $handle, 'enqueued' ) ) {
+            wp_enqueue_script( $handle );
+        }
+    }
+
+    // Localize for AJAX
+    wp_localize_script(
+        'ovb-single-script',
+        'ovbProductVars',
+        [
+            'ajax_url'          => esc_url( admin_url( 'admin-ajax.php' ) ),
+            'nonce'             => wp_create_nonce( 'ovb_nonce' ),
+            'product_id'        => absint( $product_id ),
+            'calendar_data'     => ovb_get_clean_calendar_data( $product_id ),
+            'price_types'       => get_post_meta( $product_id, '_ovb_price_types', true ) ?: [],
+            'checkout_url'      => esc_url( wc_get_checkout_url() ),
+            'cart_url'          => esc_url( wc_get_cart_url() ),
+            'is_user_logged_in' => is_user_logged_in(),
+            'start_date'        => sanitize_text_field( $_GET['ovb_start_date'] ?? '' ),
+            'end_date'          => sanitize_text_field( $_GET['ovb_end_date']   ?? '' ),
+            'i18n' => [
+                'select_end_date' => __( 'Select end date', 'ov-booking' ),
+                'select_dates'    => __( 'Please select dates', 'ov-booking' ),
+                'loading'         => __( 'Loading...',        'ov-booking' ),
+            ],
+        ]
+    );
+}
+
+/** PRELOAD CRITICAL CSS ONLY (no JS) */
+add_action( 'wp_head', 'ovb_preload_critical_css', 99 );
+function ovb_preload_critical_css() {
+    if ( is_product() ) {
+        echo sprintf(
+            '<link rel="preload" href="%1$sassets/css/ov-single.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">',
+            esc_url( OVB_BOOKING_URL )
+        );
+        echo sprintf(
+            '<noscript><link rel="stylesheet" href="%1$sassets/css/ov-single.css"></noscript>',
+            esc_url( OVB_BOOKING_URL )
+        );
+    }
+}
+
+/** CART ASSETS */
+add_action( 'wp_enqueue_scripts', 'ov_enqueue_cart_assets' );
+function ov_enqueue_cart_assets() {
+    if ( ! is_cart() ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'ovb-cart-style',
+        OVB_BOOKING_URL . 'assets/css/ov-cart.css',
+        [],
+        filemtime( OVB_BOOKING_PATH . 'assets/css/ov-cart.css' )
+    );
+
+    wp_enqueue_script(
+        'ovb-cart-script',
+        OVB_BOOKING_URL . 'assets/js/ov-cart.js',
+        [ 'jquery', 'wc-cart' ],
+        filemtime( OVB_BOOKING_PATH . 'assets/js/ov-cart.js' ),
+        true
+    );
+
+    wp_localize_script(
+        'ovb-cart-script',
+        'ovCartVars',
+        [
+            'ajax_url'            => esc_url( admin_url( 'admin-ajax.php' ) ),
+            'nonce'               => wp_create_nonce( 'ovb_nonce' ),
+            'checkoutUrl'         => esc_url( wc_get_checkout_url() ),
+       
+            'emptyCartTitle'    => __( 'Empty cart?', 'ov-booking' ),
+            'emptyCartMessage'  => __( 'This will remove all items from your cart.', 'ov-booking' ),
+            'confirmText'       => __( 'Yes, empty it', 'ov-booking' ),
+            'cancelText'        => __( 'Cancel', 'ov-booking' ),
+            'emptySuccess'      => __( 'Cart emptied.', 'ov-booking' ),
+        ]
+    );
+
+}
+
+/**********************
+ * CHECKOUT (UNIFIED) *
+ *********************/
+add_action('wp_enqueue_scripts', 'ovb_enqueue_checkout_assets', 9999);
+function ovb_enqueue_checkout_assets() {
+    if ( ! function_exists('is_checkout') || ! is_checkout() ) return;
+    if ( function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received') ) return;
+
+    $css_file = OVB_BOOKING_PATH . 'assets/css/ov-checkout.css';
+    $js_file  = OVB_BOOKING_PATH . 'assets/js/ov-checkout.js';
+
+    /* -------------------------------
+     *  STYLES (vezani za Woo/Blocks)
+     * ------------------------------- */
+    $style_deps = [];
+    foreach (['woocommerce-general','woocommerce-layout','woocommerce-smallscreen','wc-blocks-style'] as $h) {
+        if ( wp_style_is($h, 'registered') ) { $style_deps[] = $h; }
+    }
+
+    if ( file_exists($css_file) ) {
+        wp_register_style(
+            'ovb-checkout-style',
+            OVB_BOOKING_URL . 'assets/css/ov-checkout.css',
+            $style_deps,
+            filemtime($css_file)
+        );
+        wp_enqueue_style('ovb-checkout-style');
+
+  
+    }
+
+    // Ako Woo ima SelectWoo/Select2 stilove – obezbedi da postoje pre naših inicijalizacija
+    if ( wp_style_is('select2', 'registered') ) {
+        wp_enqueue_style('select2');
+    }
+
+    /* -------------------------------
+     *  SCRIPTS (classic + blocks deps)
+     * ------------------------------- */
+    $script_deps = array_filter([
+        'jquery',
+        wp_script_is('wc-checkout', 'registered') ? 'wc-checkout' : null,
+        wp_script_is('wc-blocks-checkout', 'registered') ? 'wc-blocks-checkout' : null,
+        wp_script_is('wc-address-i18n', 'registered') ? 'wc-address-i18n' : null,
+        wp_script_is('wc-country-select', 'registered') ? 'wc-country-select' : null,
+    ]);
+
+    // Ako postoji SelectWoo/Select2 – učitaj pre našeg inline-a
+    if ( wp_script_is('selectWoo', 'registered') ) {
+        $script_deps[] = 'selectWoo';
+    } elseif ( wp_script_is('select2', 'registered') ) {
+        $script_deps[] = 'select2';
+    }
+
+    // Uvek registruj handle (i kad nema fajla) da inline pouzdano radi
+    $js_src = file_exists($js_file) ? OVB_BOOKING_URL . 'assets/js/ov-checkout.js' : '';
+    $js_ver = file_exists($js_file) ? filemtime($js_file) : null;
+    wp_register_script('ovb-checkout-script', $js_src, $script_deps, $js_ver, true);
+    wp_enqueue_script('ovb-checkout-script');
+
+    /* -------------------------------
+     *  INLINE: toggles + repeater + SelectWoo/Select2 (sa dropdownParent)
+     * ------------------------------- */
+    $inline = <<<'JS'
+jQuery(function($){
+  if (window.__ovbUnifiedInit) return; window.__ovbUnifiedInit = true;
+
+  // Selektori (tvoji) + fallback na starije klase
+  var $isCo      = $('#ovb_is_company');
+  var $wrapCo    = $('.ovb-company-fields-wrap').length ? $('.ovb-company-fields-wrap') : $('.ovb-company-fields');
+  var $isOther   = $('#ovb_is_other').length ? $('#ovb_is_other') : $('#ovb_guest_different');
+  var $wrapOther = $('.ovb-other-fields-wrap').length ? $('.ovb-other-fields-wrap') : $('.ovb-guest-fields');
+
+  var $rep   = $('#ovb-guest-repeater');
+  var $total = $('#ovb_guests_total');
+
+  function setRequired($wrap, on){
+    if(!$wrap || !$wrap.length) return;
+    $wrap.find('[data-required]').each(function(){
+      if(on){ $(this).attr('required','required'); }
+      else  { $(this).removeAttr('required'); }
+    });
+  }
+  function toggleWrap($cb, $wrap){
+    if(!$cb || !$cb.length || !$wrap || !$wrap.length) return;
+    var on = $cb.is(':checked');
+    $wrap.toggle(on);
+    setRequired($wrap, on);
+    if (window.ovbEnhanceSelects) window.ovbEnhanceSelects($wrap);
+  }
+
+  function toggleCompany(){ toggleWrap($isCo, $wrapCo); }
+  function toggleOther(){   toggleWrap($isOther, $wrapOther); }
+
+  // Guests repeater (bez <18 logike)
+  function guestRowTpl(i){
+    return '' +
+      '<div class="ovb-guest-row" data-index="'+i+'">' +
+        '<input type="text"  name="ovb_guest['+i+'][first_name]" placeholder="Ime" required>' +
+        '<input type="text"  name="ovb_guest['+i+'][last_name]"  placeholder="Prezime" required>' +
+        '<select name="ovb_guest['+i+'][gender]" required data-no-search="1">' +
+          '<option value="">Pol...</option>' +
+          '<option value="M">Muški</option>' +
+          '<option value="F">Ženski</option>' +
+        '</select>' +
+        '<input type="date" name="ovb_guest['+i+'][dob]" placeholder="Datum rođenja" required>' +
+        '<input type="tel"  name="ovb_guest['+i+'][phone]" placeholder="Telefon">' +
+        '<input type="text" name="ovb_guest['+i+'][passport]" placeholder="Broj pasoša/lične karte (opciono)">' +
+      '</div>';
+  }
+
+  function ensureRows(n){
+    if(!$rep.length) return;
+    var have = $rep.find('.ovb-guest-row').length;
+    if(have < n){
+      for(var i=have;i<n;i++){
+        $rep.append( guestRowTpl(i) );
+        if (window.ovbEnhanceSelects) {
+          window.ovbEnhanceSelects($rep.find('.ovb-guest-row').last());
+        }
+      }
+    } else if(have > n){
+      $rep.find('.ovb-guest-row').slice(n).remove();
+    }
+  }
+
+  function baseGuests(){
+    var otherOn = $isOther && $isOther.length ? $isOther.is(':checked') : false;
+    return 1 + (otherOn ? 1 : 0);
+  }
+
+  function syncGuests(){
+    if(!$total || !$total.length) return;
+    var t = parseInt($total.val() || '1', 10);
+    if(!isFinite(t) || t < 1) t = 1;
+    var need = Math.max(0, t - baseGuests());
+    ensureRows(need);
+  }
+
+  // --- SelectWoo / Select2 UX (jedinstvena inicijalizacija + dropdownParent)
+  if (!window.__ovbSelectsInit) {
+    window.__ovbSelectsInit = true;
+
+    window.ovbEnhanceSelects = function($ctx){
+      var $scope = $ctx && $ctx.length ? $ctx : $(document);
+      var $sels = $scope.find('.ovb-company-fields-wrap select, .ovb-other-fields-wrap select, #ovb-guest-repeater select');
+
+      $sels.each(function(){
+        var $el = $(this);
+        if ($el.hasClass('select2-hidden-accessible')) return; // već init
+
+        // dropdownParent: veži za lokalni kontejner da ne razvuče layout
+        var $parent = $el.closest('.ovb-company-fields-wrap, .ovb-other-fields-wrap, .ovb-checkout-section, .ovb-checkout-content, .woocommerce-checkout');
+        if (!$parent.length) $parent = $(document.body);
+
+        var searchable = $el.find('option').length > 7 && !$el.is('[data-no-search]');
+        var opts = {
+          width: '100%',
+          minimumResultsForSearch: searchable ? 0 : Infinity,
+          dropdownParent: $parent
+        };
+
+        if ($.fn.selectWoo)      { $el.selectWoo(opts); }
+        else if ($.fn.select2)   { $el.select2(opts); }
+      });
+    };
+
+    // prvi run
+    window.ovbEnhanceSelects($(document));
+
+    // Woo klasični eventi i fragmenti
+    $(document.body).on('updated_checkout updated_wc_div country_to_state_changed wc_fragments_loaded', function(){
+      window.ovbEnhanceSelects($(document));
+    });
+
+    // WC Blocks i ostali DOM update-i
+    if ('MutationObserver' in window) {
+      var obs = new MutationObserver(function(){ window.ovbEnhanceSelects($(document)); });
+      obs.observe(document.body, {childList:true, subtree:true});
+    }
+  }
+
+  // INIT UI
+  toggleCompany();
+  toggleOther();
+  syncGuests();
+
+  // LISTENERS
+  $(document).on('change', '#ovb_is_company', function(){ toggleCompany(); syncGuests(); });
+  $(document).on('change', '#ovb_is_other, #ovb_guest_different', function(){ toggleOther(); syncGuests(); });
+  $(document).on('change', '#ovb_guests_total', syncGuests);
+});
+JS;
+    wp_add_inline_script('ovb-checkout-script', $inline, 'after');
+}
+
+/**
+ * (Opcionalno) Elementor: obezbedi da naš CSS bude poslednji
+ */
+// add_action('elementor/frontend/after_enqueue_styles', function(){
+//     if ( function_exists('is_checkout') && is_checkout() && wp_style_is('ovb-checkout-style', 'registered') ) {
+//         wp_dequeue_style('ovb-checkout-style');
+//         wp_enqueue_style('ovb-checkout-style');
+//     }
+// }, 99);
+
+
+/** THANK YOU PAGE CSS */
+function ov_enqueue_thank_you_assets()
+{
+    $is_thankyou = (function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('order-received')) || isset($_GET['order-received']);
+    
+    if ($is_thankyou) {
+        wp_enqueue_style('ovb-thank-you-style', OVB_BOOKING_URL . 'assets/css/ov-thank-you.css');
+        wp_enqueue_script('ovb-thank-you-script', OVB_BOOKING_URL . 'assets/js/ov-thank-you.js', ['jquery'], '1.0', true);
+    }
+}
+add_action('wp_enqueue_scripts', 'ov_enqueue_thank_you_assets');
+
+/** MY ACCOUNT PAGE CSS */
+add_action( 'wp_enqueue_scripts', 'ovb_enqueue_my_account_assets', 20 );
+function ovb_enqueue_my_account_assets() {
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
+        return;
+    }
+
+    $css_file = OVB_BOOKING_PATH . 'assets/css/ov-my-account.css';
+
+    if ( file_exists( $css_file ) ) {
+        wp_enqueue_style(
+            'ovb-my-account-style',
+            OVB_BOOKING_URL . 'assets/css/ov-my-account.css',
+            [],
+            filemtime( $css_file )
+        );
+    }
+    
+    // My Account conflict resolution
+    // add_action( 'wp_footer', 'ovb_resolve_account_conflicts', 999 );
+}
+
+/** UTILITY FUNCTIONS */
+function ovb_is_woo_page() {
+    return function_exists( 'is_woocommerce' ) && (
+        is_cart() ||
+        is_checkout() ||
+        is_account_page() ||
+        is_wc_endpoint_url( 'order-received' ) ||
+        is_product() ||
+        is_shop() ||
+        is_product_category() ||
+        is_product_tag()
+    );
+}
+
+function ovb_get_clean_calendar_data( $product_id ) {
+    $raw = get_post_meta( $product_id, '_ovb_calendar_data', true );
+    if ( empty( $raw ) ) {
+        return [];
+    }
+    if ( is_string( $raw ) ) {
+        $raw = json_decode( $raw, true );
+    }
+    return is_array( $raw ) ? $raw : [];
+}
+
+// AJAX osvežavanje Shop filtera (Elementor/Woo archive)
+add_action('wp_enqueue_scripts', function () {
+    if (!function_exists('is_shop')) return;
+    if (!is_shop() && !is_product_taxonomy() && !is_post_type_archive('product')) return;
+    if (is_admin()) return;
+
+    wp_register_script('ovb-shop-filters', '', [], '1.3.0', true);
+
+$inline = <<<'JS'
+(function(){
+  if (document.body.classList.contains('elementor-editor-active')) return;
+  var form = document.querySelector('form.ovb-shop-filters');
+  if (!form) return;
+
+  var rootSel    = '.elementor-widget-wc-archive-products, .woocommerce';
+  var listSel    = 'ul.products, .products';
+  var resultSel  = '.woocommerce-result-count';
+  var orderingSel= 'form.woocommerce-ordering, .woocommerce-ordering';
+  var pagSel     = '.woocommerce-pagination';
+  var FILTER_FIELDS = ['ci','co','type','street_name','city','country','capacity','bedrooms','beds','bathrooms','min_price','max_price'];
+  var DYNAMIC_FILTERS = ['type', 'capacity', 'bedrooms', 'beds', 'bathrooms', 'city']; // Fields that use buttons/selects
+
+  function setLoading(on){
+    var root = document.querySelector(rootSel) || document.querySelector('main') || document.body;
+    root.classList.toggle('ovb-loading', !!on);
+  }
+  function buildUrl(base, params){
+    try{
+      var u = new URL(base, window.location.origin);
+      params.delete('paged');
+      FILTER_FIELDS.forEach(function(k){ if(!params.get(k)) params.delete(k); });
+      u.search = params.toString();
+      return u.toString();
+    }catch(e){ return base; }
+  }
+  function hasAnyFilter(params){
+    return FILTER_FIELDS.some(function(k){
+      var v = params.get(k); return v && String(v).trim() !== '';
+    });
+  }
+  async function updateFrom(url, pushHistory=true){
+    setLoading(true);
+    try{
+      var res = await fetch(url, {headers:{'X-Requested-With':'fetch'}});
+      if(!res.ok) throw new Error(res.status);
+      var html = await res.text();
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+
+      var curList = document.querySelector(listSel);
+      var newList = doc.querySelector(listSel);
+      var curRes = document.querySelector(resultSel);
+      var newRes = doc.querySelector(resultSel);
+      var curOrd = document.querySelector(orderingSel);
+      var newOrd = doc.querySelector(orderingSel);
+      var curPag = document.querySelector(pagSel);
+      var newPag = doc.querySelector(pagSel);
+      var curRoot = document.querySelector(rootSel);
+      var newInfo = doc.querySelector('.ovb-no-results');
+
+      // Clear previous state
+      if (curRoot) {
+        var oldInfo = curRoot.querySelector('.ovb-no-results');
+        if (oldInfo) oldInfo.remove();
+      }
+
+      // Case 1: New product list found. Replace all elements.
+      if (newList) {
+        if (curList) curList.replaceWith(newList);
+        if (curRes && newRes) curRes.replaceWith(newRes);
+        if (curOrd && newOrd) curOrd.replaceWith(newOrd);
+        if (curPag && newPag) curPag.replaceWith(newPag);
+      }
+      // Case 2: No product list found. This means no results.
+      else {
+        if (curList) curList.innerHTML = '';
+        if (newInfo && curRoot) {
+          curRoot.prepend(newInfo);
+        }
+        if (curRes) curRes.innerHTML = '';
+        if (curOrd) curOrd.innerHTML = '';
+        if (curPag) curPag.innerHTML = '';
+      }
+
+      if (pushHistory) history.pushState({ovbFilter:true}, '', url);
+    } catch(e){
+      window.location.href = url;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function getFilterParamsFromForm() {
+      var params = new URLSearchParams(window.location.search);
+      FILTER_FIELDS.forEach(function(key) {
+          var el = form.querySelector('[name="' + key + '"]');
+          if (el) {
+              if (el.value) {
+                  params.set(key, el.value);
+              } else {
+                  params.delete(key);
+              }
+          }
+      });
+      return params;
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var params = getFilterParamsFromForm();
+    var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+    var target = hasAnyFilter(params) ? buildUrl(base, params) : base;
+    updateFrom(target);
+  });
+
+  document.addEventListener('click', function(ev){
+    var btn = ev.target.closest('#ovb-filter-reset');
+    if (!btn) return;
+    ev.preventDefault();
+    var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+    updateFrom(base);
+    form.reset();
+  });
+
+//   document.addEventListener('click', function(ev) {
+//     var filterBtn = ev.target.closest('.ovb-filter-buttons a.ovb-filter-button');
+//     if (!filterBtn) return;
+//     ev.preventDefault();
+
+//     var url = new URL(filterBtn.href);
+//     var params = new URLSearchParams(url.search);
+//     var key = params.get('key');
+//     var value = params.get('value');
+
+//     var currentParams = new URLSearchParams(window.location.search);
+    
+//     // Toggle logic for filters
+//     if (currentParams.get(key) === value) {
+//         currentParams.delete(key);
+//     } else {
+//         currentParams.set(key, value);
+//     }
+    
+//     // Update date fields from form
+//     var ci = form.querySelector('[name="ci"]').value;
+//     var co = form.querySelector('[name="co"]').value;
+//     if (ci) currentParams.set('ci', ci); else currentParams.delete('ci');
+//     if (co) currentParams.set('co', co); else currentParams.delete('co');
+
+//     var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+//     var newUrl = buildUrl(base, currentParams);
+
+//     updateFrom(newUrl);
+//   });
+  
+  document.addEventListener('change', function(ev){
+    var sel = ev.target;
+    if (sel.tagName === 'SELECT' && sel.closest('.ovb-filter-group') && sel.name === 'city') {
+        ev.preventDefault();
+        var currentParams = new URLSearchParams(window.location.search);
+        if (sel.value) {
+            currentParams.set('city', sel.value);
+        } else {
+            currentParams.delete('city');
+        }
+        var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+        var newUrl = buildUrl(base, currentParams);
+        updateFrom(newUrl);
+    } else if (sel.closest(orderingSel)) {
+      var params = new URLSearchParams(window.location.search);
+      params.set('orderby', sel.value);
+      var base = (form.getAttribute('action') || window.location.href.split('?')[0]);
+      var url = buildUrl(base, params);
+      updateFrom(url);
+    }
+  });
+
+
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest(pagSel + ' a.page-numbers');
+    if (!a || a.classList.contains('current')) return;
+    ev.preventDefault();
+    updateFrom(a.getAttribute('href'));
+  });
+
+  window.addEventListener('popstate', function(e){
+    if (e.state && e.state.ovbFilter) {
+      updateFrom(window.location.href, false);
+    }
+  });
+
+})();
+JS;
+
+wp_add_inline_script('ovb-shop-filters', $inline);
+wp_enqueue_script('ovb-shop-filters');
+
+add_action('wp_head', function () {
+    echo '<style>.ovb-loading{opacity:.5;pointer-events:none;transition:opacity .2s}</style>';
+});
+}, 50);

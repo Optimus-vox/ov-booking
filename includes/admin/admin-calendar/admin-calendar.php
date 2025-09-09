@@ -177,6 +177,7 @@ function render_calendar_meta_box($post)
             <!-- TAB 5: Bulk Price Update -->
             <div class="tab-content" id="tab-set-price" style="display: none;">
                 <h4>Price Updates</h4>
+
                 <table class="form-table">
                     <tr>
                         <th><label for="price_type">Price Type:</label></th>
@@ -185,9 +186,11 @@ function render_calendar_meta_box($post)
                                 <option value="regular">Regular</option>
                                 <option value="weekend">Weekend</option>
                                 <option value="discount">Discount</option>
+                                <!-- "Custom" će se dinamički dodati/ukloniti iz JS-a ako postoji vrednost -->
                             </select>
                         </td>
                     </tr>
+
                     <tr>
                         <th><label for="apply_rule">Apply to:</label></th>
                         <td>
@@ -199,13 +202,19 @@ function render_calendar_meta_box($post)
                             </select>
                         </td>
                     </tr>
-                    <!-- <tr id="daterange_row" style="display: none;">
-                            <th><label for="daterange">Custom Dates:</label></th>
-                            <td>
-                                <input type="text" id="daterange" style="width: 180px;" placeholder="Pick a date range">
-                            </td>
-                        </tr> -->
+
+                    <!-- 👇 Novi red koji se prikazuje samo kad je izabran "Custom Range" -->
+                    <tr id="daterange_row" style="display:none;">
+                        <th><label for="daterange">Custom Dates:</label></th>
+                        <td>
+                            <div id="daterange_container">
+                                <input type="text" id="daterange" style="width: 180px;" placeholder="Pick a date range"
+                                    readonly>
+                            </div>
+                        </td>
+                    </tr>
                 </table>
+
                 <button id="apply_price" class="button button-secondary" style="margin-top: 10px;">Apply Price</button>
             </div>
 
@@ -278,8 +287,8 @@ function render_calendar_meta_box($post)
 <input type="hidden" name="ovb_status_daterange" id="ovb_status_daterange_input" value="">
 
 <!-- add client modal -->
-<div id="client_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1001;">
-    <div id="client_modal">
+<div id="client_modal_wrapper" class="ovb-overlay" aria-hidden="true">
+    <div id="client_modal" class="ovb-modal">
         <i class="close_modal" onclick="closeOvModal('#client_modal_wrapper')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                 <path fill="currentColor"
@@ -362,8 +371,8 @@ function render_calendar_meta_box($post)
 <!-- add client modal -->
 
 <!-- edit single price day modal -->
-<div id="price_modal_wrapper" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
-    <div id="price_modal">
+<div id="price_modal_wrapper" class="ovb-overlay" aria-hidden="true">
+    <div id="price_modal" class="ovb-modal">
         <i class="close_modal" onclick="closeOvModal('#price_modal_wrapper')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                 <path fill="currentColor"
@@ -382,9 +391,8 @@ function render_calendar_meta_box($post)
 </div>
 
 <!-- edit single price day modal -->
-<div id="client_action_modal_wrapper"
-    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2001;">
-    <div id="client_action_modal">
+<div id="client_action_modal_wrapper" class="ovb-overlay" aria-hidden="true">
+    <div id="client_action_modal" class="ovb-modal">
         <i class="close_modal" onclick='closeOvModal("#client_action_modal_wrapper")' ;>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                 <path fill="currentColor"
@@ -411,6 +419,7 @@ function render_calendar_meta_box($post)
 
     </div>
 </div>
+
 <script>
 function closeClientModal() {
     // uništi datepicker
@@ -420,7 +429,7 @@ function closeClientModal() {
     // očisti inpute
     jQuery(
             "#client_first_name, #client_last_name, #client_email, #client_phone, #client_guests, #custom-daterange-input-admin"
-            )
+        )
         .val("");
 
     // koristi helper za zatvaranje

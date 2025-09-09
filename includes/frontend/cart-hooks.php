@@ -91,6 +91,22 @@ function ovb_calculate_cart_item_price($cart_item) {
             ? floatval($calendar_data[$d]['price'])
             : floatval($price_types['regular']); // fallback na regular
     }
+
+        // <-- DODAJ OVAJ DEO KODA OVDE TEST -->
+    $log_message = sprintf(
+        'OVB LOG [Price Calculation]: Calculating price for product ID %d. Final calculated total for cart item: %s EUR.',
+        $cart_item['product_id'],
+        $total
+    );
+    // Koristimo tvoju ovb_log funkciju ako postoji, inače error_log
+    if (function_exists('ovb_log')) {
+        ovb_log($log_message, 'price-calculation');
+    } else {
+        ovb_log($log_message);
+        error_log($log_message);
+    }
+    ovb_log($log_message, 'price-calculation');
+    // <-- KRAJ DODATOG KODA TEST -->
     return $total;
 }
 
@@ -224,8 +240,8 @@ add_action('woocommerce_ajax_added_to_cart', function($product_id) {
 add_filter('woocommerce_add_to_cart_fragments', function($fragments) {
     ob_start();
     ?>
-    <span class="ovb-cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></span>
-    <?php
+<span class="ovb-cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></span>
+<?php
     $fragments['.ovb-cart-count'] = ob_get_clean();
     return $fragments;
 });

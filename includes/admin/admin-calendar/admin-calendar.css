@@ -612,18 +612,124 @@ td .day-wrapper {
     display: none;
   }
 }
+/* ===== Global: zabrani scroll kad je modal otvoren ===== */
+body.ovb-modal-open { overflow: hidden !important; }
 
-body.ovb-modal-open {
-    overflow: hidden !important;
+/* ===== Responsivnost tabele u admin kalendaru ===== */
+@media (max-width: 1000px) {
+  .admin-table-wrapper { overflow-x: auto; }
+  .admin-table { min-width: 1000px; width: max-content; }
+}
+/* ===== SCOPE: WP Admin → Products → Edit/New ===== */
+body.wp-admin.post-type-product.post-php,
+body.wp-admin.post-type-product.post-new-php {}
+
+/* Global: zabrani scroll kad je modal otvoren */
+body.wp-admin.post-type-product.post-php.ovb-modal-open,
+body.wp-admin.post-type-product.post-new-php.ovb-modal-open {
+  overflow: hidden !important;
 }
 
+/* Responsivnost tabele u admin kalendaru */
 @media (max-width: 1000px) {
-  .admin-table-wrapper {
+  body.wp-admin.post-type-product.post-php .admin-table-wrapper,
+  body.wp-admin.post-type-product.post-new-php .admin-table-wrapper {
     overflow-x: auto;
   }
-
-  .admin-table {
+  body.wp-admin.post-type-product.post-php .admin-table,
+  body.wp-admin.post-type-product.post-new-php .admin-table {
     min-width: 1000px;
     width: max-content;
   }
+}
+
+/* ===== Bazni overlay & modal (za client/price/action modale) ===== */
+body.wp-admin.post-type-product.post-php .ovb-overlay,
+body.wp-admin.post-type-product.post-new-php .ovb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: rgba(17,24,39,.55);
+  backdrop-filter: blur(1px);
+  align-items: center;
+  justify-content: center;
+}
+body.wp-admin.post-type-product.post-php .ovb-overlay[aria-hidden="false"],
+body.wp-admin.post-type-product.post-php #client_modal_wrapper.is-open,
+body.wp-admin.post-type-product.post-php #price_modal_wrapper.is-open,
+body.wp-admin.post-type-product.post-php #client_action_modal_wrapper.is-open,
+body.wp-admin.post-type-product.post-new-php .ovb-overlay[aria-hidden="false"],
+body.wp-admin.post-type-product.post-new-php #client_modal_wrapper.is-open,
+body.wp-admin.post-type-product.post-new-php #price_modal_wrapper.is-open,
+body.wp-admin.post-type-product.post-new-php #client_action_modal_wrapper.is-open {
+  display: flex;
+}
+body.wp-admin.post-type-product.post-php .ovb-modal,
+body.wp-admin.post-type-product.post-new-php .ovb-modal {
+  width: min(820px, 95vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.35);
+  transform: scale(.98);
+  opacity: 0;
+  transition: transform .15s ease, opacity .15s ease;
+}
+body.wp-admin.post-type-product.post-php .ovb-overlay[aria-hidden="false"] .ovb-modal,
+body.wp-admin.post-type-product.post-php #client_modal_wrapper.is-open .ovb-modal,
+body.wp-admin.post-type-product.post-php #price_modal_wrapper.is-open .ovb-modal,
+body.wp-admin.post-type-product.post-php #client_action_modal_wrapper.is-open .ovb-modal,
+body.wp-admin.post-type-product.post-new-php .ovb-overlay[aria-hidden="false"] .ovb-modal,
+body.wp-admin.post-type-product.post-new-php #client_modal_wrapper.is-open .ovb-modal,
+body.wp-admin.post-type-product.post-new-php #price_modal_wrapper.is-open .ovb-modal,
+body.wp-admin.post-type-product.post-new-php #client_action_modal_wrapper.is-open .ovb-modal {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* ===== Datepicker u KLIJENT modalu ===== */
+body.wp-admin.post-type-product.post-php #date-range-picker,
+body.wp-admin.post-type-product.post-new-php #date-range-picker { position: relative; }
+body.wp-admin.post-type-product.post-php #date-range-picker .ov-picker-container,
+body.wp-admin.post-type-product.post-new-php #date-range-picker .ov-picker-container {
+  position: absolute !important;
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;           /* ispravka: NE 50% */
+  bottom: auto;
+  transform: none !important;
+  max-width: 100%;
+  overflow: auto;
+  z-index: 100002 !important; /* iznad .ovb-modal */
+}
+
+/* ===== Datepicker kao INLINE POPOVER u admin tabeli (bez overlay-a) ===== */
+body.wp-admin.post-type-product.post-php #daterange_container,
+body.wp-admin.post-type-product.post-php #status_daterange_container,
+body.wp-admin.post-type-product.post-new-php #daterange_container,
+body.wp-admin.post-type-product.post-new-php #status_daterange_container { position: relative; }
+
+body.wp-admin.post-type-product.post-php #daterange_container .ov-picker-container,
+body.wp-admin.post-type-product.post-php #status_daterange_container .ov-picker-container,
+body.wp-admin.post-type-product.post-new-php #daterange_container .ov-picker-container,
+body.wp-admin.post-type-product.post-new-php #status_daterange_container .ov-picker-container {
+  position: absolute !important;
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  bottom: 80px;
+  transform: none !important;
+  max-width: min(auto, 95vw);
+  overflow: auto;
+  z-index: 100001 !important;   /* iznad sadržaja meta-boxa, ispod client pickera */
+  box-shadow: 0 15px 35px rgba(0,0,0,.25);
+  border-radius: 10px;
+}
+
+body.wp-admin.post-type-product.post-php  #daterange,
+body.wp-admin.post-type-product.post-php  #status_daterange{
+  background-color: #fff;
 }

@@ -84,6 +84,7 @@
   color: #fff;
   padding: 4rem 0;
   overflow: hidden;
+  padding-top: 290px;
 }
 
 .ovb-myaccount-inner {
@@ -176,13 +177,13 @@
     }
 
     thead th {
-      background: rgba(255, 255, 255, 0.1);
+      background: #1b203a !important;
       text-align: left;
     }
 
     tbody tr:nth-child(even) td,
     tbody tr:nth-child(even) th {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.05) !important;
     }
 
     tbody td {
@@ -301,7 +302,7 @@
     thead th {
       border: 1px solid #fff;
       padding: 0.75rem 1rem;
-      background: rgba(255, 255, 255, 0.1);
+      background: #1B203A;
       color: #fff;
       text-align: left;
     }

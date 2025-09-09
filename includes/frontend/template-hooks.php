@@ -43,6 +43,10 @@ function ovb_override_templates($template) {
     }
 
     if ( function_exists('is_cart') && is_cart() ) {
+         // Ako je korpa prazna -> pusti Woo default (cart-empty.php)
+        if ( WC()->cart && WC()->cart->is_empty() ) {
+            return $template; // bez override-a
+        }
         $tpl = OVB_BOOKING_PATH . 'templates/woocommerce/ov-cart.php';
         if ( file_exists($tpl) ) return $tpl;
     }
@@ -174,3 +178,20 @@ function ovb_optimize_shop_loop() {
         return $classes;
     }, 10, 3);
 }
+
+// === OVB: Guard za prazan cart na checkout-u ===
+add_action('template_redirect', function () {
+    if ( is_admin() || wp_doing_ajax() ) return;
+
+    if ( function_exists('is_checkout') && is_checkout() && ! is_order_received_page() ) {
+        if ( ! WC()->cart || WC()->cart->is_empty() ) {
+            $shop_url = wc_get_page_permalink('shop');
+            if ( empty($shop_url) ) {
+                $shop_url = home_url('/shop/');
+            }
+            wc_add_notice( __('Your cart is empty. Please add a product to continue.', 'ov-booking'), 'notice' );
+            wp_safe_redirect( $shop_url );
+            exit;
+        }
+    }
+}, 11);

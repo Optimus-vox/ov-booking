@@ -11,8 +11,8 @@
   position: absolute;
   top: 80px;
   right: 0;
-  border: 1px solid #ccc;
-  padding: 15px;
+  border: 2px solid #5D3FD3;
+  padding: 24px;
   width: 900px;
   background-color: #1b203a;
   z-index: 999;
@@ -90,7 +90,7 @@
   align-items: center;
   font-size: 14px;
   color: white;
-  background-color: #2a3052;
+  background-color: #100730;
   border-radius: 4px;
   transition: background-color 0.2s ease;
   position: relative;
@@ -98,8 +98,13 @@
   box-sizing: border-box;
 }
 
+.ov-day.available-day{
+  background-color: #2a3052;
+}
+
 .ov-day.differentDay {
   color: #999;
+ 
 }
 
 /* === Cene ispod dana === */

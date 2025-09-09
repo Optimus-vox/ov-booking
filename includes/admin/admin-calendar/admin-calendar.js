@@ -27,11 +27,18 @@ const parseDMY = (s) => {
 
 // === Modal open/close helpers ===
 function openOvModal(selector) {
+  const $el = jQuery(selector);
   jQuery('body').addClass('ovb-modal-open');
-  jQuery(selector).show();
+  $el.show().addClass('is-open').attr('aria-hidden', 'false');
+
+  // fokus na prvi focusable u modalu (bolji11)
+  const $first = $el.find('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])').filter(':visible').first();
+  if ($first.length) $first.trigger('focus');
 }
 function closeOvModal(selector) {
-  jQuery(selector).hide();
+  const $el = jQuery(selector);
+  $el.removeClass('is-open').attr('aria-hidden', 'true');
+  setTimeout(() => { $el.hide(); }, 120);
   jQuery('body').removeClass('ovb-modal-open');
 }
 
@@ -116,66 +123,69 @@ jQuery(document).ready(function () {
     });
   }
 
-  function renderCalendar(startDay, totalDays, currentDate, month, year) {
-    const calendar = document.querySelector(".admin-table tbody");
-    if (!calendar) return;
-    calendar.innerHTML = "";
+  // ✅ DROP-IN PATCH: zameni celu svoju renderCalendar funkciju ovim kodom
+function renderCalendar(startDay, totalDays, currentDate, month, year) {
+  const calendar = document.querySelector(".admin-table tbody");
+  if (!calendar) return;
+  calendar.innerHTML = "";
 
-    let currentDay = startDay;
-    let $week = getCalendarRow();
+  let currentDay = startDay;
+  let $week = getCalendarRow();
 
-    for (let i = 1; i <= totalDays; i++) {
-      let $day = $week.find("td").eq(currentDay);
-      const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+  // 1) Izvedi UI status bez prepisivanja storage-a
+  const deriveDisplayStatus = (dateKey, dayData, todayDateObj) => {
+    const hasClients = Array.isArray(dayData?.clients) && dayData.clients.length > 0;
+    const price = (typeof dayData?.price === "number") ? dayData.price : undefined;
+    const persisted = (dayData?.status) || "available";
 
-      const dayData = calendarData[formattedDate] || {};
-      const clients = Array.isArray(dayData.clients) ? dayData.clients : [];
-      const hasClients = clients.length > 0;
+    // Past dan: prikaz "unavailable", storage NE diramo
+    const isPast = (new Date(dateKey) < todayDateObj);
+    if (isPast) return { display: "unavailable", isPast: true };
 
-      const dayDate = new Date(year, month, i);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    // Postoje klijenti?
+    if (hasClients) {
+      const checkins = dayData.clients.filter(c => c.isCheckin).length;
+      const checkouts = dayData.clients.filter(c => c.isCheckout).length;
+      const turnoverDay = checkouts > 0 && checkins > 0;
+      if (turnoverDay) return { display: "available", isPast: false };
 
-      const isPast = dayDate < today;
+      const isLastDay = dayData.clients.some(c => c.rangeEnd === dateKey);
+      if (isLastDay) return { display: "available", isPast: false };
 
-      // Koliko ih ulazi/izlazi tog dana
-      const checkins = clients.filter((c) => c.isCheckin).length;
-      const checkouts = clients.filter((c) => c.isCheckout).length;
+      return { display: "booked", isPast: false };
+    }
 
-      // Stanja dana
-      const departuresOnly = checkouts > 0 && checkins === 0; // samo izlazak
-      const turnoverDay = checkouts > 0 && checkins > 0; // izlazak + ulazak
+    // Nema klijenata: ako nema cene → "unavailable", inače poštuj ručno postavljen status
+    if (price === undefined) return { display: "unavailable", isPast: false };
+    return { display: persisted, isPast: false };
+  };
 
-      let price = dayData.price;
-      let status = dayData.status ?? "available";
+  for (let i = 1; i <= totalDays; i++) {
+    let $day = $week.find("td").eq(currentDay);
+    const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
 
-      // Ako nemamo cenu i nemamo klijente, status je unavailable
-      if (!price && price !== 0 && !hasClients) {
-        status = "unavailable";
-      }
+    const dayData = calendarData[formattedDate] || {};
+    const clients = Array.isArray(dayData.clients) ? dayData.clients : [];
+    const hasClients = clients.length > 0;
 
-      // Ako je prošao dan, status mora biti unavailable
-      if (isPast) {
-        status = "unavailable";
-        $day.addClass("past-day");
-      }
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const { display: displayStatus, isPast } = deriveDisplayStatus(formattedDate, dayData, today);
 
-      const isLastDay = clients.some((client) => client.rangeEnd === formattedDate);
-      if (hasClients) {
-        if (turnoverDay || isLastDay) {
-          status = "available";
-        } else {
-          status = "booked";
-        }
-      }
+    // ❗ Selekt treba da pokaže PERSISTED ako postoji, a ne UI-izvedeni status
+    const selectInitial = (dayData.status ?? displayStatus);
 
-      calendarData[formattedDate] = {
-        ...calendarData[formattedDate],
-        status: status,
-        isPast: isPast,
-      };
+    // Potrebno je obeležiti past day zbog tvojih CSS pravila (.past-day)
+    if (isPast) $day.addClass("past-day");
 
-      let dayHTML = `
+    // Koliko ulaza/izlaza (originalna semantika za prikaz "+")
+    const checkins = clients.filter(c => c.isCheckin).length;
+    const checkouts = clients.filter(c => c.isCheckout).length;
+    const departuresOnly = checkouts > 0 && checkins === 0;
+
+    const price = (typeof dayData.price === "number") ? dayData.price : undefined;
+
+    // 2) HTML bez mutiranja calendarData
+    let dayHTML = `
       <div class="day-wrapper">
         <div class="day-header">
           <div class="day-number ${i === currentDate ? "today-number" : ""}">${i}</div>
@@ -185,132 +195,111 @@ jQuery(document).ready(function () {
               ${
                 !isPast
                   ? `<svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
-                </svg>`
+                      <path d="M6.98958 1.50002L8.55556 3.06599C8.62153 3.13196 8.62153 3.2396 8.55556 3.30558L4.76389 7.09724L3.15278 7.27606C2.9375 7.30037 2.75521 7.11808 2.77951 6.9028L2.95833 5.29169L6.75 1.50002C6.81597 1.43405 6.92361 1.43405 6.98958 1.50002ZM9.80208 1.10245L8.95486 0.255229C8.69097 -0.00866021 8.26215 -0.00866021 7.99653 0.255229L7.38195 0.869812C7.31597 0.935784 7.31597 1.04342 7.38195 1.1094L8.94792 2.67537C9.01389 2.74134 9.12153 2.74134 9.1875 2.67537L9.80208 2.06078C10.066 1.79516 10.066 1.36634 9.80208 1.10245ZM6.66667 6.06599V7.83335H1.11111V2.2778H5.10069C5.15625 2.2778 5.20833 2.25523 5.24826 2.21703L5.94271 1.52259C6.07465 1.39065 5.9809 1.16669 5.79514 1.16669H0.833333C0.373264 1.16669 0 1.53995 0 2.00002V8.11113C0 8.5712 0.373264 8.94446 0.833333 8.94446H6.94444C7.40451 8.94446 7.77778 8.5712 7.77778 8.11113V5.37155C7.77778 5.18578 7.55382 5.09377 7.42188 5.22398L6.72743 5.91842C6.68924 5.95835 6.66667 6.01044 6.66667 6.06599Z" fill="#111827"/>
+                    </svg>`
                   : ""
               }
               ${typeof price === "number" ? price + "€" : "Add price"}
               <span class="tooltip-text">
                 Price: ${typeof price === "number" ? price + "€" : "Price not set"}<br>
-                Status: ${status}
+                Status: ${displayStatus}
               </span>
             </div>
           </div>
         </div>
     `;
 
-      // Always show clients without filtering end dates
-      if (hasClients) {
-        clients.forEach((client) => {
-          let iconHtml = "";
-          let hasIcon = false;
-          if (client.isCheckin && client.isCheckout) {
-            hasIcon = true;
-            iconHtml = `<div class="ovb-booking-dates check-in-out" style="display:flex; align-items:center; width:32px">
-            <svg xmlns="http://www.w3.org/2000/svg" title="Check-in-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-            <svg xmlns="http://www.w3.org/2000/svg" title="Check-in-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-             <div class="tooltip-text">Check-in & Check-out</div>
+    // Klijenti – samo prikaz (ne diramo storage)
+    if (hasClients) {
+      clients.forEach((client) => {
+        let iconHtml = "";
+        let hasIcon = false;
+        if (client.isCheckin && client.isCheckout) {
+          hasIcon = true;
+          iconHtml = `<div class="ovb-booking-dates check-in-out" style="display:flex; align-items:center; width:32px">
+              <svg xmlns="http://www.w3.org/2000/svg" title="Check-in-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" title="Check-in-out" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <div class="tooltip-text">Check-in & Check-out</div>
             </div>`;
-          } else if (client.isCheckin) {
-            hasIcon = true;
-            iconHtml = `<div class="ovb-booking-dates check-in" style="display:flex; align-items:center; gap:5px; width:32px ">
-            <svg xmlns="http://www.w3.org/2000/svg" title="Check-in" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-            <div class="tooltip-text">Check-in</div>
+        } else if (client.isCheckin) {
+          hasIcon = true;
+          iconHtml = `<div class="ovb-booking-dates check-in" style="display:flex; align-items:center; gap:5px; width:32px ">
+              <svg xmlns="http://www.w3.org/2000/svg" title="Check-in" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+              <div class="tooltip-text">Check-in</div>
             </div>`;
-          } else if (client.isCheckout) {
-            hasIcon = true;
-            iconHtml = `<div class="ovb-booking-dates check-out" style="display:flex; align-items:center; gap:5px; width:32px">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                <div class="tooltip-text">Check-out</div>
-                </div>`;
-          }
-          dayHTML += `
-            <div class="day-client clickable-client"
-                data-date="${formattedDate}"
-                data-email="${client.email}"
-                data-guests="${client.guests}"
-                data-phone="${client.phone}"
-                data-firstname="${client.firstName}"
-                data-lastname="${client.lastName}"
-                data-bookingid="${client.bookingId}">
-                <span class="ovb-client-info${hasIcon ? " has-icon" : ""}">${iconHtml} ${client.firstName} ${client.lastName} ${
-                  hasIcon ? '<i class="icon-spacer"></i>' : ""
-                }</span>
-            </div>
-        `;
-        });
-      }
+        } else if (client.isCheckout) {
+          hasIcon = true;
+          iconHtml = `<div class="ovb-booking-dates check-out" style="display:flex; align-items:center; gap:5px; width:32px">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <div class="tooltip-text">Check-out</div>
+            </div>`;
+        }
 
-      // Start actions container
-      dayHTML += `<div class="day-actions">`;
-
-      // (+) i status:
-      //  - nema klijenata → prikaži (ako nije prošao dan)
-      //  - samo checkout tog dana (niko ne ulazi) → prikaži (da možeš da dodaš novog gosta)
-      //  - čim postoji i checkin (turnover) ILI ukupno 2 klijenta → sakrij
-      const canShowActions = !isPast && (!hasClients || (departuresOnly && clients.length < 2));
-
-      if (canShowActions) {
         dayHTML += `
+          <div class="day-client clickable-client"
+               data-date="${formattedDate}"
+               data-email="${client.email}"
+               data-guests="${client.guests}"
+               data-phone="${client.phone}"
+               data-firstname="${client.firstName}"
+               data-lastname="${client.lastName}"
+               data-bookingid="${client.bookingId}">
+               <span class="ovb-client-info${hasIcon ? " has-icon" : ""}">${iconHtml} ${client.firstName} ${client.lastName} ${hasIcon ? '<i class="icon-spacer"></i>' : ""}</span>
+          </div>`;
+      });
+    }
+
+    // 3) Akcije (zadržavamo tvoju tačnu logiku za "+" i select)
+    const canShowActions = !isPast && (!hasClients || (departuresOnly && clients.length < 2));
+    dayHTML += `<div class="day-actions">`;
+    if (canShowActions) {
+      dayHTML += `
         <button class="add-client-button" data-date="${formattedDate}" title="Add client">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g clip-path="url(#clip0_419_1770)">
-                    <path d="M13.125 6.09375H8.90625V1.875C8.90625 1.35732 8.48643 0.9375 7.96875 0.9375H7.03125C6.51357 0.9375 6.09375 1.35732 6.09375 1.875V6.09375H1.875C1.35732 6.09375 0.9375 6.51357 0.9375 7.03125V7.96875C0.9375 8.48643 1.35732 8.90625 1.875 8.90625H6.09375V13.125C6.09375 13.6427 6.51357 14.0625 7.03125 14.0625H7.96875C8.48643 14.0625 8.90625 13.6427 8.90625 13.125V8.90625H13.125C13.6427 8.90625 14.0625 8.48643 14.0625 7.96875V7.03125C14.0625 6.51357 13.6427 6.09375 13.125 6.09375Z" fill="#7C3AED"/>
-                </g>
-                <defs>
-                    <clipPath id="clip0_419_1770">
-                        <rect width="15" height="15" fill="white"/>
-                    </clipPath>
-                </defs>
-            </svg>
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_419_1770)">
+              <path d="M13.125 6.09375H8.90625V1.875C8.90625 1.35732 8.48643 0.9375 7.96875 0.9375H7.03125C6.51357 0.9375 6.09375 1.35732 6.09375 1.875V6.09375H1.875C1.35732 6.09375 0.9375 6.51357 0.9375 7.03125V7.96875C0.9375 8.48643 1.35732 8.90625 1.875 8.90625H6.09375V13.125C6.09375 13.6427 6.51357 14.0625 7.03125 14.0625H7.96875C8.48643 14.0625 8.90625 13.6427 8.90625 13.125V8.90625H13.125C13.6427 8.90625 14.0625 8.48643 14.0625 7.96875V7.03125C14.0625 6.51357 13.6427 6.09375 13.125 6.09375Z" fill="#7C3AED"/>
+            </g>
+            <defs><clipPath id="clip0_419_1770"><rect width="15" height="15" fill="white"/></clipPath></defs>
+          </svg>
         </button>
         <select class="ov-status-select" data-date="${formattedDate}">
-            <option value="available" ${status === "available" ? "selected" : ""}>Available</option>
-            <option value="unavailable" ${status === "unavailable" ? "selected" : ""}>Unavailable</option>
-            <option value="booked" ${status === "booked" ? "selected" : ""}>Booked</option>
-        </select>
-    `;
+          <option value="available"   ${selectInitial === "available"   ? "selected" : ""}>Available</option>
+          <option value="unavailable" ${selectInitial === "unavailable" ? "selected" : ""}>Unavailable</option>
+          <option value="booked"      ${selectInitial === "booked"      ? "selected" : ""}>Booked</option>
+        </select>`;
+    }
+    dayHTML += `</div></div>`;
+
+    $day.html(dayHTML);
+
+    // 4) Boje select-a (vizuelno), bez side-effekta na storage
+    const selectEl = $day.find(".ov-status-select")[0];
+    if (selectEl) {
+      function updateSelectBackground() {
+        selectEl.classList.remove("status-available", "status-unavailable", "status-booked");
+        const val = selectEl.value;
+        if (val === "available")   selectEl.classList.add("status-available");
+        if (val === "unavailable") selectEl.classList.add("status-unavailable");
+        if (val === "booked")      selectEl.classList.add("status-booked");
       }
+      updateSelectBackground();
+      selectEl.addEventListener("change", updateSelectBackground);
 
-      // Close actions container and day wrapper
-      dayHTML += `</div></div>`;
-
-      $day.html(dayHTML);
-
-      const selectEl = $day.find(".ov-status-select")[0];
-      if (selectEl) {
-        function updateSelectBackground() {
-          const val = selectEl.value;
-          selectEl.classList.remove("status-available", "status-unavailable", "status-booked");
-          if (!isPast) {
-            if (val === "available") selectEl.classList.add("status-available");
-            else if (val === "unavailable") selectEl.classList.add("status-unavailable");
-            else if (val === "booked") selectEl.classList.add("status-booked");
-          } else {
-            selectEl.value = "unavailable";
-            selectEl.classList.add("status-unavailable");
-          }
-        }
-        updateSelectBackground();
-        selectEl.addEventListener("change", updateSelectBackground);
-      }
-
-      $day.attr(
-        "data-title",
-        `Datum: ${formattedDate}
-        Cena: ${typeof price === "number" ? price + "€" : "-"}
-        Tip: ${status}`
-      );
-
-      $day.addClass("current-month");
-      if (i === currentDate) $day.addClass("today");
-
-      $day.find(".ov-status-select").on("change", function () {
+      // On-change: pitaj korisnika, pa snimi (tvoja postojeća logika)
+      $day.find(".ov-status-select").off("change.ovb").on("change.ovb", function () {
         const select = jQuery(this);
         const newStatus = select.val();
         const dateKey = select.data("date");
-        const previousStatus = calendarData[dateKey]?.status || "available";
+        const previousStatus = (calendarData[dateKey]?.status) || "available";
 
+        // Ako korisnik pokušava da postavi 'available', a dan NEMA definisanu cenu
+        const dayPrice = calendarData[dateKey]?.price;
+        if (newStatus === "available" && (typeof dayPrice !== "number" || dayPrice < 0)) {
+          showToast("Cannot set status to 'Available' because no price is set for this day.");
+          select.val(previousStatus); // Vrati na prethodnu vrednost
+          updateSelectBackground();   // Osveži boju
+          return; // Prekini izvršavanje
+        }
         Swal.fire({
           title: "Change status?",
           text: `Do you want to set status to "${newStatus}"?`,
@@ -321,39 +310,38 @@ jQuery(document).ready(function () {
           scrollbarPadding: false,
         }).then((result) => {
           if (!result.isConfirmed) {
-            // Vrati na prethodni status bez dodatnog pitanja
             select.val(previousStatus);
-
-            // Resetuj klase i dodaj pravu
-            select.removeClass("status-available status-unavailable status-booked");
-            if (previousStatus === "available") {
-              select.addClass("status-available");
-            } else if (previousStatus === "unavailable") {
-              select.addClass("status-unavailable");
-            } else if (previousStatus === "booked") {
-              select.addClass("status-booked");
-            }
+            updateSelectBackground();
             return;
           }
-
-          // Ako je potvrđeno → ažuriraj status
-          if (!calendarData[dateKey]) {
-            calendarData[dateKey] = { clients: [] };
-          }
+          if (!calendarData[dateKey]) calendarData[dateKey] = { clients: [] };
           calendarData[dateKey].status = newStatus;
 
           saveCalendarDataSafely("Status updated successfully.").then(() => {
-            myCalendar(); // Rerenderuj kalendar
+            myCalendar();
           });
         });
       });
+    }
 
-      currentDay = ++currentDay % 7;
-      if (currentDay === 0 && i + 1 <= totalDays) {
-        $week = getCalendarRow();
-      }
+    // Tooltip/title
+    $day.attr(
+      "data-title",
+      `Datum: ${formattedDate}
+      Cena: ${typeof price === "number" ? price + "€" : "-"}
+      Tip: ${displayStatus}`
+    );
+
+    $day.addClass("current-month");
+    if (i === currentDate) $day.addClass("today");
+
+    // Napredovanje po danima / nov red
+    currentDay = ++currentDay % 7;
+    if (currentDay === 0 && i + 1 <= totalDays) {
+      $week = getCalendarRow();
     }
   }
+}
 
   // Show/hide custom range polja
   // jQuery("#apply_rule").on("change", function () {
@@ -364,24 +352,238 @@ jQuery(document).ready(function () {
   //   }
   // });
 
-  // Init daterangepicker
-  initOvDateRangePicker({
-    input: "#daterange",
-    container: "#daterange_container",
-    calendarData,
-    onChange: (start, end) => {
-      jQuery("#daterange").val(`${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`);
-    },
+// Init daterangepicker (Set Prices → Custom Range)
+initOvDateRangePicker({
+  input: "#daterange",
+  container: "#daterange_container",
+  calendarData,
+  onChange: (start, end) => {
+    jQuery("#daterange").val(`${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`);
+  },
+});
+
+// Init (Availability Updates → Custom Range)
+initOvDateRangePicker({
+  input: "#status_daterange",
+  container: "#status_daterange_container",
+  calendarData,
+  onChange: (start, end) => {
+    jQuery("#status_daterange").val(`${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`);
+  },
+});
+
+// === Range overlay: fresh instance, no detach/append ===
+// (function () {
+//   // Focus trap za11
+//   function trapFocus($scope) {
+//     const sel = 'a[href],area[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled]),[tabindex]:not([tabindex="-1"])';
+//     const $f = $scope.find(sel).filter(':visible');
+//     if (!$f.length) return () => {};
+//     const first = $f[0], last = $f[$f.length - 1];
+//     function handler(e) {
+//       if (e.key !== 'Tab') return;
+//       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+//       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+//     }
+//     $scope.on('keydown.ovbTrap', handler);
+//     return () => $scope.off('keydown.ovbTrap', handler);
+//   }
+
+//   let lastInputSel = null;
+//   let untrap = () => {};
+
+//   function buildPicker(which) {
+//     const $mount = jQuery('#ovb-range-mount').empty();
+//     const inputSel = (which === 'status') ? '#status_daterange' : '#daterange';
+
+//     // pokušaj da pročitaš postojeće vrednosti iz inputa (DD/MM/YYYY – DD/MM/YYYY)
+//     let defaultStart, defaultEnd;
+//     const raw = jQuery(inputSel).val();
+//     if (raw && raw.includes('–')) {
+//       const [s, e] = raw.split('–').map(x => x.trim());
+//       if (window.moment && moment(s, 'DD/MM/YYYY', true).isValid()) defaultStart = moment(s, 'DD/MM/YYYY').format('YYYY-MM-DD');
+//       if (window.moment && moment(e, 'DD/MM/YYYY', true).isValid()) defaultEnd   = moment(e, 'DD/MM/YYYY').format('YYYY-MM-DD');
+//     }
+
+//     // napravi NOV picker direktno u overlay-u
+//     initOvDateRangePicker({
+//       input: inputSel,
+//       container: '#ovb-range-mount',
+//       calendarData,
+//       ...(defaultStart ? { defaultStart } : {}),
+//       ...(defaultEnd   ? { defaultEnd }   : {}),
+//       onChange: (start, end) => {
+//         if (start) {
+//           const val = end
+//             ? `${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`
+//             : `${start.format("DD/MM/YYYY")} – `;
+//           jQuery(inputSel).val(val);
+//         }
+//         // auto-close kad oba postoje
+//         if (start && end) {
+//           jQuery('#ovb-range-overlay .ovb-close').trigger('click');
+//         }
+//       },
+//     });
+    
+//   }
+
+//   function openRangeOverlay(which) {
+//     const $overlay = jQuery('#ovb-range-overlay');
+//     lastInputSel = (which === 'status') ? '#status_daterange' : '#daterange';
+
+//     buildPicker(which);
+
+//     jQuery('body').addClass('ovb-modal-open');
+//     $overlay.attr('aria-hidden', 'false');       // CSS će dati display:flex
+//     untrap = trapFocus($overlay);
+//     // fokus na X
+//     $overlay.find('.ovb-close').trigger('focus');
+//   }
+
+//   function closeRangeOverlay() {
+//     const $overlay = jQuery('#ovb-range-overlay');
+//     jQuery('#ovb-range-mount').empty();          // “uništi” picker
+//     $overlay.attr('aria-hidden', 'true');
+//     jQuery('body').removeClass('ovb-modal-open');
+//     untrap();
+//     if (lastInputSel) jQuery(lastInputSel).trigger('focus');
+//   }
+
+//   // backplate klik
+//   jQuery('#ovb-range-overlay').off('click.ovb').on('click.ovb', function (e) {
+//     if (e.target === this) closeRangeOverlay();
+//   });
+//   // X dugme
+//   jQuery('#ovb-range-overlay .ovb-close').off('click').on('click', closeRangeOverlay);
+//   // ESC
+//   jQuery(document).off('keydown.ovbRange').on('keydown.ovbRange', function (e) {
+//     if (e.key === 'Escape' && jQuery('#ovb-range-overlay').attr('aria-hidden') === 'false') {
+//       closeRangeOverlay();
+//     }
+//   });
+
+//   // otvaranje overlay-a klikom na input
+//   jQuery('#daterange').off('click.ovbRange').on('click.ovbRange', function (e) {
+//     e.preventDefault();
+//     openRangeOverlay('price');
+//   });
+//   jQuery('#status_daterange').off('click.ovbRange').on('click.ovbRange', function (e) {
+//     e.preventDefault();
+//     openRangeOverlay('status');
+//   });
+// })();
+
+
+// Inline date-range popover helper (admin inputs)
+function attachInlineRangePicker({ input, container, calendarData, getDefaultRange }) {
+  // inicijalizuj kad prvi put klikne ili fokusira
+  let initialized = false;
+
+  function ensurePicker() {
+    if (initialized) return;
+    // pokušaj da pročitaš postojeće vrednosti iz inputa (DD/MM/YYYY – DD/MM/YYYY)
+    let defaultStart, defaultEnd;
+    if (typeof getDefaultRange === 'function') {
+      const d = getDefaultRange();
+      defaultStart = d?.start;
+      defaultEnd   = d?.end;
+    } else {
+      const raw = jQuery(input).val();
+      if (raw && raw.includes('–')) {
+        const [s, e] = raw.split('–').map(x => x.trim());
+        if (window.moment && moment(s, 'DD/MM/YYYY', true).isValid()) defaultStart = moment(s, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        if (window.moment && moment(e, 'DD/MM/YYYY', true).isValid()) defaultEnd   = moment(e, 'DD/MM/YYYY').format('YYYY-MM-DD');
+      }
+    }
+
+    initOvDateRangePicker({
+      input,
+      container,
+      calendarData,
+      ...(defaultStart ? { defaultStart } : {}),
+      ...(defaultEnd   ? { defaultEnd }   : {}),
+      onChange: (start, end) => {
+        if (!start) { jQuery(input).val(''); return; }
+        const val = end
+          ? `${start.format('DD/MM/YYYY')} – ${end.format('DD/MM/YYYY')}`
+          : `${start.format('DD/MM/YYYY')} – `;
+        jQuery(input).val(val);
+      },
+    });
+    initialized = true;
+  }
+
+  // otvori/toggle na click/focus
+  jQuery(input).off('focus.ovb click.ovb').on('focus.ovb click.ovb', function(e){
+    e.preventDefault();
+    ensurePicker();
+    // prikaži popover (container je relativan; picker sam renderuje .ov-picker-container)
+    jQuery(container).find('.ov-picker-container').show();
   });
 
-  initOvDateRangePicker({
-    input: "#status_daterange",
-    container: "#status_daterange_container",
-    calendarData,
-    onChange: (start, end) => {
-      jQuery("#status_daterange").val(`${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`);
-    },
+  // zatvori klikom van
+  jQuery(document).off('mousedown.ovbInline').on('mousedown.ovbInline', function(e){
+    const $c = jQuery(container);
+    if (!$c.is(e.target) && $c.has(e.target).length === 0 && !jQuery(input).is(e.target)) {
+      $c.find('.ov-picker-container').hide();
+    }
   });
+
+  // ESC za zatvaranje
+  jQuery(document).off('keydown.ovbInline').on('keydown.ovbInline', function(e){
+    if (e.key === 'Escape') jQuery(container).find('.ov-picker-container').hide();
+  });
+}
+
+// --- INIT za "Set Prices → Custom Range"
+attachInlineRangePicker({
+  input: '#daterange',
+  container: '#daterange_container',
+  calendarData,
+});
+
+// --- INIT za "Availability Updates → Custom Range"
+attachInlineRangePicker({
+  input: '#status_daterange',
+  container: '#status_daterange_container',
+  calendarData,
+});
+
+
+// Prikaz/skrivanje kontejnera za "Set Prices → Custom Range"
+// function toggleDateRange() {
+//   const isCustom = jQuery("#apply_rule").val() === "custom";
+//   jQuery("#daterange_row").toggle(isCustom);
+//   if (!isCustom) {
+//     jQuery("#daterange").val(""); // ne ostavljamo stari range ako se vrati sa "custom"
+//   }
+// }
+// toggleDateRange();
+// jQuery("#apply_rule").on("change", toggleDateRange);
+
+// Set Prices → "Apply to"
+function toggleSetPriceDateRange() {
+  const isCustom = jQuery("#apply_rule").val() === "custom";
+  jQuery("#daterange_row").toggle(isCustom);         // tr red
+  jQuery("#daterange_container").toggle(isCustom);   // unutrašnji div (nije naodmet)
+  if (!isCustom) jQuery("#daterange").val("");
+}
+toggleSetPriceDateRange();
+jQuery("#apply_rule")
+  .off("change.setprice")
+  .on("change.setprice", toggleSetPriceDateRange);
+
+// Availability Updates → "Apply to"
+function toggleStatusDateRange() {
+  const isCustom = jQuery("#status_apply_rule").val() === "custom";
+  jQuery("#status_daterange_container").toggle(isCustom);
+  if (!isCustom) jQuery("#status_daterange").val("");
+}
+toggleStatusDateRange();
+jQuery("#status_apply_rule")
+  .off("change.status")
+  .on("change.status", toggleStatusDateRange);
 
   // SAVE PRICE TYPES
   jQuery("#save_price_types")
@@ -486,98 +688,106 @@ jQuery(document).ready(function () {
       });
     });
 
-  // APPLY PRICE
-  jQuery("#apply_price")
-    .off("click")
-    .on("click", function (e) {
-      e.preventDefault();
+jQuery("#apply_price")
+  .off("click")
+  .on("click", function (e) {
+    e.preventDefault();
 
-      const priceType = jQuery("#price_type").val();
-      const rule = jQuery("#apply_rule").val();
-      const selectedPrice = definedPriceTypes[priceType];
-      const selectedStatus = jQuery("#bulk_status").val();
+    const priceType = jQuery("#price_type").val();
+    const rule = jQuery("#apply_rule").val();
+    const selectedPrice = definedPriceTypes[priceType];
+    const selectedStatus = jQuery("#bulk_status").val(); // opciono – ako hoćeš i status da se primeni
 
-      if (typeof selectedPrice !== "number" || isNaN(selectedPrice) || selectedPrice <= 0) {
-        return Swal.fire("Error", "Please enter a valid price for the selected price type.", "error");
-      }
+    if (typeof selectedPrice !== "number" || isNaN(selectedPrice) || selectedPrice <= 0) {
+      return Swal.fire("Error", "Please enter a valid price for the selected price type.", "error");
+    }
 
-      let ruleLabel = "";
-      if (rule === "weekdays") ruleLabel = "weekdays (Monday–Friday)";
-      else if (rule === "weekends") ruleLabel = "weekends (Saturday–Sunday)";
-      else if (rule === "full_month") ruleLabel = "all days in the selected month";
-      else if (rule === "custom") {
-        const parts = jQuery("#daterange").val().split(" – ");
-        if (parts.length !== 2) return Swal.fire("Error", "Date range picker is not initialized.", "error");
-        const start = moment(parts[0], "DD/MM/YYYY");
-        const end = moment(parts[1], "DD/MM/YYYY");
-        ruleLabel = `dates in range: ${start.format("DD/MM/YYYY")} – ${end.format("DD/MM/YYYY")}`;
-      }
+    let ruleLabel = "";
+    let rangeStart = null, rangeEnd = null;
 
-      Swal.fire({
-        title: "Confirm Price Application",
-        html: `
-      This change will apply to: <b>${ruleLabel}</b><br>
-      Price type: <b>${priceType}</b><br>
-      Price value: <b>${selectedPrice}€</b><br>
-      ${selectedStatus ? `Status to apply: <b>${selectedStatus}</b><br>` : ""}
-      <br>Do you want to continue?`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Yes, apply",
-        cancelButtonText: "Cancel",
-      }).then((result) => {
-        if (!result.isConfirmed) return;
+    if (rule === "weekdays") ruleLabel = "weekdays (Monday–Friday)";
+    else if (rule === "weekends") ruleLabel = "weekends (Saturday–Sunday)";
+    else if (rule === "full_month") ruleLabel = "all days in the selected month";
+    else if (rule === "custom") {
+      const val = jQuery("#daterange").val();
+      if (!val) return Swal.fire("Error", "Please pick a custom date range.", "error");
+      const parts = val.split(" – ");
+      if (parts.length !== 2) return Swal.fire("Error", "Date range picker is not initialized.", "error");
+      rangeStart = moment(parts[0], "DD/MM/YYYY");
+      rangeEnd   = moment(parts[1], "DD/MM/YYYY");
+      ruleLabel = `dates in range: ${rangeStart.format("DD/MM/YYYY")} – ${rangeEnd.format("DD/MM/YYYY")}`;
+    }
 
-        const month = d.getUTCMonth();
-        const year = d.getUTCFullYear();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+    Swal.fire({
+      title: "Confirm Price Application",
+      html: `
+        This change will apply to: <b>${ruleLabel}</b><br>
+        Price type: <b>${priceType}</b><br>
+        Price value: <b>${selectedPrice}€</b><br>
+        ${selectedStatus ? `Status to apply: <b>${selectedStatus}</b><br>` : ""}
+        <br>Do you want to continue?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, apply",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (!result.isConfirmed) return;
 
-        // Primeni promene na calendarData
-        if (rule === "weekdays" || rule === "weekends" || rule === "full_month") {
-          for (let i = 1; i <= daysInMonth; i++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
-            const dayOfWeek = new Date(year, month, i).getDay();
+      const month = d.getUTCMonth();
+      const year = d.getUTCFullYear();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            let shouldApply = false;
-            if (rule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) shouldApply = true;
-            if (rule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) shouldApply = true;
-            if (rule === "full_month") shouldApply = true;
+      const ensureDay = (dateStr) => {
+        if (!calendarData[dateStr]) {
+          calendarData[dateStr] = { status: "available", isPast: false, clients: [] };
+        }
+        if (!Array.isArray(calendarData[dateStr].clients)) calendarData[dateStr].clients = [];
+      };
 
-            if (shouldApply) {
-              // Inicijalizuj objekat ako ne postoji
-              if (!calendarData[dateStr]) {
-                calendarData[dateStr] = {
-                  status: "available",
-                  isPast: false,
-                  clients: [],
-                };
-              }
+      if (rule === "weekdays" || rule === "weekends" || rule === "full_month") {
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+          const dayOfWeek = new Date(year, month, i).getDay();
 
-              // Postavi cenu i tip
-              calendarData[dateStr].price = selectedPrice;
-              calendarData[dateStr].priceType = priceType;
+          let shouldApply = false;
+          if (rule === "weekdays" && dayOfWeek >= 1 && dayOfWeek <= 5) shouldApply = true;
+          if (rule === "weekends" && (dayOfWeek === 0 || dayOfWeek === 6)) shouldApply = true;
+          if (rule === "full_month") shouldApply = true;
 
-              // Postavi status ako je izabran
-              if (selectedStatus) {
-                calendarData[dateStr].status = selectedStatus;
-              } else if (selectedPrice > 0) {
-                // Ako dan dobija cenu, učini ga dostupnim
-                calendarData[dateStr].status = "available";
-              }
+          if (shouldApply) {
+            ensureDay(dateStr);
+            calendarData[dateStr].price = selectedPrice;
+            calendarData[dateStr].priceType = priceType;
 
-              // Proveri da clients postoji
-              if (!Array.isArray(calendarData[dateStr].clients)) {
-                calendarData[dateStr].clients = [];
-              }
+            if (selectedStatus) {
+              calendarData[dateStr].status = selectedStatus;
+            } else if (selectedPrice > 0) {
+              calendarData[dateStr].status = "available";
             }
           }
         }
-        // Sačuvaj promene i rerenderuj
-        saveCalendarDataSafely("Prices were successfully applied.").then(() => {
-          myCalendar(); // Rerenderuj kalendar
-        });
+      } else if (rule === "custom") {
+        let cur = rangeStart.clone();
+        while (cur.isSameOrBefore(rangeEnd, "day")) {
+          const dateStr = cur.format("YYYY-MM-DD");
+          ensureDay(dateStr);
+          calendarData[dateStr].price = selectedPrice;
+          calendarData[dateStr].priceType = priceType;
+
+          if (selectedStatus) {
+            calendarData[dateStr].status = selectedStatus;
+          } else if (selectedPrice > 0 && calendarData[dateStr].status !== "booked") {
+            calendarData[dateStr].status = "available";
+          }
+          cur.add(1, "day");
+        }
+      }
+
+      saveCalendarDataSafely("Prices were successfully applied.").then(() => {
+        myCalendar();
       });
     });
+  });
 
   // APPLY STATUS
   jQuery("#apply_status")
@@ -659,37 +869,37 @@ jQuery(document).ready(function () {
           }
         }
 
-        if (rule === "custom") {
-          const start = picker.startDate.startOf("day");
-          const end = picker.endDate.startOf("day");
-          let current = moment(start);
+ if (rule === "custom") {
+  const val = jQuery("#status_daterange").val();
+  if (!val) return Swal.fire("Error", "Please pick a custom date range.", "error");
+  const parts = val.split(" – ");
+  if (parts.length !== 2) return Swal.fire("Error", "Date range picker is not initialized.", "error");
 
-          while (current.isSameOrBefore(end)) {
-            const dateStr = current.format("YYYY-MM-DD");
+  const start = moment(parts[0], "DD/MM/YYYY");
+  const end   = moment(parts[1], "DD/MM/YYYY");
 
-            if (!calendarData[dateStr]) {
-              calendarData[dateStr] = {
-                status: "available",
-                isPast: false,
-                clients: [],
-              };
-            }
+  let current = start.clone();
+  while (current.isSameOrBefore(end, "day")) {
+    const dateStr = current.format("YYYY-MM-DD");
 
-            calendarData[dateStr].status = selectedStatus;
+    if (!calendarData[dateStr]) {
+      calendarData[dateStr] = { status: "available", isPast: false, clients: [] };
+    }
+    calendarData[dateStr].status = selectedStatus;
 
-            if (typeof calendarData[dateStr].price !== "number") {
-              calendarData[dateStr].price = undefined;
-            }
-            if (!calendarData[dateStr].priceType) {
-              calendarData[dateStr].priceType = undefined;
-            }
-            if (!Array.isArray(calendarData[dateStr].clients)) {
-              calendarData[dateStr].clients = [];
-            }
+    if (typeof calendarData[dateStr].price !== "number") {
+      calendarData[dateStr].price = undefined;
+    }
+    if (!calendarData[dateStr].priceType) {
+      calendarData[dateStr].priceType = undefined;
+    }
+    if (!Array.isArray(calendarData[dateStr].clients)) {
+      calendarData[dateStr].clients = [];
+    }
 
-            current.add(1, "days");
-          }
-        }
+    current.add(1, "days");
+  }
+}
 
         // Sačuvaj promene i rerenderuj
         saveCalendarDataSafely("Status has been successfully applied.").then(() => {
@@ -727,6 +937,7 @@ jQuery(document).ready(function () {
         method: "POST",
         data: {
           action: "ovb_save_checkin_checkout",
+            nonce: ovbAdminCalendar.nonce, 
           product_id: productId,
           checkin_time: checkinTime,
           checkout_time: checkoutTime,
@@ -1059,15 +1270,15 @@ jQuery(document).ready(function () {
   updateCustomPriceOption();
   jQuery("#custom_price").on("input", updateCustomPriceOption);
 
-  function toggleDateRange() {
-    if (jQuery("#apply_rule").val() === "custom") {
-      jQuery("#daterange_container").show();
-    } else {
-      jQuery("#daterange_container").hide();
-    }
-  }
-  toggleDateRange();
-  jQuery("#apply_rule").on("change", toggleDateRange);
+  // function toggleDateRange() {
+  //   if (jQuery("#apply_rule").val() === "custom") {
+  //     jQuery("#daterange_container").show();
+  //   } else {
+  //     jQuery("#daterange_container").hide();
+  //   }
+  // }
+  // toggleDateRange();
+  // jQuery("#apply_rule").on("change", toggleDateRange);
 
   // Navigacija kroz mesece
   jQuery(".prev-month").click(() => navigationHandler(-1));
@@ -1163,7 +1374,7 @@ jQuery(document).ready(function () {
     jQuery("#client_modal_date").text(formattedDate);
     // automatski setujemo checkout na +1 dan
     const nextDay = moment(selectedDate).add(1, "days").format("DD/MM/YYYY");
-    jQuery("#custom-daterange-input").val(`${formattedDate} – ${nextDay}`);
+    jQuery("#custom-daterange-input-admin").val(`${formattedDate} – ${nextDay}`);
     openOvModal("#client_modal_wrapper");
 
     setTimeout(() => {
@@ -1268,6 +1479,7 @@ jQuery(document).ready(function () {
         method: "POST",
         data: {
           action: "ovb_delete_booking_and_order",
+          nonce: ovbAdminCalendar.nonce, 
           booking_id: bookingId,
         },
 
