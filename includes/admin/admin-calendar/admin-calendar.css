@@ -691,20 +691,7 @@ body.wp-admin.post-type-product.post-new-php #client_action_modal_wrapper.is-ope
 }
 
 /* ===== Datepicker u KLIJENT modalu ===== */
-body.wp-admin.post-type-product.post-php #date-range-picker,
-body.wp-admin.post-type-product.post-new-php #date-range-picker { position: relative; }
-body.wp-admin.post-type-product.post-php #date-range-picker .ov-picker-container,
-body.wp-admin.post-type-product.post-new-php #date-range-picker .ov-picker-container {
-  position: absolute !important;
-  top: calc(100% + 6px);
-  left: 0;
-  right: auto;           /* ispravka: NE 50% */
-  bottom: auto;
-  transform: none !important;
-  max-width: 100%;
-  overflow: auto;
-  z-index: 100002 !important; /* iznad .ovb-modal */
-}
+
 
 /* ===== Datepicker kao INLINE POPOVER u admin tabeli (bez overlay-a) ===== */
 body.wp-admin.post-type-product.post-php #daterange_container,
@@ -722,11 +709,11 @@ body.wp-admin.post-type-product.post-new-php #status_daterange_container .ov-pic
   right: auto;
   bottom: 80px;
   transform: none !important;
-  max-width: min(auto, 95vw);
+  max-width: min(900px, 95vw);
   overflow: auto;
   z-index: 100001 !important;   /* iznad sadržaja meta-boxa, ispod client pickera */
   box-shadow: 0 15px 35px rgba(0,0,0,.25);
-  border-radius: 10px;
+  min-height: 480px;
 }
 
 body.wp-admin.post-type-product.post-php  #daterange,

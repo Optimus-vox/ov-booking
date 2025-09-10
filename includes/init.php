@@ -77,6 +77,30 @@ if (defined('OVB_WC_MISSING') && OVB_WC_MISSING) {
     return;
 }
 
+
+
+/** Login screen customizations */
+require_once OVB_BOOKING_PATH . '/includes/auth/login-customizations.php';
+
+/** Login logo customizations */
+add_filter('ovb_login_logo_url', function ($default) {
+    // preferiramo postojeće konstante ako ih imaš
+    if (defined('OVB_BOOKING_URL') && defined('OVB_BOOKING_PATH')) {
+        $rel = 'assets/images/logo-transparent.png';
+        // fallback ako slika ne postoji – vraća default (site icon ili tema)
+        if (file_exists(trailingslashit(OVB_BOOKING_PATH) . $rel)) {
+            return trailingslashit(OVB_BOOKING_URL) . $rel;
+        }
+        return $default;
+    }
+
+    // univerzalni fallback 
+    $candidate = plugins_url('assets/images/logo-transparent.png', dirname(__DIR__) . '/ov-booking.php');
+    return $candidate ?: $default;
+});
+
+/** Login switch */
+require_once OVB_BOOKING_PATH . 'includes/frontend/menu-login-switch.php';
 /**
  * Core moduli (redosled: helpers → services → admin notice utili)
  */
